@@ -191,6 +191,7 @@ return [
         'bank_account'=>'银行账号',
         'status'=>'状态',
         'desc'=>'描述',
+        'cate_name'=>'分类名称',
         'signdate'=>'签到日期'
     ],
 
