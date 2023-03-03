@@ -51,3 +51,7 @@ Route::resource('award', 'App\Http\Controllers\AwardController');
 Route::resource('sign', 'App\Http\Controllers\SignController');
 //文章列表
 Route::resource('article', 'App\Http\Controllers\ArticleController');
+//系统图片设置
+Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
+//生活缴费
+Route::resource('life', 'App\Http\Controllers\LifeController');
