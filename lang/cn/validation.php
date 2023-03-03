@@ -33,7 +33,7 @@ return [
     'boolean' => 'The :attribute field must be true or false.',
     'confirmed' => ':attribute 不匹配.',
     'current_password' => '密码错误',
-    'date' => ':attribute 日期格式不正确',
+    'date' => ':attribute 必须是日期格式',
     'date_equals' => 'The :attribute must be a date equal to :date.',
     'date_format' => 'The :attribute does not match the format :format.',
     'declined' => 'The :attribute must be declined.',
@@ -191,7 +191,8 @@ return [
         'bank_account'=>'银行账号',
         'status'=>'状态',
         'desc'=>'描述',
-        'cate_name'=>'分类名称'
+        'cate_name'=>'分类名称',
+        'signdate'=>'签到日期'
     ],
 
 ];
