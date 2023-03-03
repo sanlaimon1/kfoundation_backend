@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Article;
+use App\Models\Admin;
+use App\Models\Category;
 
 class ArticleController extends Controller
 {
@@ -18,7 +21,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        $articles = Article::select('id', 'title','content','categoryid','adminid')->paginate(10);
+
+        return view('article.index', compact('articles'));
     }
 
     /**
@@ -26,7 +31,10 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        //
+        $admins = Admin::select('id','username')->get();
+        $categories = Category::select('id','cate_name')->get();
+        
+        return view('article.create', compact('admins' , 'categories'));
     }
 
     /**
@@ -34,7 +42,28 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $request->validate([
+            'title' => ['required', 'string'],
+            'content' => ['required', 'string'],
+            'categoryid' => ['required', 'string'],
+            'adminid' => ['required', 'integer']
+        ]);
+
+        $title = trim($request->get('title'));
+        $content = trim($request->get('content'));
+        $categoryid = trim($request->get('categoryid'));
+        $adminid = trim($request->get('adminid'));
+
+        $newarticle = new Article;
+        $newarticle->title = $title;
+        $newarticle->content = $content;
+        $newarticle->categoryid = $categoryid;
+        $newarticle->adminid = $adminid;
+        
+        $newarticle->save();
+
+        return redirect()->route('article.index');
     }
 
     /**

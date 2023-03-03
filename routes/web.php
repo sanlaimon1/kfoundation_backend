@@ -46,3 +46,5 @@ Route::resource('category', 'App\Http\Controllers\CategoryController');
 Route::resource('award', 'App\Http\Controllers\AwardController');
 //签到管理
 Route::resource('sign', 'App\Http\Controllers\SignController');
+//文章列表
+Route::resource('article', 'App\Http\Controllers\ArticleController');
