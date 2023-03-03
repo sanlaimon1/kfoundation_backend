@@ -29,6 +29,16 @@
             border-radius:5px;
             margin-top: .5rem;
         }
+        .choose_logo{
+            display: inline-block;
+            background-color: #ffc107;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: #000
+        }
     </style>
     <script>
         $.ajaxSetup({
@@ -38,6 +48,40 @@
         });
 
         $(function(){
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-logo').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#upload-logo").change(function(){
+                readURL(this);
+            });
+
+
+            function readURLQRcode(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-crypto-qrcode').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#upload-crypto-qrcode").change(function(){
+                readURLQRcode(this);
+            });
+            
             $('button.btn[data]').click(function(){
                 $('.loading').show();
                 var dataid = $(this).attr('data');
@@ -90,7 +134,7 @@
             </ol>
         </nav>
         
-        <form action="{{ route('payment.update',['payment'=>$id]) }}" method="post">
+        <form action="{{ route('payment.update',['payment'=>$id]) }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
             @method('PATCH')
             <input type="hidden" name="pid" value="{{ $id }}" />
@@ -150,8 +194,12 @@
                 <div class="row">
                     <div class="col-6 mb-3" style="marign: 0 auto;">
                         <label for="logo" class="form-label">Logo上传</label>
-                        <img src="{{ $one->logo }}" width="120" height="120" />
-                        <button class="btn btn-warning">选择</button>
+
+                        <img id="show-logo" src="{{ $one->logo }}" width="120" height="120" />
+                        
+                        <input type="file" id="upload-logo" name="upload_logo" hidden/>
+                        <label class="choose_logo" for="upload-logo">选择</label>
+                        <!-- <button class="btn btn-warning">选择</button> -->
                     </div>
                 </div>
             </section>
@@ -171,8 +219,11 @@
                 </div>
                 <div class="col-6 mb-3">
                     <label for="crypto_qrcode" class="form-label">加密货币二维码</label>
-                    <img src="<?= array_key_exists('crypto_qrcode', $extra) ? $extra['crypto_qrcode'] : '' ?>" width="120" height="120"  />
-                    <button class="btn btn-warning">选择</button>
+                    <img src="<?= array_key_exists('crypto_qrcode', $extra) ? $extra['crypto_qrcode'] : '' ?>" id="show-crypto-qrcode" width="120" height="120"  />
+                        
+                    <input type="file" id="upload-crypto-qrcode" name="upload_crypto_qrcode" hidden/>
+                    <label class="choose_logo" for="upload-crypto-qrcode">选择</label>
+                    <!-- <button class="btn btn-warning">选择</button> -->
                 </div>
             </div>
             @elseif($one->ptype==4)
