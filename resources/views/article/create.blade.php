@@ -84,11 +84,11 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">系统用户管理</li>
+                <li class="breadcrumb-item">信息管理</li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('article.index') }}">用户列表</a>
+                    <a href="{{ route('article.index') }}">文章列表</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">创建用户</li>
+                <li class="breadcrumb-item active" aria-current="page">创建文章列表</li>
             </ol>
         </nav>
         
@@ -101,7 +101,7 @@
                         @error('title')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="title" name="title" placeholder="用户名" value="">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="标题" value="">
                     </div>
                 </div>
                 <div class="row">
@@ -110,7 +110,7 @@
                         @error('content')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="content" name="content" placeholder="描述" value="">
+                        <input type="text" class="form-control" id="content" name="content" placeholder="内容" value="">
                     </div>
                 </div>
                 <div class="row">
