@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');  //用户权限
+        $this->middleware('injection');
+        //$this->middleware('injection')->only('login');
+    }
+    
     /**
      * Display a listing of the resource.
      */
