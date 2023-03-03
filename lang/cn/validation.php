@@ -190,7 +190,8 @@ return [
         'bank_name'=>'收款人',
         'bank_account'=>'银行账号',
         'status'=>'状态',
-        'desc'=>'描述'
+        'desc'=>'描述',
+        'cate_name'=>'分类名称'
     ],
 
 ];

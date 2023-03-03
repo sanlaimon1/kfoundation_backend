@@ -34,3 +34,4 @@ Route::get('/sysusers/modifypass/{id}', 'App\Http\Controllers\SysUsersController
 Route::post('/sysusers/updatepass', 'App\Http\Controllers\SysUsersController@update_pass')->name('sysusers.updatepass');
 //系统角色
 Route::resource('role', 'App\Http\Controllers\RoleController');
+Route::resource('category', 'App\Http\Controllers\CategoryController');
