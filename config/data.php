@@ -13,10 +13,10 @@ return [
     //商城管理
     'shop'=>['商品管理'=>'/productions', '订单管理'=>'/orders_productions'],
     //生活服务
-    'service_life'=>['充值缴费'=>'/payment_charge','订单管理'=>'/orders_service'],
+    'service_life'=>['充值缴费'=>'/life','订单管理'=>'/orders_service'],
     //用户中心
-    'user_center'=>['会员列表'=>'/list_members','会员等级管理'=>'/levels_members','用户钱包列表'=>'/wallets',
-    '团队等级管理'=>'/levels_team','钱包绑定统计'=>'/bind_wallet','流水记录'=>'/financial_records',
+    'user_center'=>['会员列表'=>'/list_members','会员等级管理'=>'/level','团队等级管理'=>'/teamlevel',
+    '用户钱包列表'=>'/wallets','钱包绑定统计'=>'/bind_wallet','流水记录'=>'/financial_records',
     '充值记录'=>'/charge_records','提现记录'=>'/withdrawal_records'],
     //奖励管理
     'awards'=>['系统奖励'=>'/award', '签到奖励'=>'/sign'],

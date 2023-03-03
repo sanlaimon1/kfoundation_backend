@@ -43,8 +43,8 @@
             <tbody>
             @foreach($categories as $category)
                 <tr>
-                    <td>{{ $category->sort }}</td>
                     <td>{{ $category->cate_name }}</td>
+                    <td>{{ $category->sort }}</td>
                     <td>
                         <a href="{{ route('category.edit', ['category'=>$category->id]) }}" class="btn btn-warning">编辑</a>
                         |

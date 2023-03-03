@@ -55,3 +55,7 @@ Route::resource('article', 'App\Http\Controllers\ArticleController');
 Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
 //生活缴费
 Route::resource('life', 'App\Http\Controllers\LifeController');
+//会员等级
+Route::resource('level', 'App\Http\Controllers\LevelController');
+//团队等级
+Route::resource('teamlevel', 'App\Http\Controllers\TeamlevelController');
