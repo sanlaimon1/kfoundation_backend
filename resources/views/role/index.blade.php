@@ -31,7 +31,7 @@
                 <li class="breadcrumb-item active" aria-current="page">角色列表</li>
             </ol>
         </nav>
-        <a href="{{ route('role.create') }}" class="btn btn-primary">创建角色</a>
+        <a href="{{ route('role.create') }}" class="btn btn-primary mb-5">创建角色</a>
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
