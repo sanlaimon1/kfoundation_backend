@@ -63,7 +63,7 @@
                     type: "patch",
                     url: '/award/' + dataid,
                     dataType: "json",
-                    data: { config_value:  config_value_string },
+                    data: { award_value:  config_value_string },
                     success: function(msg){
                         $('.modal-body').html(msg.message);
                         $('#myModal').show();
