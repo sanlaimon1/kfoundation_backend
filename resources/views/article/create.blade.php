@@ -77,6 +77,11 @@
         });
     </script>
 
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
+
+
 </head>
 
 <body>
@@ -110,7 +115,7 @@
                         @error('content')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="content" name="content" placeholder="内容" value="">
+                        <textarea class="form-control" id="summernote" name="content"></textarea>
                     </div>
                 </div>
                 <div class="row">
@@ -126,19 +131,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3">
-                        <label for="adminid" class="form-label">管理员id</label>
-                        @error('adminid')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <select id="adminid" name="adminid"  class="form-select" >
-                            @foreach( $admins as $admin )
-                            <option value="{{ $admin->id }}"> {{ $admin->username }} </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
             </section>
 
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
@@ -147,6 +139,10 @@
     </div>
     @include('loading')
     @include('modal')
-
+    <script>
+        $(document).ready(function() {
+            $('#summernote').summernote();
+        });
+    </script>
 </body>
 </html>

@@ -76,6 +76,9 @@
             });
         });
     </script>
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 
 </head>
 
@@ -111,7 +114,7 @@
                         @error('content')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="content" name="content" placeholder="内容" value="{{$article->content}}">
+                        <textarea class="form-control" id="summernote" name="content">{{ html_entity_decode( $article->content ) }}</textarea>
                     </div>
                 </div>
                 <div class="row">
@@ -148,6 +151,12 @@
     </div>
     @include('loading')
     @include('modal')
+
+    <script>
+        $(document).ready(function() {
+            $('#summernote').summernote();
+        });
+    </script>
 
 </body>
 </html>

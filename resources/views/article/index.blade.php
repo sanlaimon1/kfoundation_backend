@@ -38,7 +38,7 @@
                     <th>编号</th>
                     <th>标题</th>
                     <th>内容</th>
-                    <th>分类</th>
+                    <!-- <th>分类</th> -->
                     <th>管理员id</th>
                     <th style="width:260px;">操作</th>
                 </tr>
@@ -48,7 +48,6 @@
                 <tr>
                     <td>{{ $article->id }}</td>
                     <td>{{ $article->title }}</td>
-                    <td>{{ $article->content }}</td>
                     <td>{{ $article->category->cate_name }}</td>
                     <td>{{ $article->admin->username }}</td>
                     <td>
