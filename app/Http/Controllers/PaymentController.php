@@ -120,10 +120,25 @@ class PaymentController extends Controller
             $one->sort = $sort;
             $one->level = $level;
             $one->ptype = $ptype;
+            if($request->hasFile('upload_logo')){
+                $upload_logo = time().'.'.$request->upload_logo->extension();
+                $request->upload_logo->move(public_path('/images/'),$upload_logo);
+                $logo_image = '/images/'.$upload_logo;
+            }else{
+                $logo_image =  $one->logo;
+            }
+            $one->logo = $logo_image;
             $one->give = $give;
             $one->description = $description;
             $extra_array = json_decode( $one->extra, true );
             $extra_array['crypto_link'] = $crypto_link;
+            if($request->hasFile('upload_crypto_qrcode')){
+                $crypto_qrcode = time().'QR.'.$request->upload_crypto_qrcode->extension();
+                $request->upload_crypto_qrcode->move(public_path('/images/'),$crypto_qrcode);
+                $extra_array['crypto_qrcode'] = '/images/'.$crypto_qrcode;
+            }else{
+                $extra_array['crypto_qrcode'] = $extra_array['crypto_qrcode'];
+            }
             $one->extra = json_encode($extra_array) ;
             $one->save();
             

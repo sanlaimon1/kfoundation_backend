@@ -40,7 +40,7 @@ class SignController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'signdate' => ['required', 'date' ,'date_format:Y-m-d', 'after:today'],
+            'signdate' => ['required', 'date' ,'date_format:Y-m-d', 'after:today', 'unique:signs'],
         ];
         
         $messages = [
