@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Log;
 use App\Models\Admin;
+use DB;
 
 class LogController extends Controller
 {
@@ -14,7 +15,7 @@ class LogController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the logs.
      * 日志列表
@@ -46,12 +47,11 @@ class LogController extends Controller
     {
         $search_logs = DB::table('logs')
                             ->join('admins','admins.id','=','logs.adminid')
-                            ->where('logs.adminid',$request->adminid)
+                            ->whereDate('logs.created_at','=',$request->date)
+                            ->orwhere('logs.adminid',$request->adminid)
                             ->orwhere('logs.action','=',$request->action)
-                            ->orwhere('logs.created_at',$request->date)
                             ->select('logs.*','admins.username')
                             ->get();
-
         return response()->json([
             'search_logs' => $search_logs
         ]);
