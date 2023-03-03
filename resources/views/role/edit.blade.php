@@ -28,11 +28,11 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">系统管理</li>
-                <li class="breadcrumb-item active" aria-current="page">角色列表 Edit</li>
+                <li class="breadcrumb-item"><a href="{{ route('role.index') }}">角色列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">编辑角色</li>
             </ol>
         </nav>
-        <a href="{{ route('role.index') }}" class="btn btn-primary mb-5">Go to Role</a>
-
+        
         <div class="container">
             <form action="{{ route('role.store') }}" method="post">
                 {{ csrf_field() }}
