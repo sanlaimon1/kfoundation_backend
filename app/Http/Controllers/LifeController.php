@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Life;
 
-class InboxController extends Controller
+class LifeController extends Controller
 {
     public function __construct()
     {
@@ -12,13 +13,15 @@ class InboxController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $lifes = Life::orderBy('sort','asc')->paginate(10);
+
+        return view('life.index',  compact('lifes') );
     }
 
     /**

@@ -62,7 +62,9 @@
         </table>
         <footer style="display:flex;">
             <aside style="line-height: 37px; margin-right: 2rem;">
+                共计<strong>{{ $categories->count() }}</strong>条数据
             </aside>
+            {{ $categories->links() }}
         </footer>
         
         

@@ -32,7 +32,7 @@ class ArticleController extends Controller
     public function create()
     {
         $admins = Admin::select('id','username')->get();
-        $categories = Category::select('id','cate_name')->get();
+        $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
         
         return view('article.create', compact('admins' , 'categories'));
     }
@@ -79,7 +79,10 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $article = Article::find($id);
+        $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
+        $admins = Admin::select('id','username')->get();
+        return view('article.edit', compact('article' ,'categories', 'admins'));
     }
 
     /**
@@ -87,7 +90,27 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => ['required', 'string'],
+            'content' => ['required', 'string'],
+            'categoryid' => ['required', 'string'],
+            'adminid' => ['required', 'integer']
+        ]);
+
+        $title = trim($request->get('title'));
+        $content = trim($request->get('content'));
+        $categoryid = trim($request->get('categoryid'));
+        $adminid = trim($request->get('adminid'));
+
+        $newarticle = Article::find($id);
+        $newarticle->title = $title;
+        $newarticle->content = $content;
+        $newarticle->categoryid = $categoryid;
+        $newarticle->adminid = $adminid;
+        
+        $newarticle->save();
+
+        return redirect()->route('article.index');
     }
 
     /**
@@ -95,6 +118,8 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $article = Article::find($id);
+        $article->delete();
+        return redirect()->route('article.index');
     }
 }

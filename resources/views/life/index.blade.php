@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>文章列表</title>
+    <title>生活缴费</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -16,8 +16,13 @@
         }
         #app td
         {
-            height: 20px;
-            line-height: 20px;
+            height: 50px;
+            line-height: 50px;
+        }
+        #app td img
+        {
+            height: 50px;
+            width: 50px;
         }
     </style>
 </head>
@@ -27,40 +32,52 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">信息管理</li>
-                <li class="breadcrumb-item active" aria-current="page">文章列表</li>
+                <li class="breadcrumb-item">生活服务</li>
+                <li class="breadcrumb-item active" aria-current="page">商品列表</li>
             </ol>
         </nav>
-        <a href="{{ route('article.create') }}" class="btn btn-primary">创建文章</a>
+        <a href="{{ route('life.create') }}" class="btn btn-primary">创建商品</a>
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
-                    <th>编号</th>
-                    <th>标题</th>
-                    <th>内容</th>
-                    <th>分类</th>
-                    <th>管理员id</th>
-                    <th style="width:260px;">操作</th>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th>图片</th>
+                    <th>排序</th>
+                    <th>其他选项</th>
+                    <th>输入选项</th>
+                    <th style="width:160px;">操作</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($articles as $article)
+                @foreach($lifes as $one)
                 <tr>
-                    <td>{{ $article->id }}</td>
-                    <td>{{ $article->title }}</td>
-                    <td>{{ $article->content }}</td>
-                    <td>{{ $article->category->cate_name }}</td>
-                    <td>{{ $article->admin->username }}</td>
+                    <td>{{ $one->id }}</td>
+                    <td>{{ $one->production_name }}</td>
                     <td>
-                        <a href="{{ route('article.edit', ['article'=>$article->id]) }}" class="btn btn-warning">编辑</a>
+                        <img src="{{ $one->picture }}" />
+                    </td>
+                    <td>
+                        {{ $one->sort }}
+                    </td>
+                    <td>
+                        {{ $one->extra }}
+                    </td>
+                    <td>
+                        {{ $one->inputs }}
+                    </td>
+                    <td>
+                        
+                        <a href="{{ route('life.edit', ['life'=>$one->id]) }}" class="btn btn-warning">编辑</a>
                         |
-                        <form action="{{ route('article.destroy', ['article'=>$article->id]) }}" 
+                        <form action="{{ route('life.destroy', ['life'=>$one->id]) }}" 
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">删除</button>
                         </form>
+                        
                     </td>
                 </tr>
                 @endforeach
@@ -68,9 +85,9 @@
         </table>
         <footer style="display:flex;">
             <aside style="line-height: 37px; margin-right: 2rem;">
-                共计<strong>{{ $articles->count() }}</strong>条数据
+                共计<strong>{{ $lifes->count() }}</strong>条数据
             </aside>
-            {{ $articles->links() }}
+            {{ $lifes->links() }}
         </footer>
         
         

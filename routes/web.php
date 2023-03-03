@@ -34,6 +34,8 @@ Route::resource('version', 'App\Http\Controllers\VersionController');
 Route::resource('sms', 'App\Http\Controllers\SmsController');
 //合同模板设置
 Route::resource('agreement', 'App\Http\Controllers\AgreementController');
+//系统日志
+Route::resource('log', 'App\Http\Controllers\LogController');
 //系统用户列表
 Route::resource('sysusers', 'App\Http\Controllers\SysUsersController');
 Route::get('/sysusers/modifypass/{id}', 'App\Http\Controllers\SysUsersController@modify_pass')->name('sysusers.modifypass'); //修改系统用户的密码
@@ -48,5 +50,10 @@ Route::resource('award', 'App\Http\Controllers\AwardController');
 Route::resource('sign', 'App\Http\Controllers\SignController');
 //文章列表
 Route::resource('article', 'App\Http\Controllers\ArticleController');
+<<<<<<< HEAD
 //系统图片设置
 Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
+=======
+//生活缴费
+Route::resource('life', 'App\Http\Controllers\LifeController');
+>>>>>>> b613edb49391ac00bcadab15b96fe383116683e2

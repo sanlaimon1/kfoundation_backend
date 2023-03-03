@@ -13,7 +13,7 @@ return [
     //商城管理
     'shop'=>['商品管理'=>'/productions', '订单管理'=>'/orders_productions'],
     //生活服务
-    'service_life'=>['充值缴费'=>'/payment_charge','订单管理'=>'/orders_service'],
+    'service_life'=>['充值缴费'=>'/life','订单管理'=>'/orders_service'],
     //用户中心
     'user_center'=>['会员列表'=>'/list_members','会员等级管理'=>'/levels_members','用户钱包列表'=>'/wallets',
     '团队等级管理'=>'/levels_team','钱包绑定统计'=>'/bind_wallet','流水记录'=>'/financial_records',
@@ -25,8 +25,8 @@ return [
     //系统管理
     'sys_management'=>[
         '网站信息'=>'/website','首页弹窗设置'=>'/windowhomepage', '支付设置'=>'/payment', 
-        '系统图片设置'=>'/slide', 'APP版本设置'=>'/version', '合同设置'=>'/agreement',
-        '管理员操作日志'=>'/log_manager', '短信参数设置'=>'/sms', '系统日志管理'=>'/log_system', 
+        '系统图片设置'=>'/slide', 'APP版本设置'=>'/version', '合同设置'=>'/agreement', '短信参数设置'=>'/sms', 
+        '管理员操作日志'=>'/log',
         '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers'
     ],
 
