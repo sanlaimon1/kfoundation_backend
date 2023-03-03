@@ -133,7 +133,7 @@ class PaymentController extends Controller
             $extra_array = json_decode( $one->extra, true );
             $extra_array['crypto_link'] = $crypto_link;
             if($request->hasFile('upload_crypto_qrcode')){
-                $crypto_qrcode = time().'.'.$request->upload_crypto_qrcode->extension();
+                $crypto_qrcode = time().'QR.'.$request->upload_crypto_qrcode->extension();
                 $request->upload_crypto_qrcode->move(public_path('/images/'),$crypto_qrcode);
                 $extra_array['crypto_qrcode'] = '/images/'.$crypto_qrcode;
             }else{
