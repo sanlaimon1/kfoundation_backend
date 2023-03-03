@@ -25,8 +25,8 @@ return [
     //系统管理
     'sys_management'=>[
         '网站信息'=>'/website','首页弹窗设置'=>'/windowhomepage', '支付设置'=>'/payment', 
-        '系统图片设置'=>'/slide', 'APP版本设置'=>'/appversion', '合同设置'=>'/agreement',
-        '管理员操作日志'=>'/log_manager', '程序参数设置'=>'/parameters_process', '系统日志管理'=>'/log_system', 
+        '系统图片设置'=>'/slide', 'APP版本设置'=>'/version', '合同设置'=>'/agreement',
+        '管理员操作日志'=>'/log_manager', '短信参数设置'=>'/sms', '系统日志管理'=>'/log_system', 
         '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers'
     ],
 
@@ -34,5 +34,8 @@ return [
     'payment_ways' => [
         1=>'加密货币', 4=>'银行卡'
     ],
-
+    //短信接口
+    'smsapi_array' => [
+        1=>'短信宝', 2=>'阿里云短信'
+    ],
 ];
