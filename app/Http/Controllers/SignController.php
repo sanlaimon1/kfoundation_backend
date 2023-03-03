@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class SignController extends Controller
 {
     public function __construct()
     {
@@ -12,13 +12,13 @@ class CategoryController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -26,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        // not finished
     }
 
     /**
@@ -34,7 +34,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // not finished
     }
 
     /**
@@ -42,7 +42,7 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // no need to show
     }
 
     /**
@@ -50,7 +50,7 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // disable to edit
     }
 
     /**
@@ -58,7 +58,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // disable to update
     }
 
     /**

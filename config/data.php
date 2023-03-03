@@ -19,7 +19,7 @@ return [
     '团队等级管理'=>'/levels_team','钱包绑定统计'=>'/bind_wallet','流水记录'=>'/financial_records',
     '充值记录'=>'/charge_records','提现记录'=>'/withdrawal_records'],
     //奖励管理
-    'awards'=>['系统奖励'=>'/awards', '签到奖励'=>'/sign'],
+    'awards'=>['系统奖励'=>'/award', '签到奖励'=>'/sign'],
     //信息管理
     'information'=>['文章列表'=>'/article', '文章分类'=>'/category', '站内信列表'=>'/indexbox'],
     //系统管理
