@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Config;
 
 class HomeController extends Controller
 {
@@ -57,6 +58,11 @@ class HomeController extends Controller
         ];
 
         return json_encode( $arr );
+   }
+
+   public function slide()
+   {
+        return view('config.system_picture');
    }
 
    
