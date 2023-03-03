@@ -1,0 +1,152 @@
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+  
+.main{
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    margin: -150px 0px 0px -150px;
+}
+
+/* .main h1{
+    text-align: center;
+} */
+
+.main hr {
+	width:10%;
+}
+
+.left {
+	float:left;
+    margin-left: 33%;
+}
+
+.right {
+	float:right;
+    margin-right: 33%;
+}
+
+form{
+    /* margin-left: 14%; */
+}
+form input{
+    display: block;
+    margin-bottom: 12px;
+    width: 300px;
+    height: 40px;
+}
+
+.button{
+    width: 300px;
+    height: 40px;
+    background-color: #3374f6;   
+    border: 1px solid #3762bc;  
+    color: #fff; 
+    font-size: 15px; 
+}
+
+
+
+
+  textarea {
+    display: block;
+    margin: 1em auto;
+    padding: 0.4em;
+    width: 90%;
+    height: 30%;
+    resize: none;
+    font-size: 1.2em;
+    font-family: system-ui, monospace;
+    border-radius: 5px;
+  }
+  
+  .keyboard {
+    position: fixed;
+    left: 0;
+    bottom: 14px;
+    width: 50%;
+    margin-left: 25%;
+    padding: 5px 0;
+   
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    transition: bottom 0.4s;
+  }
+  
+  .keyboard-hidden {
+    bottom: -100%;
+  }
+  
+  .keyboard-keys {
+    text-align: center;
+  }
+  
+  .keyboard-key {
+    height: 45px;
+    width: 10.9%;
+    max-width: 105px;
+    margin: 0% -0.5%;
+    border-radius: 4px;
+   
+    font-size: 1.05rem;
+    outline: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: top;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  
+  .keyboard1 {
+    
+    max-width: 100%;
+  }
+
+  .keyboard1 #text{
+      margin-right:20%;
+  }
+  .keyboard-key:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  
+  .keyboard-wide1 {
+    width: 100%;
+  }
+  
+  .keyboard-space{
+    width: 21%;
+    max-width: 100%;
+  }
+  .keyboard-extrawide {
+    width: 36%;
+    max-width: 500px;
+  }
+  
+  .keyboard-active::after {
+    content: "";
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+  }
+  
+  .keyboard-check::after {
+    background: #08ff00;
+  }
+  
+  .keyboard-dark {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  
+  #backspace-icon{
+margin-left: 10px;
+  }

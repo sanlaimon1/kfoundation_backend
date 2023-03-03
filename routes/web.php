@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/satistatics', [App\Http\Controllers\HomeController::class, 'satistatics'])->name('satistatics');
+Route::get('/subitem/{keyid}', [App\Http\Controllers\HomeController::class, 'subitem'])->name('subitem');   //子菜单
+//网站信息
+Route::resource('website', 'App\Http\Controllers\WebsiteController');
+//首页弹窗提示
+Route::resource('windowhomepage', 'App\Http\Controllers\WindowhomepageController');
+//支付设置
+Route::resource('payment', 'App\Http\Controllers\PaymentController');
+//系统用户列表
+Route::resource('sysusers', 'App\Http\Controllers\SysUsersController');
+Route::get('/sysusers/modifypass/{id}', 'App\Http\Controllers\SysUsersController@modify_pass')->name('sysusers.modifypass'); //修改系统用户的密码
+Route::post('/sysusers/updatepass', 'App\Http\Controllers\SysUsersController@update_pass')->name('sysusers.updatepass');
+//系统角色
+Route::resource('role', 'App\Http\Controllers\RoleController');

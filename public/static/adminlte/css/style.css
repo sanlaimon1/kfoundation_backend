@@ -1,0 +1,88 @@
+/* .card-header{
+    border-bottom: 1px solid rgba(34,41,47,.125);
+}
+.col-form-label.required::before {
+    content: '*';
+    position: absolute;
+    font-size: 20px;
+    color: red;
+    right: 0px;
+    top: 6px;
+}
+.pagination .page-item.previous .page-link:before {
+    content: "";
+   
+}
+.pagination .page-item.next .page-link:after {
+    content: "";
+    font-family: feather;
+} */
+
+.card-header {
+    border-bottom: 1px solid rgba(34, 41, 47, .125);
+}
+
+.col-form-label.required::before {
+    content: '*';
+    position: absolute;
+    font-size: 20px;
+    color: red;
+    right: 0px;
+    top: 6px;
+}
+
+.pagination .page-item.previous .page-link:before {
+    content: "";
+
+}
+
+.pagination .page-item.next .page-link:after {
+    content: "";
+    font-family: feather;
+}
+
+/* .nav-sidebar>.nav-item>.nav-link.active{
+    background-color: #586cb1 !important;
+} */
+[class*=sidebar-light-] .nav-sidebar>.nav-item>.nav-link.active {
+    box-shadow: unset !important;
+}
+
+
+[class*=sidebar-light-] .nav-treeview>.nav-item>.nav-link.active,
+[class*=sidebar-light-] .nav-treeview>.nav-item>.nav-link.active:hover {
+    background-color: #586cb1 !important;
+    background: #586cb1 !important;
+    color: #fff !important;
+    box-shadow: unset !important;
+}
+
+.sidebar-light-primary .nav-item>.nav-link.active {
+    color: #fff !important;
+}
+
+.nav-item.menu-open>.nav-link.active {
+    background-color: #586cb1 !important;
+    background: #586cb1 !important;
+    color: #fff !important;
+}
+
+.nav-item.menu-is-opening.menu-open>.nav-link,
+.nav-item.menu-is-opening.menu-open>.nav-link:focus {
+    /* background-color: rgba(0,0,0,.1); */
+    background-color: #586cb1 !important;
+    color: #fff !important;
+}
+
+.nav-item.menu-is-opening.menu-open>.nav-link:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.nav-sidebar>.nav-item:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+[class*=sidebar-light-] .nav-treeview>.nav-item>.nav-link:hover {
+    background-color: rgba(0, 0, 0, .1);
+    color: #586cb1;
+}
