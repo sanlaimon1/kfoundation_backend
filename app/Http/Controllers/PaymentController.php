@@ -93,6 +93,8 @@ class PaymentController extends Controller
             'ptype' => ['required', 'integer', 'in:' . $ptypes_string],
             'give' => ['required', 'numeric', 'gte:0'],
             'description' => ['required', 'string', 'max:200'],
+            "upload_logo.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+            "crypto_qrcode.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
         ]);
 
         $payment_name = trim( $request->get('payment_name') );
@@ -158,6 +160,14 @@ class PaymentController extends Controller
             $one->sort = $sort;
             $one->level = $level;
             $one->ptype = $ptype;
+            if($request->hasFile('upload_logo')){
+                $upload_logo = time().'.'.$request->upload_logo->extension();
+                $request->upload_logo->move(public_path('/images/'),$upload_logo);
+                $logo_image = '/images/'.$upload_logo;
+            }else{
+                $logo_image =  $one->logo;
+            }
+            $one->logo = $logo_image;
             $one->give = $give;
             $one->description = $description;
             $extra_array = ['bank'=>$bank, 'bank_name'=>$bank_name, 'bank_account'=>$bank_account];
