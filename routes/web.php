@@ -28,6 +28,12 @@ Route::resource('website', 'App\Http\Controllers\WebsiteController');
 Route::resource('windowhomepage', 'App\Http\Controllers\WindowhomepageController');
 //支付设置
 Route::resource('payment', 'App\Http\Controllers\PaymentController');
+//app版本设置
+Route::resource('version', 'App\Http\Controllers\VersionController');
+//短信版本设置
+Route::resource('sms', 'App\Http\Controllers\SmsController');
+//合同模板设置
+Route::resource('agreement', 'App\Http\Controllers\AgreementController');
 //系统用户列表
 Route::resource('sysusers', 'App\Http\Controllers\SysUsersController');
 Route::get('/sysusers/modifypass/{id}', 'App\Http\Controllers\SysUsersController@modify_pass')->name('sysusers.modifypass'); //修改系统用户的密码
