@@ -59,3 +59,7 @@ Route::resource('life', 'App\Http\Controllers\LifeController');
 Route::resource('level', 'App\Http\Controllers\LevelController');
 //团队等级
 Route::resource('teamlevel', 'App\Http\Controllers\TeamlevelController');
+//项目分类
+Route::resource('projectcate', 'App\Http\Controllers\ProjectCateController');
+//商品管理
+Route::resource('goods', 'App\Http\Controllers\GoodsController');
