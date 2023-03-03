@@ -19,7 +19,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::where('status', 1)->orderBy('sort','asc')->paginate(10);
+        $roles = Role::where('status', 1)->orderBy('sort', 'asc')->paginate(10);
 
         return view('role.index', compact('roles'));
     }
@@ -29,7 +29,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        return view('role.create');
     }
 
     /**
@@ -37,7 +37,25 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => ['required', 'string'],
+            'status' => ['required', 'integer'],
+            'soft' => ['required', 'integer', 'gt:0'],
+            // // 'description' => ['required', 'string'],
+            'auth' => ['required', 'integer', 'gt:0'],
+            'auth2' => ['required', 'integer', 'gt:0'],
+        ]);
+
+        $role = new Role();
+        $role->title = $request->title;
+        $role->status = $request->status;
+        $role->sort = $request->soft;
+        $role->desc = $request->description;
+        $role->auth = $request->auth;
+        $role->auth2 = $request->auth2;
+        $role->save();
+
+        return redirect(route("role.index"));
     }
 
     /**
@@ -53,7 +71,8 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        return view('role.edit', compact('role'));
     }
 
     /**
@@ -70,7 +89,7 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         $id = (int)$id;
-        $one = Admin::find($id);
+        $one = Role::find($id);
         $one->status = 0;
         $one->save();
 

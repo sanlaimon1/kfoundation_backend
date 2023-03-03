@@ -34,6 +34,8 @@ Route::resource('version', 'App\Http\Controllers\VersionController');
 Route::resource('sms', 'App\Http\Controllers\SmsController');
 //合同模板设置
 Route::resource('agreement', 'App\Http\Controllers\AgreementController');
+//系统日志
+Route::resource('log', 'App\Http\Controllers\LogController');
 //系统用户列表
 Route::resource('sysusers', 'App\Http\Controllers\SysUsersController');
 Route::get('/sysusers/modifypass/{id}', 'App\Http\Controllers\SysUsersController@modify_pass')->name('sysusers.modifypass'); //修改系统用户的密码
