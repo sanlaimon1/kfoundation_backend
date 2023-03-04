@@ -21,7 +21,7 @@ return [
     //奖励管理
     'awards'=>['系统奖励'=>'/award', '签到奖励'=>'/sign'],
     //信息管理
-    'information'=>['文章列表'=>'/article', '文章分类'=>'/category', '站内信列表'=>'/indexbox'],
+    'information'=>['文章列表'=>'/article', '文章分类'=>'/category', '站内信列表'=>'/inbox'],
     //系统管理
     'sys_management'=>[
         '网站信息'=>'/website','首页弹窗设置'=>'/windowhomepage', '支付设置'=>'/payment', 
@@ -37,5 +37,10 @@ return [
     //短信接口
     'smsapi_array' => [
         1=>'短信宝', 2=>'阿里云短信'
+    ],
+    //返利模式
+    'return_mode'=>[
+        1=>'每小时返利，到期返本', 2=>'每日返利，到期返本', 
+        3=>'每周返利，到期返本', 4=>'每月返利，到期返本',5=>'到期返本返利'
     ],
 ];
