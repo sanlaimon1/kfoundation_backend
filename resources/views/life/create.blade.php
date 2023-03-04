@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>参数设置</title>
+    <title>文章列表</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -28,6 +28,16 @@
             border: 1px solid black;
             border-radius:5px;
             margin-top: .5rem;
+        }
+        .choose_logo{
+            display: inline-block;
+            background-color: #ffc107;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: #000
         }
     </style>
     <script>
@@ -74,6 +84,22 @@
                 $('#myModal').hide();
                 location.reload();
             });
+
+            $("#picture").change(function(){
+                readURL(this);
+            });
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-logo').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
         });
     </script>
 
@@ -81,54 +107,75 @@
 
 <body>
     <div id="app" class="container-fluid">
-        <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+       <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">信息管理</li>
-                <li class="breadcrumb-item">
-                    <a href="{{ route('category.index') }}">文章分类</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">编辑文章分类 <strong style="color:red;">{{ $category->cate_name }}</strong></li>
+                <li class="breadcrumb-item">生活服务</li>
+                <li class="breadcrumb-item active" aria-current="page">创建商品</li>
             </ol>
         </nav>
-
-        @if(session('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
-            </div>
-        @endif
         
-        <form action="{{ route('category.update',['category'=>$category->id]) }}" method="post">
+        <form action="{{ route('life.store') }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
-            @method('PATCH')
-            <input type="hidden" name="id" value="{{ $category->id }}" />
             <section class="row frame">
                 <div class="row">
                     <div class="mb-3">
-                        <label for="cate_name" class="form-label">分类名称</label>
-                        @error('cate_name')
+                        <label for="production_name" class="form-label">商品名称</label>
+                        @error('production_name')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="cate_name" name="cate_name" placeholder="分类名称" value="{{ $category->cate_name }}">
+                        <input type="text" class="form-control" id="production_name" name="production_name" placeholder="商品名称" value="">
                     </div>
                 </div>
                 <div class="row">
                     <div class="mb-3">
-                        <label for="cate_name" class="form-label">排序</label>
+                        <label for="sort" class="form-label">排序</label>
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="{{ $category->sort }}">
+                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label class="form-label">项目图片</label>
+                        @error('picture')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <img id="show-logo" src="" width="120" height="120" />
+
+                        <input type="file" class="form-control" id="picture" name="picture" placeholder="项目图片" hidden>
+                        <label class="choose_logo" for="picture">选择</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="extra" class="form-label">其他选项</label>
+                        @error('extra')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" id="extra" name="extra" placeholder="其他选项">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="inputs" class="form-label">输入选项</label>
+                        @error('inputs')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" id="inputs" name="inputs" placeholder="输入选项">
+                    </div>
+                </div>
+                
             </section>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
         </form>
         
     </div>
     @include('loading')
     @include('modal')
-
 </body>
 </html>
