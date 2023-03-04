@@ -28,57 +28,45 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">系统管理</li>
-                <li class="breadcrumb-item"><a href="{{ route('role.index') }}">角色列表</a></li>
-                <li class="breadcrumb-item active" aria-current="page">编辑角色</li>
+                <li class="breadcrumb-item"><a href="{{ route('permission.index') }}">权限表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">创建权限</li>
             </ol>
         </nav>
 
         <div class="container">
-            <form action="{{ route('role.store') }}" method="post">
+            <form action="{{ route('permission.store') }}" method="post">
                 {{ csrf_field() }}
-                <div class="form-group">
-                    <label for="title">标题</label>
-                    <input type="text" name="title" class="form-control" id="title" placeholder="标题" value="{{$role->title}}">
-                    @error('title')
+                <!-- <div class="form-group">
+                    <label for="path_name">uri名称</label>
+                    <input type="text" name="path_name" class="form-control" id="path_name" placeholder="uri名称">
+                    @error('path_name')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
-                </div>
-                <div class="form-group mt-4">
-                    <input class="form-check-input" type="radio" name="status" id="enable" value="1" @if($role->status == 1) checked @endif>
-                    <label class="form-check-label" for="enable">
-                        启用
-                    </label>
+                </div> -->
 
-                    <input class="form-check-input" type="radio" name="status" id="disable" value="0" @if($role->status == 0) checked @endif>
-                    <label class="form-check-label" for="disable">
-                        屏蔽
-                    </label>
+                <div class="form-group">
+                    <label for="path_name">uri名称</label>
+                    <select id="path_name" class="form-control" name="path_name">
+                        @foreach($menu_items as $key=>$item)
+                            <?php $data_keys = config('data.' . $key); ?>
+                            @foreach($data_keys as $data_key=>$data_value)
+                                <option value="{{$data_value}}">{{$data_key}}</option>
+                            @endforeach
+                        @endforeach
+                    </select>
                 </div>
+
                 <div class="form-group mt-4">
-                    <label for="soft">排序</label>
-                    <input type="text" class="form-control" name="soft" id="soft" placeholder="排序" value="{{$role->sort}}">
-                    @error('soft')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group mt-4">
-                    <label for="description">描述</label>
-                    <textarea name="description" id="description" class="form-control" rows="5">{{$role->desc}}</textarea>
-                    @error('description')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group mt-4">
-                    <label for="auth">权限值</label>
-                    <input type="text" name="auth" class="form-control" id="auth" placeholder="权限值" value="{{$role->auth}}">
-                    @error('auth')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+                    <label for="role_id">角色</label>
+                    <select id="role_id" class="form-control" name="role_id">
+                        @foreach($roles as $role)
+                        <option value="{{$role->rid}}">{{$role->title}}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group mt-4">
                     <label for="auth2">子栏目权限值</label>
-                    <!-- <input type="text" name="auth2" class="form-control" id="auth2" placeholder="Enter auth2" value="{{$role->auth2}}"> -->
                     <div class="row">
                         <div class="col-3">
                             <input type="checkbox" id="create" name="create" value="1">
@@ -106,7 +94,9 @@
 
 
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

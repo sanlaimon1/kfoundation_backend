@@ -37,8 +37,8 @@
             <form action="{{ route('role.store') }}" method="post">
                 {{ csrf_field() }}
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" name="title" class="form-control" id="title" placeholder="Enter title">
+                    <label for="title">标题</label>
+                    <input type="text" name="title" class="form-control" id="title" placeholder="标题">
                     @error('title')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -46,42 +46,56 @@
                 <div class="form-group mt-4">
                     <input class="form-check-input" type="radio" name="status" id="enable" value="1" checked>
                     <label class="form-check-label" for="enable">
-                        Enable
+                    启用
                     </label>
 
                     <input class="form-check-input" type="radio" name="status" id="disable" value="0">
                     <label class="form-check-label" for="disable">
-                        Disable
+                    屏蔽
                     </label>
                 </div>
                 <div class="form-group mt-4">
-                    <label for="soft">Soft</label>
-                    <input type="text" class="form-control" name="soft" id="soft" placeholder="Enter soft">
+                    <label for="soft">排序</label>
+                    <input type="text" class="form-control" name="soft" id="soft" placeholder="排序">
                     @error('soft')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group mt-4">
-                    <label for="description">Description</label>
+                    <label for="description">描述</label>
                     <textarea name="description" id="description" class="form-control" rows="5"></textarea>
                     @error('description')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group mt-4">
-                    <label for="auth">Auth</label>
-                    <input type="text" name="auth" class="form-control" id="auth" placeholder="Enter auth">
+                    <label for="auth">权限值</label>
+                    <input type="text" name="auth" class="form-control" id="auth" placeholder="权限值">
                     @error('auth')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group mt-4">
-                    <label for="auth2">Auth2</label>
-                    <input type="text" name="auth2" class="form-control" id="auth2" placeholder="Enter auth2">
-                    @error('auth2')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+                    <label for="auth2">子栏目权限值</label>
+                    <div class="row">
+                        <div class="col-3">
+                            <input type="checkbox" id="create" name="create" value="1">
+                            <label for="create">创建</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="checkbox" id="read" name="read" value="2">
+                            <label for="read">查询</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="checkbox" id="update" name="update" value="4">
+                            <label for="update">修改</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="checkbox" id="delete" name="delete" value="8">
+                            <label for="delete">删除</label>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-4">Submit</button>

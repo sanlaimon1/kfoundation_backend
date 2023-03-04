@@ -50,3 +50,5 @@ Route::resource('award', 'App\Http\Controllers\AwardController');
 Route::resource('sign', 'App\Http\Controllers\SignController');
 //文章列表
 Route::resource('article', 'App\Http\Controllers\ArticleController');
+//权限表 permission
+Route::resource('permission', 'App\Http\Controllers\PermissionController');

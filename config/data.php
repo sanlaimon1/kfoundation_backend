@@ -21,13 +21,13 @@ return [
     //奖励管理
     'awards'=>['系统奖励'=>'/award', '签到奖励'=>'/sign'],
     //信息管理
-    'information'=>['文章列表'=>'/article', '文章分类'=>'/category', '站内信列表'=>'/indexbox'],
+    'information'=>['文章列表'=>'/article', '文章分类'=>'/category', '站内信列表'=>'/inbox'],
     //系统管理
     'sys_management'=>[
         '网站信息'=>'/website','首页弹窗设置'=>'/windowhomepage', '支付设置'=>'/payment', 
         '系统图片设置'=>'/slide', 'APP版本设置'=>'/version', '合同设置'=>'/agreement', '短信参数设置'=>'/sms', 
         '管理员操作日志'=>'/log',
-        '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers'
+        '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers' , "权限表" => '/permission'
     ],
 
     //支付类型  1 加密货币 2 支付宝 3 微信 4 银行卡
