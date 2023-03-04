@@ -43,8 +43,8 @@
             <tbody>
             @foreach($categories as $category)
                 <tr>
-                    <td>{{ $category->sort }}</td>
                     <td>{{ $category->cate_name }}</td>
+                    <td>{{ $category->sort }}</td>
                     <td>
                         <a href="{{ route('category.edit', ['category'=>$category->id]) }}" class="btn btn-warning">编辑</a>
                         |
@@ -62,7 +62,9 @@
         </table>
         <footer style="display:flex;">
             <aside style="line-height: 37px; margin-right: 2rem;">
+                共计<strong>{{ $categories->count() }}</strong>条数据
             </aside>
+            {{ $categories->links() }}
         </footer>
         
         

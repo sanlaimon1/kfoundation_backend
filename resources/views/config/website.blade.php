@@ -45,6 +45,16 @@
             padding: .3rem auto;
             border-bottom: 1px solid #ccc;
         }
+        .logo , .video_home{
+            display: inline-block;
+            background-color: #ffc107;
+            color: white;
+            padding: 0.45rem 0.75rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: #000
+        }
     </style>
     <script>
         $.ajaxSetup({
@@ -55,6 +65,7 @@
 
         $(function(){
             $('button.btn[data]').click(function(){
+                console.log("Reach")
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
@@ -90,6 +101,40 @@
                 $('#myModal').hide();
                 location.reload();
             });
+
+            function readURLogo(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-logo').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $(".select_logo").change(function(){
+                readURLogo(this);
+            });
+
+            function readURLVideoHome(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-video-home').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $(".select_video_home").change(function(){
+                console.log("reach");
+                readURLVideoHome(this);
+            });
+
         });
     </script>
 </head>
@@ -187,19 +232,40 @@
                 <label class="card-title bg-success text-white">
                     {{ $logo->comment }}
                 </label>
-                <div class="card-body">
-                    <button class="btn btn-warning">选择</button>
-                    <button class="btn btn-primary" data="{{ $logo->cid }}">保存</button>
-                </div>
+                <form action="{{ route('website.update',['website'=>$logo->cid]) }}" method="post" enctype="multipart/form-data">
+                    {{ csrf_field() }}
+                    @method('PATCH')
+                    <input type="hidden" name="id" value="{{ $logo->cid }}" />
+                    <div class="card-body">
+                        <div class="mb-3 col-6">
+
+                            <img id="show-logo" src="{{ $logo->config_value }}" width="120" height="120" />
+                            <input type="file" class="select_logo" id="item-{{ $logo->cid }}" name="logo" hidden/>
+                            <label class="logo" for="item-{{ $logo->cid }}">选择</label>
+                            <!-- <button class="btn btn-warning">选择</button> -->
+                            <button class="btn btn-primary" type="submit">保存</button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="card">
                 <label class="card-title bg-success text-white">
                     {{ $video_homepage->comment }}
                 </label>
-                <div class="card-body">
-                    <button class="btn btn-warning">选择</button>
-                    <button class="btn btn-primary" data="{{ $video_homepage->cid }}">保存</button>
-                </div>
+                <form action="{{ route('website.update',['website'=>$video_homepage->cid]) }}" method="post" enctype="multipart/form-data">
+                    {{ csrf_field() }}
+                    @method('PATCH')
+                    <input type="hidden" name="id" value="{{ $video_homepage->cid }}" />
+                    <div class="card-body">
+                        <div class="mb-3 col-6">
+                            <img id="show-video-home" src="{{ $video_homepage->config_value }}" width="120" height="120" />
+                            <input type="file" class="select_video_home" id="item-{{ $video_homepage->cid }}" name="video_home" hidden/>
+                            <label class="video_home" for="item-{{ $video_homepage->cid }}">选择</label>
+                            <!-- <button class="btn btn-warning">选择</button> -->
+                            <button class="btn btn-primary" type="submit">保存</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 

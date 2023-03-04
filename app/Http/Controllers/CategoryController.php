@@ -45,10 +45,12 @@ class CategoryController extends Controller
         $category_name = trim($request->cate_name);
         $sort = trim($request->sort);
 
-        $category = new Category();
-        $category->cate_name = $category_name;
-        $category->sort = $sort;
-        $category->save();
+        $sort = (int)$sort;
+
+        $newcategory = new Category();
+        $newcategory->cate_name = $category_name;
+        $newcategory->sort = $sort;
+        $newcategory->save();
 
         return redirect()->route('category.index');
     }
@@ -83,10 +85,12 @@ class CategoryController extends Controller
         $category_name = trim($request->cate_name);
         $sort = trim($request->sort);
 
-        $category = Category::find($id);
-        $category->cate_name = $category_name;
-        $category->sort = $sort;
-        $category->save();
+        $sort = (int)$sort;
+
+        $newcategory = Category::find($id);
+        $newcategory->cate_name = $category_name;
+        $newcategory->sort = $sort;
+        $newcategory->save();
 
         return redirect()->route('category.index');
     }
@@ -96,6 +100,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = (int)$id;
         $category = Category::find($id);
         $category->enable = 0;
         $category->save();

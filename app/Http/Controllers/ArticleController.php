@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Admin;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -21,7 +22,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::select('id', 'title','content','categoryid','adminid')->paginate(10);
+        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate(10);
 
         return view('article.index', compact('articles'));
     }
@@ -32,7 +33,7 @@ class ArticleController extends Controller
     public function create()
     {
         $admins = Admin::select('id','username')->get();
-        $categories = Category::select('id','cate_name')->get();
+        $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
         
         return view('article.create', compact('admins' , 'categories'));
     }
@@ -42,24 +43,21 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'title' => ['required', 'string'],
-            'content' => ['required', 'string'],
-            'categoryid' => ['required', 'string'],
-            'adminid' => ['required', 'integer']
+            'content' => ['required'],
+            'categoryid' => ['required', 'integer', 'exists:categories,id'],
         ]);
 
         $title = trim($request->get('title'));
-        $content = trim($request->get('content'));
+        $content = trim( htmlspecialchars( $request->get('content') ));
         $categoryid = trim($request->get('categoryid'));
-        $adminid = trim($request->get('adminid'));
 
         $newarticle = new Article;
         $newarticle->title = $title;
         $newarticle->content = $content;
         $newarticle->categoryid = $categoryid;
-        $newarticle->adminid = $adminid;
+        $newarticle->adminid = Auth::id();
         
         $newarticle->save();
 
@@ -71,7 +69,8 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::find($id);
+        return view('article.show', compact('article'));
     }
 
     /**
@@ -79,7 +78,10 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $article = Article::find($id);
+        $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
+        $admins = Admin::select('id','username')->get();
+        return view('article.edit', compact('article' ,'categories', 'admins'));
     }
 
     /**
@@ -87,7 +89,24 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => ['required', 'string'],
+            'content' => ['required', 'string'],
+            'categoryid' => ['required', 'integer', 'exists:categories,id'],
+        ]);
+
+        $title = trim($request->get('title'));
+        $content = trim($request->get('content'));
+        $categoryid = trim($request->get('categoryid'));
+
+        $newarticle = Article::find($id);
+        $newarticle->title = $title;
+        $newarticle->content = $content;
+        $newarticle->categoryid = $categoryid;
+        
+        $newarticle->save();
+
+        return redirect()->route('article.index');
     }
 
     /**
@@ -95,6 +114,8 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $article = Article::find($id);
+        $article->delete();
+        return redirect()->route('article.index');
     }
 }

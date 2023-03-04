@@ -118,7 +118,7 @@
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="sort" name="sort" placeholder="排序" value="{{ $category->sort }}">
+                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="{{ $category->sort }}">
                     </div>
                 </div>
             </section>
