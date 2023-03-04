@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Log;
 use App\Rules\ForbidUserRule;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -85,13 +87,43 @@ class LoginController extends Controller
         $auth = Auth::attempt( [$this->username()=>$username, 'password' => md5( $salt . $password ) . $salt ] );
 
         if($auth) {
-            if( $oneuser->tick !== 5 )
-            {
-                $oneuser->tick = 5;
+            DB::beginTransaction();
+            try {
+                if( $oneuser->tick !== 5 )
+                {
+                    $oneuser->tick = 5;
+                }
+                
+                $oneuser->login_at = date('Y-m-d H:i:s');
+                if(!$oneuser->save())
+                    throw new \Exception('登录事务中断1');
+
+                $newlog = new Log;
+                $newlog->adminid = $oneuser->id;
+                $newlog->action = '管理员' . $username . '后台登录';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'login';
+                $newlog->parameters = json_encode( ['username'=>$username] );
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newlog->save())
+                    throw new \Exception('登录事务中断2');
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                
+                $this->guard()->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return redirect('/login')->with('pass_error', '登录错误，事务回滚');
             }
-            
-            $oneuser->login_at = date('Y-m-d H:i:s');
-            $oneuser->save();
 
             if ($request->hasSession()) {
                 $request->session()->put('auth.password_confirmed_at', time());

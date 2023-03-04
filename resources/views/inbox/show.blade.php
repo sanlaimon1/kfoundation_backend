@@ -11,32 +11,61 @@ use App\models\Admin;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #app td, .card-header
+        {
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div id="app" class="container-fluid">
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">信息管理</li>
-                <li class="breadcrumb-item"><a href="{{ route('inbox.index') }}">inbox list</a></li>
-                <li class="breadcrumb-item active" aria-current="page">inbox show</li>
+                <li class="breadcrumb-item"><a href="{{ route('inbox.index') }}">站内信列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">显示</li>
             </ol>
         </nav>
         <br />
 
         <div class="card text-center">
             <div class="card-header">
-                Inbox show
+                显示站内信 <a href="{{ route('inbox.index') }}" class="btn btn-primary">返回</a>
             </div>
             <div class="card-body">
-                <h5 class="card-title">标题 : {{ $mail->title}}</h5>
-                <p class="card-text">内容 : {{ $mail->content}}</p>
-                <p class="card-text">Status : @if($mail->read == 0) 未读 @else 已读  @endif</p>
-                <p class="card-text">创建时间 : {{ $mail->created_at}}</p>
-                <p class="card-text">排序 : {{ $mail->sort}}</p>
-                <p class="card-text">用户手机号 若为空则是全部 :  @if( $mail->user_phone==null ) 所有人 @else {{ $mail->user_phone }} @endif</p>
-                <a href="{{ route('inbox.index') }}" class="btn btn-primary">Go back</a>
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <td>标题</td>
+                            <td>{{ $mail->title }}</td>
+                        </tr>
+                        <tr>
+                            <td>状态</td>
+                            <td>@if($mail->is_top == 0) 未置顶 @else 已置顶  @endif</td>
+                        </tr>
+                        <tr>
+                            <td>发布时间</td>
+                            <td>{{ $mail->created_at }}</td>
+                        </tr>
+                        <tr>
+                            <td>排序</td>
+                            <td>{{ $mail->sort }}</td>
+                        </tr>
+                        <tr>
+                            <td>用户手机号</td>
+                            <td>@if( $mail->user_phone==null ) 所有人 @else {{ $mail->user_phone }} @endif</td>
+                        </tr>
+                        <tr>
+                            <td>内容</td>
+                            <td>
+                                <?= html_entity_decode($mail->content) ?>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 

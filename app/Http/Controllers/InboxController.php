@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Inbox;
+use App\Models\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InboxController extends Controller
 {
@@ -22,19 +25,22 @@ class InboxController extends Controller
     {
         $title = $request->title ;
         $date = $request->date;
+
+        //验证
+
         if( !empty($title)){
             if(!empty($date)){
-                $mails = Inbox::where("title", "LIKE", "%{$title}%")->whereDate('created_at', "=", $date )->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
+                $mails = Inbox::where("title", "LIKE", '%' . $title . '%')->whereDate('created_at', "=", $date )->orderBy('is_top','desc')->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
                 return view( 'inbox.index', compact('mails') );
             }
             else{ 
-                $mails = Inbox::where("title", "LIKE", "%{$title}%")->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
+                $mails = Inbox::where("title", "LIKE", '%' . $title . '%')->orderBy('sort','desc')->orderBy('is_top','desc')->orderBy('created_at','desc')->paginate(10);
                 // dd($mails);
                 return view( 'inbox.index', compact('mails') );
             }            
         }
         else{
-            $mails = Inbox::orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
+            $mails = Inbox::orderBy('is_top','desc')->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
 
             return view( 'inbox.index', compact('mails') );
             
@@ -57,21 +63,50 @@ class InboxController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => ['required', 'string'],
-            // 'content' => ['required', 'string'],
-            'read' => ['required', 'integer'],
-            'sort' => ['required', 'integer'],
+            'title' => ['required', 'string', 'max:45'],
+            'content' => ['required', 'string'],
+            'is_top' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer','gte:0'],
             // 'user_phone' => ['required', 'string'],
         ]);
         
-        $mail = new Inbox();
-        $mail->title = $request->title;
-        $mail->content = $request->content;
-        $mail->read = $request->read;
-        $mail->sort = $request->sort;
-        $mail->user_phone = $request->user_phone;
-        // $mail->created_at = now();
-        $mail->save();
+        DB::beginTransaction();
+        try {
+            $mail = new Inbox();
+            $mail->title = $request->title;
+            $mail->content = htmlspecialchars( $request->content );
+            //$mail->read = $request->read;
+            $mail->sort = $request->sort;
+            $mail->user_phone = $request->user_phone;
+            $mail->created_at = date('Y-m-d H:i:s');
+            
+            if(!$mail->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'inbox.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '添加错误，事务回滚';
+        }
+
         return redirect()->route('inbox.index');
     }
 
@@ -99,32 +134,82 @@ class InboxController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'title' => ['required', 'string'],
-            // 'content' => ['required', 'string'],
-            'read' => ['required', 'integer'],
-            'sort' => ['required', 'integer'],
+            'title' => ['required', 'string', 'max:45'],
+            'content' => ['required', 'string'],
+            'is_top' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer','gte:0'],
             // 'user_phone' => ['required', 'string'],
         ]);
         
-        $mail = Inbox::find($id);
-        $mail->title = $request->title;
-        $mail->content = $request->content;
-        $mail->read = $request->read;
-        $mail->sort = $request->sort;
-        $mail->user_phone = $request->user_phone;
-        // $mail->created_at = now();
-        $mail->save();
+        DB::beginTransaction();
+        try {
+            $mail = Inbox::find($id);
+            $mail->title = $request->title;
+            $mail->content = htmlspecialchars( $request->content );
+            $mail->is_top = $request->is_top;
+            $mail->sort = $request->sort;
+            $mail->user_phone = $request->user_phone;
+
+            if(!$mail->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'inbox.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '修改错误，事务回滚';
+        }
+        
         return redirect()->route('inbox.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $id = (int)$id;
-        $one = Inbox::find($id);
-        $one->delete();
+        DB::beginTransaction();
+        try {
+            $one = Inbox::find($id);
+            if(!$one->delete())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'inbox.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '修改错误，事务回滚';
+        }
         return redirect()->route('inbox.index');
     }
 }

@@ -46,9 +46,11 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
+                    <th scope="col">排序</th>
+                    <th scope="col">置顶</th>
                     <th scope="col">标题</th>
                     <th scope="col">接收者</th>
-                    <th scope="col">时间</th>
+                    <th scope="col">发布时间</th>
                     <th scope="col" style="width:200px;">操作</th>
                 </tr>
             </thead>
@@ -56,6 +58,12 @@
                 @foreach ($mails as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
+                    <td>{{ $one->sort }}</td>
+                    <td>
+                        @if($one->is_top==1)
+                        <span style="color:red;">已置顶</span>
+                        @endif
+                    </td>
                     <td>{{ $one->title }}</td>
                     <td>
                         @if( $one->user_phone==null )

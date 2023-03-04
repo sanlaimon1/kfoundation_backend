@@ -2,7 +2,7 @@
 <html lang="zh">
 
 <head>
-    <title>系统角色管理</title>
+    <title>创建站内信</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -20,6 +20,9 @@
             line-height: 20px;
         }
     </style>
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 </head>
 
 <body>
@@ -28,7 +31,7 @@
         <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">信息管理</li>
-                <li class="breadcrumb-item"><a href="{{ route('inbox.index') }}">inbox list</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('inbox.index') }}">站内信列表</a></li>
                 <li class="breadcrumb-item active" aria-current="page">发送站内信</li>
             </ol>
         </nav>
@@ -51,14 +54,14 @@
                     @enderror
                 </div>
                 <div class="form-group mt-4">
-                    <input class="form-check-input" type="radio" name="read" id="enable" value="1" checked>
+                    <input class="form-check-input" type="radio" name="is_top" id="enable" value="1" checked>
                     <label class="form-check-label" for="enable">
-                        已读
+                        置顶
                     </label>
 
-                    <input class="form-check-input" type="radio" name="read" id="disable" value="0" >
+                    <input class="form-check-input" type="radio" name="is_top" id="disable" value="0" >
                     <label class="form-check-label" for="disable">
-                        未读 
+                        不置顶
                     </label>
                 </div>
                 <div class="form-group mt-4">
@@ -77,14 +80,18 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-4">修改</button>
+                <button type="submit" class="btn btn-primary mt-4">添加</button>
             </form>
 
         </div>
 
 
     </div>
-
+    <script>
+        $(document).ready(function() {
+            $('#content').summernote();
+        });
+    </script>
 </body>
 
 </html>

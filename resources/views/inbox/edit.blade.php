@@ -20,6 +20,8 @@
             line-height: 20px;
         }
     </style>
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 </head>
 
 <body>
@@ -46,20 +48,20 @@
                 </div>
                 <div class="form-group mt-4">
                     <label for="content">内容</label>
-                    <textarea name="content" id="content" class="form-control" rows="5">{{$mail->content}}</textarea>
+                    <textarea name="content" id="content" class="form-control" rows="5">{{ html_entity_decode($mail->content) }}</textarea>
                     @error('content')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group mt-4">
-                    <input class="form-check-input" type="radio" name="read" id="enable" value="1" @if($mail->read == 1) checked @endif>
+                    <input class="form-check-input" type="radio" name="is_top" id="enable" value="1" @if($mail->is_top == 1) checked @endif>
                     <label class="form-check-label" for="enable">
-                        已读
+                        置顶
                     </label>
 
-                    <input class="form-check-input" type="radio" name="read" id="disable" value="0" @if($mail->read == 0) checked @endif>
+                    <input class="form-check-input" type="radio" name="is_top" id="disable" value="0" @if($mail->is_top == 0) checked @endif>
                     <label class="form-check-label" for="disable">
-                        未读 
+                        不置顶
                     </label>
                 </div>
                 <div class="form-group mt-4">
@@ -85,7 +87,11 @@
 
 
     </div>
-
+    <script>
+        $(document).ready(function() {
+            $('#content').summernote();
+        });
+    </script>
 </body>
 
 </html>
