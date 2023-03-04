@@ -8,7 +8,7 @@ return [
         'sys_management'=>'系统管理'
     ],
     //项目管理
-    'projects' => [ '项目列表'=>'/list_projects', '项目分类'=>'/projectcate', 
+    'projects' => [ '项目列表'=>'/project', '项目分类'=>'/projectcate', 
                 '已投项目'=>'/invested_project', '返息明细'=>'/interest'],
     //商城管理
     'shop'=>['商品管理'=>'/goods', '订单管理'=>'/orders_productions'],

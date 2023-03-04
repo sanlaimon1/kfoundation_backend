@@ -65,3 +65,5 @@ Route::resource('projectcate', 'App\Http\Controllers\ProjectCateController');
 Route::resource('goods', 'App\Http\Controllers\GoodsController');
 //站内信
 Route::resource('inbox', 'App\Http\Controllers\InboxController');
+//项目管理
+Route::resource('project', 'App\Http\Controllers\ProjectController');
