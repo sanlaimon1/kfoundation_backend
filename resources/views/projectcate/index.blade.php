@@ -65,17 +65,17 @@
                         @endif
                     </td>
                     <td>
-                        
+
                         <a href="{{ route('projectcate.edit', ['projectcate'=>$one->id]) }}" class="btn btn-warning">编辑</a>
-                        
-                        <form action="{{ route('projectcate.destroy', ['projectcate'=>$one->id]) }}" 
+
+                        <form action="{{ route('projectcate.destroy', ['projectcate'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">删除</button>
                         </form>
-                        
+
                     </td>
                 </tr>
                 @endforeach
@@ -87,16 +87,16 @@
             </aside>
             {{ $projectcates->links() }}
         </footer>
-        
-        
+
+
     </div>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
         }
     }
     </script>
