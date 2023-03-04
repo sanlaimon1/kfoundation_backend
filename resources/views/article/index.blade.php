@@ -53,6 +53,8 @@
                     <td>
                         <a href="{{ route('article.edit', ['article'=>$article->id]) }}" class="btn btn-warning">编辑</a>
                         |
+                        <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-info">細節</a>
+                        |
                         <form action="{{ route('article.destroy', ['article'=>$article->id]) }}" 
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">

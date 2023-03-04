@@ -170,7 +170,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">系统管理</li>
-                <li class="breadcrumb-item active" aria-current="page">支付设置</li>
+                <li class="breadcrumb-item active" aria-current="page">系统图片设置</li>
             </ol>
         </nav>
         
