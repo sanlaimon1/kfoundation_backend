@@ -96,6 +96,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = (int)$id;
         $category = Category::find($id);
         $category->enable = 0;
         $category->save();
