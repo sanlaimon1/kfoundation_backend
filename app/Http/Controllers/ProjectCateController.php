@@ -41,8 +41,8 @@ class ProjectCateController extends Controller
     {
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
-            'comment' => ['required','string','max:255'],
-            'sort' => ['required', 'integer', 'gt:0'],
+            'comment' => ['required','string','max:200'],
+            'sort' => ['required', 'integer', 'gte:0'],
         ]);
 
         $category_name = trim($request->cate_name);
@@ -85,8 +85,8 @@ class ProjectCateController extends Controller
     {
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
-            'comment' => ['required','string','max:255'],
-            'sort' => ['required', 'integer', 'gt:0'],
+            'comment' => ['required','string','max:200'],
+            'sort' => ['required', 'integer', 'gte:0'],
         ]);
 
         $category_name = trim($request->cate_name);
