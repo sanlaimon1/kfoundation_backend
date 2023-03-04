@@ -20,6 +20,8 @@
                 <li class="breadcrumb-item active" aria-current="page">站内信列表</li>
             </ol>
         </nav>
+        <br>
+        <a href="{{ route('inbox.create') }}" class="btn btn-primary mb-5">发送站内信</a>
         <br />
         <form action="{{route('inbox.index')}}" method="get">
             <nav class="row">

@@ -48,7 +48,7 @@ class InboxController extends Controller
      */
     public function create()
     {
-        //
+        return view( 'inbox.create');
     }
 
     /**
@@ -56,7 +56,23 @@ class InboxController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => ['required', 'string'],
+            // 'content' => ['required', 'string'],
+            'read' => ['required', 'integer'],
+            'sort' => ['required', 'integer'],
+            // 'user_phone' => ['required', 'string'],
+        ]);
+        
+        $mail = new Inbox();
+        $mail->title = $request->title;
+        $mail->content = $request->content;
+        $mail->read = $request->read;
+        $mail->sort = $request->sort;
+        $mail->user_phone = $request->user_phone;
+        // $mail->created_at = now();
+        $mail->save();
+        return redirect()->route('inbox.index');
     }
 
     /**
