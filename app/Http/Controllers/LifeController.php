@@ -28,7 +28,7 @@ class LifeController extends Controller
      */
     public function create()
     {
-        //
+        return view('life.create');
     }
 
     /**
@@ -36,7 +36,34 @@ class LifeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'production_name'=> ['required', 'string', 'between:1,40'],
+            'sort'=> ['required', 'integer', 'gt:0'],
+            'picture'=> ['required','image','mimes:jpg,png,jpeg,bmp,webp'],
+        ]);
+
+        $production_name = trim( $request->get('production_name') );
+        $sort = trim( $request->get('sort') );
+        $extra = trim( $request->get('extra') );
+        $inputs = trim( $request->get('inputs') );
+
+        $sort = (int)$sort;
+
+        if($request->hasFile('picture')){
+            $picture = time().'.'.$request->picture->extension();
+            $request->picture->move(public_path('/images/'),$picture);
+            $image = '/images/'.$picture;
+        }
+
+        $newlife = new Life();
+        $newlife->production_name = $production_name;
+        $newlife->picture = $image;
+        $newlife->sort = $sort;
+        $newlife->extra = $extra;
+        $newlife->inputs = $inputs;
+        $newlife->save();
+
+        return redirect()->route('life.index');
     }
 
     /**
@@ -52,7 +79,8 @@ class LifeController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $life = Life::find($id);
+        return view('life.edit', compact('life'));
     }
 
     /**
@@ -60,7 +88,36 @@ class LifeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'production_name'=> ['required', 'string', 'between:1,40'],
+            'sort'=> ['required', 'integer', 'gt:0'],
+            'picture'=> ['image','mimes:jpg,png,jpeg,bmp,webp'],
+        ]);
+
+        $production_name = trim( $request->get('production_name') );
+        $sort = trim( $request->get('sort') );
+        $extra = trim( $request->get('extra') );
+        $inputs = trim( $request->get('inputs') );
+
+        $sort = (int)$sort;
+
+        if($request->hasFile('picture')){
+            $picture = time().'.'.$request->picture->extension();
+            $request->picture->move(public_path('/images/'),$picture);
+            $image = '/images/'.$picture;
+        } else {
+            $image = $request->old_picture;
+        }
+
+        $newlife = Life::find($id);
+        $newlife->production_name = $production_name;
+        $newlife->picture = $image;
+        $newlife->sort = $sort;
+        $newlife->extra = $extra;
+        $newlife->inputs = $inputs;
+        $newlife->save();
+
+        return redirect()->route('life.index');
     }
 
     /**
@@ -68,6 +125,8 @@ class LifeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $life = Life::find($id);
+        $life->delete();
+        return redirect()->route('life.index');
     }
 }

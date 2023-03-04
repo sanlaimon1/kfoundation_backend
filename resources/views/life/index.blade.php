@@ -67,7 +67,7 @@
                         {{ $one->inputs }}
                     </td>
                     <td>
-                        
+
                         <a href="{{ route('life.edit', ['life'=>$one->id]) }}" class="btn btn-warning">编辑</a>
                         |
                         <form action="{{ route('life.destroy', ['life'=>$one->id]) }}" 
@@ -89,7 +89,6 @@
             </aside>
             {{ $lifes->links() }}
         </footer>
-        
         
     </div>
     <script>
