@@ -79,7 +79,7 @@
                         @if( $one->is_given==1 )
                         <span style="color:green;">赠送</span>
                         @else
-
+                        <span style="color:red;">不赠送</span>
                         @endif
                     </td>
                     <td>

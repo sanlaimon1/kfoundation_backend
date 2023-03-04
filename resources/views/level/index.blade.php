@@ -16,8 +16,8 @@
         }
         #app td, #app th
         {
-            height: 30px;
-            line-height: 30px;
+            height: 50px;
+            line-height: 50px;
             font-size: 14px;
             padding: 0;
         }
@@ -87,7 +87,7 @@
                     <td>
                         
                         <a href="{{ route('level.edit', ['level'=>$one->level_id]) }}" class="btn btn-warning">编辑</a>
-                        
+                        |
                         <form action="{{ route('level.destroy', ['level'=>$one->level_id]) }}" 
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">

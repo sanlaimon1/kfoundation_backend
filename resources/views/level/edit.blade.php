@@ -88,12 +88,13 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('level.index') }}">会员等级</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">创建会员等级</li>
+                <li class="breadcrumb-item active" aria-current="page">编辑会员等级</li>
             </ol>
         </nav>
 
-        <form action="{{ route('level.store') }}" method="post">
+        <form action="{{ route('level.update',['level'=>$level->level_id]) }}" method="post">
             {{ csrf_field() }}
+            @method('PATCH')
             <section class="row frame">
                 <div class="row">
                     <div class="mb-3">
@@ -101,7 +102,7 @@
                         @error('level_name')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="level_name" name="level_name" placeholder="等级名称" value="">
+                        <input type="text" class="form-control" id="level_name" name="level_name" placeholder="等级名称" value="{{$level->level_name}}">
                     </div>
                 </div>
                 <div class="row">
@@ -110,7 +111,7 @@
                         @error('accumulative_amount')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="accumulative_amount" name="accumulative_amount" placeholder="累计充值金额" value="">
+                        <input type="number" class="form-control" id="accumulative_amount" name="accumulative_amount" placeholder="累计充值金额" value="{{$level->accumulative_amount}}">
                     </div>
                 </div>
                 <div class="row">
@@ -119,7 +120,7 @@
                         @error('interest')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="interest" name="interest" placeholder="0.00" value="">
+                        <input type="number" step="any" class="form-control" id="interest" name="interest" placeholder="0.00" value="{{$level->interest}}">
                     </div>
                 </div>
                 <div class="row">
@@ -128,7 +129,7 @@
                         @error('personal_charge')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="personal_charge" name="personal_charge" placeholder="0.00" value="">
+                        <input type="number" step="any" class="form-control" id="personal_charge" name="personal_charge" placeholder="0.00" value="{{$level->personal_charge}}">
                     </div>
                 </div>
                 <div class="row">
@@ -137,7 +138,7 @@
                         @error('level1_award')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="level1_award" name="level1_award" placeholder="0.00" value="">
+                        <input type="number" step="any" class="form-control" id="level1_award" name="level1_award" placeholder="0.00" value="{{$level->level1_award}}">
                     </div>
                 </div>
                 <div class="row">
@@ -146,7 +147,7 @@
                         @error('level2_award')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="level2_award" name="level2_award" placeholder="0.00" value="">
+                        <input type="number" step="any" class="form-control" id="level2_award" name="level2_award" placeholder="0.00" value="{{$level->level2_award}}">
                     </div>
                 </div>
                 <div class="row">
@@ -155,7 +156,7 @@
                         @error('level3_award')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="level3_award" name="level3_award" placeholder="0.00" value="">
+                        <input type="number" step="any" class="form-control" id="level3_award" name="level3_award" placeholder="0.00" value="{{$level->level3_award}}">
                     </div>
                 </div>
                 <div class="row">
@@ -164,7 +165,7 @@
                         @error('min_coin')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="min_coin" name="min_coin" placeholder="挖矿最低虚拟币" value="">
+                        <input type="number" class="form-control" id="min_coin" name="min_coin" placeholder="挖矿最低虚拟币" value="{{$level->min_coin}}">
                     </div>
                 </div>
                 <div class="row">
@@ -173,7 +174,7 @@
                         @error('max_coin')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="max_coin" name="max_coin" placeholder="挖矿最高虚拟币" value="">
+                        <input type="number" class="form-control" id="max_coin" name="max_coin" placeholder="挖矿最高虚拟币" value="{{$level->max_coin}}">
                     </div>
                 </div>
 

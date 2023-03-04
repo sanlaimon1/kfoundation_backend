@@ -88,7 +88,8 @@ class LevelController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $level = Level::find($id);
+        return view('level.edit', compact('level'));
     }
 
     /**
@@ -96,7 +97,41 @@ class LevelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'level_name' => ['required', 'string', 'between:1,45'],
+            'accumulative_amount' => ['required','integer','gt:0'],
+            'interest' => ['required','numeric','between:0,99.99'],
+            'personal_charge' => ['required','numeric','between:0,99.99'],
+            'level1_award' => ['required','numeric','between:0,99.99'],
+            'level2_award' => ['required','numeric','between:0,99.99'],
+            'level3_award' => ['required','numeric','between:0,99.99'],
+            'min_coin' => ['required', 'integer', 'gte:0'],
+            'max_coin' => ['required', 'integer', 'gte:0'],
+        ]);
+
+        $level_name = trim($request->level_name);
+        $accumulative_amount = trim($request->accumulative_amount);
+        $interest = trim($request->interest);
+        $personal_charge = trim($request->personal_charge);
+        $level1_award = trim($request->level1_award);
+        $level2_award = trim($request->level2_award);
+        $level3_award = trim($request->level3_award);
+        $min_coin = trim($request->min_coin);
+        $max_coin = trim($request->max_coin);
+
+        $newlevel = Level::find($id);
+        $newlevel->level_name = $level_name;
+        $newlevel->accumulative_amount = $accumulative_amount;
+        $newlevel->interest = $interest;
+        $newlevel->personal_charge = $personal_charge;
+        $newlevel->level1_award = $level1_award;
+        $newlevel->level2_award = $level2_award;
+        $newlevel->level3_award = $level3_award;
+        $newlevel->min_coin = $min_coin;
+        $newlevel->max_coin = $max_coin;
+        $newlevel->save();
+
+        return redirect()->route('level.index');
     }
 
     /**
@@ -104,6 +139,8 @@ class LevelController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $level = Level::find($id);
+        $level->delete();
+        return redirect()->route('level.index');
     }
 }
