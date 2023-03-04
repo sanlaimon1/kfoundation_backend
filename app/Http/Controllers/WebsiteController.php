@@ -90,17 +90,36 @@ class WebsiteController extends Controller
             return json_encode( $arr );
         }
 
-        //收到值
-        $config_value = trim( htmlspecialchars( $request->get('config_value') ));
+        if($id == 8){
+            if($request->hasFile('logo')){
+                $get_logo = time().'.'.$request->logo->extension();
+                $request->logo->move(public_path('/images/'),$get_logo);
+                $config_value = '/images/'.$get_logo;
+            }
+        }else if($id == 9){
+            if($request->hasFile('video_home')){
+                $get_video_home = time().'.'.$request->video_home->extension();
+                $request->video_home->move(public_path('/images/'),$get_video_home);
+                $config_value = '/images/'.$get_video_home;
+            }
+        }else{
+            //收到值
+            $config_value = trim( htmlspecialchars( $request->get('config_value') ));
+        }
 
         $id = (int)$id;
         //查询一条数据
         $one_config = Config::find($id);
         $one_config->config_value = $config_value;
         $one_config->save();
-
-        $arr = ['code'=>1, 'message'=>'保存成功'];
-        return response()->json( $arr );
+        
+        if($id == 8 || $id == 9){
+            return redirect()->route('website.index');
+        }else{
+            $arr = ['code'=>1, 'message'=>'保存成功'];
+            return response()->json( $arr );
+        }
+        
     }
 
     /**

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
-
 <head>
-    <title>创建商品</title>
+    <title>参数设置</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" >
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
@@ -42,6 +41,12 @@
         }
     </style>
     <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         $(function(){
             function readURLlitpic(input) {
                 if (input.files && input.files[0]) {
@@ -60,6 +65,7 @@
             });
         });
     </script>
+
 </head>
 
 <body>
@@ -72,9 +78,17 @@
                 <li class="breadcrumb-item active" aria-current="page">创建商品</li>
             </ol>
         </nav>
-        
-        <form action="{{ route('goods.store') }}" method="post" enctype="multipart/form-data">
+
+        @if(session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
+
+        <form action="{{ route('goods.update',['good'=>$goods->id]) }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
+            @method('PATCH')
+            <input type="hidden" name="id" value="{{ $goods->id }}" />
             <section class="row frame">
                 <div class="row">
                     <div class="mb-3 col-6">
@@ -82,12 +96,12 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="goods_name">商品名称</label>
-                        <input type="text" name="goods_name" class="form-control" id="goods_name" placeholder="商品名称" />
+                        <input type="text" name="goods_name" class="form-control" id="goods_name" value="{{ $goods->goods_name }}" placeholder="商品名称" />
                     </div>
                     <div class="mb-3 col-6">
                         <label for="desc" class="form-label">商品图片</label>
                         <!-- <button class="btn btn-warning">选择</button> -->
-                        <img id="show-litpic" src="#" width="120" height="120" />
+                        <img id="show-litpic" src="{{ $goods->litpic }}" width="120" height="120" />
                         <input type="file" id="litpic" name="litpic" hidden/>
                         <label class="litpic" for="litpic">选择</label>
                     </div>
@@ -98,7 +112,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="score" class="form-label">积分</label>
-                        <input type="number" name="score" class="form-control" id="score" placeholder="积分" />                    
+                        <input type="number" name="score" class="form-control" id="score" value="{{ $goods->score }}" placeholder="积分" />                    
                     </div>
                     <div class="mb-3 col-6">
                         <label for="level_id" class="form-label">需要的VIP等级</label>
@@ -107,7 +121,7 @@
                         @enderror
                         <select id="level_id" name="level_id" class="form-select" >
                             @foreach( $level_items as $key=>$one_level )
-                            <option value="{{ $key }}"> {{ $one_level }} </option>
+                            <option value="{{ $key }}" @if($key == $goods->level_id) selected @endif> {{ $one_level }} </option>
                             @endforeach
                         </select>
                     </div>
@@ -118,14 +132,14 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="store_num" class="form-label">库存</label>
-                        <input type="number" name="store_num" class="form-control" id="store_num" placeholder="库存" />                    
+                        <input type="number" name="store_num" class="form-control" id="store_num" value="{{ $goods->store_num }}" placeholder="库存" />                    
                     </div>
                     <div class="mb-3 col-6">
                         @error('count_exchange')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="count_exchange" class="form-label">兑换数量</label>
-                        <input type="number" name="count_exchange" class="form-control" id="count_exchange" placeholder="兑换数量" />                    
+                        <input type="number" name="count_exchange" class="form-control" id="count_exchange" value="{{ $goods->count_exchange }}" placeholder="兑换数量" />                    
                     </div>
                 </div>
                 <div class="row">
@@ -134,7 +148,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="sort" class="form-label">排序</label>
-                        <input type="number" name="sort" class="form-control" id="sort" placeholder="排序" />                    
+                        <input type="number" name="sort" class="form-control" id="sort" value="{{ $goods->sort }}" placeholder="排序" />                    
                     </div>
                     <div class="mb-3 col-4">
                         <label for="enable" class="form-label">状态</label>
@@ -151,17 +165,18 @@
                         @error('comment')
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" name="comment" class="form-control" id="comment" placeholder="备注" />
+                        <input type="text" name="comment" class="form-control" id="comment" value="{{ $goods->comment }}" placeholder="备注" />
                     </div>
                 </div>
 
             </section>
-            
-            <button type="submit" class="btn btn-primary mt-4">创建</button>
-        </form>
 
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
+        </form>
+        
     </div>
+    @include('loading')
+    @include('modal')
 
 </body>
-
 </html>

@@ -63,3 +63,5 @@ Route::resource('teamlevel', 'App\Http\Controllers\TeamlevelController');
 Route::resource('projectcate', 'App\Http\Controllers\ProjectCateController');
 //商品管理
 Route::resource('goods', 'App\Http\Controllers\GoodsController');
+//站内信
+Route::resource('inbox', 'App\Http\Controllers\InboxController');

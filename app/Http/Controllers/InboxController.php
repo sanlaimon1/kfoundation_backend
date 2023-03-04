@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Inbox;
 
 class InboxController extends Controller
 {
@@ -14,11 +15,14 @@ class InboxController extends Controller
     }
     
     /**
-     * Display a listing of the resource.
+     * Display a listing of inbox.   
+     * 显示站内信
      */
     public function index()
     {
-        //
+        $mails = Inbox::orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
+
+        return view( 'inbox.index', compact('mails') );
     }
 
     /**
@@ -66,6 +70,9 @@ class InboxController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $id = (int)$id;
+        $one = Inbox::find($id);
+        $one->delete();
+        return redirect()->route('inbox.index');
     }
 }
