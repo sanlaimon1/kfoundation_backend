@@ -69,3 +69,5 @@ Route::resource('inbox', 'App\Http\Controllers\InboxController');
 Route::resource('project', 'App\Http\Controllers\ProjectController');
 //角色管理列出URI
 Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
+
+Route::resource('permission', 'App\Http\Controllers\PermissionController');
