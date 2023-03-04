@@ -68,14 +68,23 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="form-group mt-4">
-                    <label for="auth">Auth</label>
-                    <input type="text" name="auth" class="form-control" id="auth" placeholder="Enter auth">
-                    @error('auth')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="form-group mt-4">
+                        <label for="auth">请选择栏目:</label>
+                        <select id="first-menu">
+                            <option>--请选择栏目--</option>
+                            @foreach( $first_menus as $key=>$one_item )
+                            <option value="{{ $key }}">{{ $one_item }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="auth">请选择URI:</label>
+                        <select id="second-menu">
+                            
+                        </select>
+                    </div>
                 </div>
-
                 <div class="form-group mt-4">
                     <label for="auth2">Auth2</label>
                     <input type="text" name="auth2" class="form-control" id="auth2" placeholder="Enter auth2">
@@ -91,6 +100,50 @@
 
 
     </div>
+    @include('loading')
+    @include('modal')
+    <script>
+        $(function() {
+            $('#first-menu').change(function(){
+                var dataid = $(this).val();
+                $('.loading').show();
+
+                $.ajax({
+                    type: "get",
+                    url: '/roles/geturi/' + dataid,
+                    dataType: "json",
+                    success: function(msg){
+                        if(msg.code==1)
+                        {
+                            $('#second-menu').html('');
+                            var html_string = "";
+                            $.each(msg.datas, function(index, val){
+                                html_string += '<option value="' + val + '">' + index + '</option>';
+                            });
+                            $('#second-menu').html( html_string );
+                        }
+                        
+                        $('.loading').hide();   //关闭动画  close the loading animation
+                        //window.reload();
+                    },
+                    'error': function (jqXHR, textStatus, errorThrown) {
+                        if(jqXHR.status==419) {
+                            $('.modal-body').html('网页已过期, 请刷新后再修改数据');
+                            $('#myModal').show();
+                        } else if(jqXHR.status==500) {
+                            $('.modal-body').html('服务器内部错误 500');
+                            $('#myModal').show();
+                        } else {
+                            $('.modal-body').html(errorThrown);
+                            $('#myModal').show();
+                        }
+                        $('.loading').hide();
+                    }
+                });
+            
+            });
+        });
+    </script>
 
 </body>
 

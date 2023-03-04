@@ -67,3 +67,5 @@ Route::resource('goods', 'App\Http\Controllers\GoodsController');
 Route::resource('inbox', 'App\Http\Controllers\InboxController');
 //项目管理
 Route::resource('project', 'App\Http\Controllers\ProjectController');
+//角色管理列出URI
+Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
