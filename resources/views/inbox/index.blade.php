@@ -21,22 +21,24 @@
             </ol>
         </nav>
         <br />
-        <nav class="row">
-            <div class="col-3">
-                <label class="form-label">收件人(不填则为所有人)：</label>
-                <input type="text" name="action" id="username" class="form-control" />
-            </div>
-
-            <div class="col-2">
-                <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
-            </div>
-
-            <div class="col-1">
-                <br />
-                <button class="btn btn-success" id="log_search">查询</button>
-            </div>
-        </nav>
+        <form action="{{route('inbox.index')}}" method="get">
+            <nav class="row">
+                <div class="col-3">
+                    <label class="form-label">收件人(不填则为所有人)：</label>
+                    <input type="text" name="title" id="title" class="form-control" />
+                </div>
+    
+                <div class="col-2">
+                    <label class="form-label">时间：</label>
+                    <input type="date" name="date" id="date" class="form-control" />
+                </div>
+    
+                <div class="col-1">
+                    <br />
+                    <button class="btn btn-success" id="log_search">查询</button>
+                </div>
+            </nav>
+        </form>
         <br />
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>

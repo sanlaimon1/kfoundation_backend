@@ -29,7 +29,10 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('role.create');
+        //一级栏目
+        $first_menus = config( 'data.main_menu' );
+
+        return view('role.create', compact('first_menus'));
     }
 
     /**
@@ -94,5 +97,22 @@ class RoleController extends Controller
         $one->save();
 
         return redirect()->route('role.index');
+    }
+
+    /**
+     * list menu of uri   列出uri
+     * roles.listuri
+     */
+    public function listuri(string $key) {
+        $datas = config('data');
+        //判断key是否存在
+        if( !array_key_exists($key, $datas) ) {
+            $arr = ['code'=>-10, 'message'=> $key . '不存在'];
+            return response()->json( $arr );
+        }
+
+        $items = $datas[$key];
+        $arr = ['code'=>1, 'message'=> '请求成功', 'datas'=>$items ];
+        return response()->json( $arr );
     }
 }
