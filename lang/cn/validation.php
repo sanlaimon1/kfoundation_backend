@@ -192,7 +192,10 @@ return [
         'status'=>'状态',
         'desc'=>'描述',
         'cate_name'=>'分类名称',
-        'signdate'=>'签到日期'
+        'signdate'=>'签到日期',
+        'extra'=>'其他选项',
+        'inputs'=>'输入选项',
+        'categoryid'=>'分类',
     ],
 
 ];

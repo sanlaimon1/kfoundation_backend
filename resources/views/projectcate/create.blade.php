@@ -42,7 +42,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/website/' + dataid,
@@ -84,24 +84,16 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">信息管理</li>
+                <li class="breadcrumb-item">项目管理</li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('category.index') }}">文章分类</a>
+                    <a href="{{ route('projectcate.index') }}">创建项目分类</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">编辑文章分类 <strong style="color:red;">{{ $category->cate_name }}</strong></li>
+                <li class="breadcrumb-item active" aria-current="page">创建项目分类</li>
             </ol>
         </nav>
 
-        @if(session('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
-            </div>
-        @endif
-        
-        <form action="{{ route('category.update',['category'=>$category->id]) }}" method="post">
+        <form action="{{ route('projectcate.store') }}" method="post">
             {{ csrf_field() }}
-            @method('PATCH')
-            <input type="hidden" name="id" value="{{ $category->id }}" />
             <section class="row frame">
                 <div class="row">
                     <div class="mb-3">
@@ -109,23 +101,33 @@
                         @error('cate_name')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="cate_name" name="cate_name" placeholder="分类名称" value="{{ $category->cate_name }}">
+                        <input type="text" class="form-control" id="cate_name" name="cate_name" placeholder="分类名称" value="">
                     </div>
                 </div>
                 <div class="row">
                     <div class="mb-3">
-                        <label for="cate_name" class="form-label">排序</label>
+                        <label for="comment" class="form-label">备注</label>
+                        @error('comment')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <textarea class="form-control" id="comment" name="comment" placeholder="请输入备注" value="" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="sort" class="form-label">排序</label>
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="{{ $category->sort }}">
+                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="">
                     </div>
                 </div>
+
             </section>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')

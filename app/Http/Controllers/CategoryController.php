@@ -45,6 +45,8 @@ class CategoryController extends Controller
         $category_name = trim($request->cate_name);
         $sort = trim($request->sort);
 
+        $sort = (int)$sort;
+
         $newcategory = new Category();
         $newcategory->cate_name = $category_name;
         $newcategory->sort = $sort;
@@ -82,6 +84,8 @@ class CategoryController extends Controller
 
         $category_name = trim($request->cate_name);
         $sort = trim($request->sort);
+
+        $sort = (int)$sort;
 
         $newcategory = Category::find($id);
         $newcategory->cate_name = $category_name;

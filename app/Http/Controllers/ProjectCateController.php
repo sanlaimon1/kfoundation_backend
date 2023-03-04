@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProjectCate;
+use Illuminate\Support\Facades\Validator;
 
 class ProjectCateController extends Controller
 {
@@ -30,7 +31,7 @@ class ProjectCateController extends Controller
      */
     public function create()
     {
-        //
+        return view('projectcate/create');
     }
 
     /**
@@ -38,7 +39,26 @@ class ProjectCateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cate_name' => ['required', 'string', 'between:1,40'],
+            'comment' => ['required','string','max:200'],
+            'sort' => ['required', 'integer', 'gte:0'],
+        ]);
+
+        $category_name = trim($request->cate_name);
+        $comment = trim($request->comment);
+        $sort = trim($request->sort);
+
+        $newprojectcates = new ProjectCate();
+        $newprojectcates->cate_name = $category_name;
+        $newprojectcates->comment = $comment;
+        $newprojectcates->created_at = date('Y-m-d H:i:s');
+        $newprojectcates->sort = $sort;
+        $newprojectcates->save();
+
+        return redirect()->route('projectcate.index');
+
+
     }
 
     /**
@@ -54,7 +74,8 @@ class ProjectCateController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $oneprojectcate = ProjectCate::find($id);
+        return view('projectcate.edit', compact('oneprojectcate'));
     }
 
     /**
@@ -62,7 +83,24 @@ class ProjectCateController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'cate_name' => ['required', 'string', 'between:1,40'],
+            'comment' => ['required','string','max:200'],
+            'sort' => ['required', 'integer', 'gte:0'],
+        ]);
+
+        $category_name = trim($request->cate_name);
+        $comment = trim($request->comment);
+        $sort = trim($request->sort);
+
+        $oneprojectcate = ProjectCate::find($id);
+        $oneprojectcate->cate_name = $category_name;
+        $oneprojectcate->comment = $comment;
+        $oneprojectcate->sort = $sort;
+        $oneprojectcate->save();
+
+        return redirect()->route('projectcate.index');
+
     }
 
     /**

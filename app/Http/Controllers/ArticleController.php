@@ -46,7 +46,7 @@ class ArticleController extends Controller
         $request->validate([
             'title' => ['required', 'string'],
             'content' => ['required'],
-            'categoryid' => ['required', 'string'],
+            'categoryid' => ['required', 'integer', 'exists:categories,id'],
         ]);
 
         $title = trim($request->get('title'));
@@ -69,7 +69,8 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::find($id);
+        return view('article.show', compact('article'));
     }
 
     /**
@@ -91,20 +92,17 @@ class ArticleController extends Controller
         $request->validate([
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
-            'categoryid' => ['required', 'string'],
-            'adminid' => ['required', 'integer']
+            'categoryid' => ['required', 'integer', 'exists:categories,id'],
         ]);
 
         $title = trim($request->get('title'));
         $content = trim($request->get('content'));
         $categoryid = trim($request->get('categoryid'));
-        $adminid = trim($request->get('adminid'));
 
         $newarticle = Article::find($id);
         $newarticle->title = $title;
         $newarticle->content = $content;
         $newarticle->categoryid = $categoryid;
-        $newarticle->adminid = $adminid;
         
         $newarticle->save();
 
