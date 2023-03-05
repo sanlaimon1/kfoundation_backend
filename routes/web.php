@@ -34,8 +34,10 @@ Route::resource('version', 'App\Http\Controllers\VersionController');
 Route::resource('sms', 'App\Http\Controllers\SmsController');
 //合同模板设置
 Route::resource('agreement', 'App\Http\Controllers\AgreementController');
-//系统日志
+//管理员日志
 Route::resource('log', 'App\Http\Controllers\LogController');
+//系统日志
+Route::resource('syslog', 'App\Http\Controllers\SyslogController');
 Route::post('log_search', 'App\Http\Controllers\LogController@log_search')->name('log_search');
 //系统用户列表
 Route::resource('sysusers', 'App\Http\Controllers\SysUsersController');
@@ -69,5 +71,17 @@ Route::resource('inbox', 'App\Http\Controllers\InboxController');
 Route::resource('project', 'App\Http\Controllers\ProjectController');
 //角色管理列出URI
 Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
-
+//权限表
 Route::resource('permission', 'App\Http\Controllers\PermissionController');
+//项目投资订单
+Route::resource('order1', 'App\Http\Controllers\Order1Controller');
+//商城订单
+Route::resource('order2', 'App\Http\Controllers\Order2Controller');
+//生活缴费订单
+Route::resource('order3', 'App\Http\Controllers\Order3Controller');
+//用户资产流水账
+Route::resource('asset', 'App\Http\Controllers\FinancialAsset');
+//用户余额流水账
+Route::resource('balance', 'App\Http\Controllers\FinancialBalance');
+//用户积分流水账
+Route::resource('integration', 'App\Http\Controllers\FinancialIntegration');
