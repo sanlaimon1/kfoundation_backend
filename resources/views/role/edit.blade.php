@@ -34,8 +34,9 @@
         </nav>
 
         <div class="container">
-            <form action="{{ route('role.store') }}" method="post">
+            <form action="{{ route('role.update', $role->rid) }}" method="post">
                 {{ csrf_field() }}
+                @method('PATCH')
                 <div class="form-group">
                     <label for="title">标题</label>
                     <input type="text" name="title" class="form-control" id="title" placeholder="标题" value="{{$role->title}}">
@@ -67,36 +68,6 @@
                     @error('description')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
-                </div>
-                <div class="form-group mt-4">
-                    <label for="auth">权限值</label>
-                    <input type="text" name="auth" class="form-control" id="auth" placeholder="权限值" value="{{$role->auth}}">
-                    @error('auth')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group mt-4">
-                    <label for="auth2">子栏目权限值</label>
-                    <!-- <input type="text" name="auth2" class="form-control" id="auth2" placeholder="Enter auth2" value="{{$role->auth2}}"> -->
-                    <div class="row">
-                        <div class="col-3">
-                            <input type="checkbox" id="create" name="create" value="1">
-                            <label for="create">创建</label>
-                        </div>
-                        <div class="col-3">
-                            <input type="checkbox" id="read" name="read" value="2">
-                            <label for="read">查询</label>
-                        </div>
-                        <div class="col-3">
-                            <input type="checkbox" id="update" name="update" value="4">
-                            <label for="update">修改</label>
-                        </div>
-                        <div class="col-3">
-                            <input type="checkbox" id="delete" name="delete" value="8">
-                            <label for="delete">删除</label>
-                        </div>
-                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-4">Submit</button>

@@ -68,7 +68,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="form-group mt-4">
                         <label for="auth">请选择栏目:</label>
                         <select id="first-menu">
@@ -84,8 +84,8 @@
                             
                         </select>
                     </div>
-                </div>
-                <div class="form-group mt-4">
+                </div> -->
+                <!-- <div class="form-group mt-4">
                     <label for="auth2">子栏目权限值</label>
                     <div class="row">
                         <div class="col-3">
@@ -105,7 +105,7 @@
                             <label for="delete">删除</label>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <button type="submit" class="btn btn-primary mt-4">Submit</button>
             </form>
