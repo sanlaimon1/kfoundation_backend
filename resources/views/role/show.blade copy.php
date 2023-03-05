@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="zh">
-
 <head>
     <title>系统角色管理</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" >
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <style>
-        #app {
+        #app
+        {
             padding-top: 1rem;
         }
-
-        #app td {
+        #app td
+        {
             height: 20px;
             line-height: 20px;
         }
-
-        li {
+        li
+        {
             margin-top: .5rem;
             list-style-type: none;
             display: flex;
         }
-
-        li span {
+        li span
+        {
             display: block;
         }
-
-        li span.sub_name {
+        li span.sub_name
+        {
             width: 10rem;
         }
-
-        li span.sub_path {
+        li span.sub_path
+        {
             width: 10rem;
         }
-
-        li span.sub_permission {
+        li span.sub_permission
+        {
             width: auto;
             display: flex;
         }
-
-        .main-item {
+        .main-item
+        {
             margin-top: 1rem;
             padding-left: 1rem;
         }
-
-        .sub-item {
+        .sub-item
+        {
             padding-left: 2rem;
             border-bottom: 1px dashed black;
         }
@@ -73,67 +73,60 @@
             <!-- 权限列表 -->
             @foreach( $items as $uripath=>$one_item )
             <li>
-            <li class="main-item">{{ $one_item['main_name'] }}</li>
-            <ul>
-                @foreach( $one_item['sub_menu'] as $sub_name=>$sub_path )
-                <form action="{{ route('permission.store') }}" method="post">
-                    {{ csrf_field() }}
+                <li class="main-item">{{ $one_item['main_name'] }}</li>
+                <ul>
+                    @foreach( $one_item['sub_menu'] as $sub_name=>$sub_path )
                     <li class="sub-item">
-
-                        <input type="text" name="role_id" value="{{$id}}" hidden>
-                        <input type="text" class="sub_path border-0" name="path_name" value="{{$sub_path}}" hidden>
                         <span class="sub_name">{{ $sub_name }}</span>
                         <span class="sub_path">{{ $sub_path }}</span>
                         <span class="sub_permission">
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}index" name="index" value="1">
-                                <label for="{{$sub_path}}index">index</label>
+                                <input type="checkbox" id="auth2_read" name="index" value="2">
+                                <label for="auth2_read">列出所有</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}store" name="create" value="2">
-                                <label for="{{$sub_path}}store">store</label>
+                                <input type="checkbox" id="auth2_create" name="create" value="1">
+                                <label for="auth2_create">创建页面</label>
+                            </div>
+                            
+                            <div class="col-2">
+                                <input type="checkbox" id="auth2_update" name="store" value="4">
+                                <label for="auth2_update">创建逻辑</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}show" name="show" value="4">
-                                <label for="{{$sub_path}}show">show</label>
+                                <input type="checkbox" id="auth2_delete" name="edit" value="8">
+                                <label for="auth2_delete">编辑页面</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}edit" name="edit" value="8">
-                                <label for="{{$sub_path}}edit">edit</label>
+                                <input type="checkbox" id="auth2_delete" name="update" value="8">
+                                <label for="auth2_delete">编辑逻辑</label>
                             </div>
-                            <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}update" name="update" value="16">
-                                <label for="{{$sub_path}}update">update</label>
+                            <div class="col-2">
+                                <input type="checkbox" id="auth2_delete" name="show" value="8">
+                                <label for="auth2_delete">查询一条</label>
                             </div>
-                            <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}destory" name="destory" value="32">
-                                <label for="{{$sub_path}}destory">delete</label>
-                            </div>
-                            <div class="col-3">
-                            <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                            <div class="col-2">
+                                <input type="checkbox" id="auth2_delete" name="destroy" value="8">
+                                <label for="auth2_delete">删除</label>
                             </div>
                         </span>
                     </li>
-                </form>
-                @endforeach
-            </ul>
+                    @endforeach
+                </ul>
             </li>
             @endforeach
         </ul>
-
-
         
     </div>
     <script>
-        function del() {
-            var msg = "您真的确定要删除吗？\n\n请确认！";
-            if (confirm(msg) == true) {
-                return true;
-            } else {
-                return false;
-            }
+    function del() { 
+        var msg = "您真的确定要删除吗？\n\n请确认！"; 
+        if (confirm(msg)==true){ 
+            return true; 
+        }else{ 
+            return false; 
         }
+    }
     </script>
 </body>
-
 </html>

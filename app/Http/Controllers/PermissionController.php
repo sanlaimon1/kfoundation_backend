@@ -40,10 +40,13 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'path_name' => ['required', 'string'],
             'role_id' => ['required', 'integer'],
         ]);
+
+        // dd($request->all());
 
         $role_id = $request->role_id;
 
@@ -53,18 +56,17 @@ class PermissionController extends Controller
             return back()->with("message", "that path and user already set!!!");
         }
 
-        $one_role = Role::find($role_id);
-
         DB::beginTransaction();
         try {
             $permission = new Permission();
             $permission->path_name = $request->path_name;
             $permission->role_id = $request->role_id;
-            $permission->auth2 = ($request->auth2_create ?? 0) + ($request->auth2_read ?? 0) + ($request->auth2_update ?? 0) + ($request->auth2_delete ?? 0);
+            $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
 
             if (!$permission->save())
                 throw new \Exception('事务中断1');
 
+            $one_role = Role::find($role_id);
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();;
@@ -89,9 +91,7 @@ class PermissionController extends Controller
             return '添加错误，事务回滚';
         }
 
-
-
-        return redirect(route("permission.index"));
+        return redirect(route("role.index"));
     }
 
     /**
