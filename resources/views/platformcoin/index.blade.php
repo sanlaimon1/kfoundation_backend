@@ -9,13 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
-    <style>
-        #app td, #app th
-        {
-            padding:0;
-            font-size: 12px;
-        }
-    </style>
 </head>
 
 <body>
@@ -95,8 +88,8 @@
                     <td>{{ $one->created_at }}</td>
                     <td>
                         {{ $one->details }}  
-                        @if($one->financial_type==3)
-                        <a href="{{ route('charge.show',[ 'charge'=>json_decode($one->extra, true)['charge_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['charge_id'] }}</a>
+                        @if($one->financial_type==2)
+                        <a href="{{ route('withdrawal.show',[ 'withdrawal'=>json_decode($one->extra, true)['withdrawal_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['withdrawal_id'] }}</a>
                         @endif
                     </td>
                 </tr>

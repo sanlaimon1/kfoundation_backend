@@ -15,35 +15,17 @@ class FinancialAssetController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * 资产流水记录
      */
     public function index()
     {
-        //
-    }
+        $records = FinancialAsset::orderBy('created_at', 'desc')->paginate(20);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $types = config('types.asset_financial_type');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $title = '资产流水记录';
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return view( 'financialasset.index', compact('records', 'types', 'title') );
     }
 
 }

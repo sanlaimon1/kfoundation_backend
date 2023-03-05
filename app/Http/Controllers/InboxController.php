@@ -85,7 +85,7 @@ class InboxController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
+            $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 添加站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'inbox.store';

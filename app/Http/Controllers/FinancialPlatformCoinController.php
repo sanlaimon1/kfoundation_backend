@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\FinancialIntegration;
+use App\Models\FinancialPlatformCoin;
 
-class FinancialIntegrationController extends Controller
+class FinancialPlatformCoinController extends Controller
 {
     public function __construct()
     {
@@ -15,15 +15,15 @@ class FinancialIntegrationController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * 平台币流水记录
      */
     public function index()
     {
-        $records = FinancialIntegration::orderBy('created_at', 'desc')->paginate(20);
+        $records = FinancialPlatformCoin::orderBy('created_at', 'desc')->paginate(20);
 
-        $types = config('types.integration_financial_type');
+        $types = config('types.platform_financial_type');
 
-        $title = '积分流水记录';
+        $title = '平台币流水记录';
 
         return view( 'platformcoin.index', compact('records', 'types','title') );
     }

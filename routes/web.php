@@ -80,8 +80,18 @@ Route::resource('order2', 'App\Http\Controllers\Order2Controller');
 //生活缴费订单
 Route::resource('order3', 'App\Http\Controllers\Order3Controller');
 //用户资产流水账
-Route::resource('asset', 'App\Http\Controllers\FinancialAsset');
+Route::resource('asset', 'App\Http\Controllers\FinancialAssetController');
 //用户余额流水账
-Route::resource('balance', 'App\Http\Controllers\FinancialBalance');
+Route::resource('balance', 'App\Http\Controllers\FinancialBalanceController');
 //用户积分流水账
-Route::resource('integration', 'App\Http\Controllers\FinancialIntegration');
+Route::resource('integration', 'App\Http\Controllers\FinancialIntegrationController');
+//平台币流水账
+Route::resource('platformcoin', 'App\Http\Controllers\FinancialPlatformCoinController');
+//资产充值审核
+Route::resource('charge', 'App\Http\Controllers\AssetCheckController');
+//余额提现审核
+Route::resource('withdrawal', 'App\Http\Controllers\BalanceCheckController');
+//用户钱包列表
+Route::resource('wallet', 'App\Http\Controllers\WalletController');
+//用户列表
+Route::resource('customer', 'App\Http\Controllers\CustomerController');

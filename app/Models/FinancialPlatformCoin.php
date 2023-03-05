@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FinancialIntegration extends Model
+class FinancialPlatformCoin extends Model
 {
     use HasFactory;
-    public $table = 'financial_integration';
+    public $table = 'financial_platform_coin';
     public $timestamps = FALSE;
 
     //关联

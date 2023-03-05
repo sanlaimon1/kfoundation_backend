@@ -15,6 +15,6 @@ class FinancialAsset extends Model
     //关联
     public function customer() {
         
-        return $this->hasOne('App\Models\Customer', 'userid', 'id');
+        return $this->hasOne('App\Models\Customer', 'id', 'userid');
     }
 }

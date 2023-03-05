@@ -10,10 +10,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
     <style>
-        #app td, #app th
+        #app td
         {
-            padding:0;
-            font-size: 12px;
+            padding: 0;
+        }
+        #app td img
+        {
+            width: 50px;
         }
     </style>
 </head>
@@ -30,28 +33,18 @@
         <h3 class="text-center text-primary">{{ $title }}</h3>
         <nav class="row">
             <div class="col-3">
-                <label class="form-label">财务编号：</label>
-                <input type="text" name="id" id="action" class="form-control" />
+                <label class="form-label">ID</label>
+                <input type="text" name="fid" id="fid" class="form-control" />
             </div>
 
             <div class="col-3">
-                <label class="form-label">用户名：</label>
-                <input type="text" name="action" id="action" class="form-control" />
-            </div>
-
-            <div class="col-3">
-                <label class="form-label">财务类型：</label>
-                <select name="financial_type" id="financial_type"  class="form-select">
-                    <option>--请选择--</option>
-                    @foreach($types as $type_val=>$one_type)
-                    <option value="{{ $type_val }}">{{ $one_type }}</option>
-                    @endforeach
-                </select>
+                <label class="form-label">手机号：</label>
+                <input type="text" name="phone" id="phone" class="form-control" />
             </div>
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="date" name="created_at" id="created_at" class="form-control" />
             </div>
 
             <div class="col-1">
@@ -63,63 +56,47 @@
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
-                    <th scope="col">财务编号</th>
-                    <th scope="col">用户名</th>
-                    <th scope="col">财务类型</th>
-                    <th scope="col">发生前余额</th>
-                    <th scope="col">金额</th>
-                    <th scope="col">当前余额</th>
-                    <th scope="col">发生时间</th>
-                    <th scope="col">备注</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">手机号</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">余额</th>
+                    <th scope="col">资产</th>
+                    <th scope="col">积分</th>
+                    <th scope="col">平台币</th>
+                    <th scope="col">注册时间</th>
+                    <th scope="col" style="width: 240px;">操作</th>
                 </tr>
             </thead>
             <tbody id="search_data">
                 @foreach ($records as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
-                    <td>{{ $one->customer->phone }}</td>
-                    <td>{{ $types[ $one->financial_type ]}}</td>
-                    <td>
-                        {{ $one->balance }}
-                    </td>
-                    <td>
-                        @if($one->direction==1)
-                        <span style="color:green;">+{{ $one->amount }}</span>
-                        @elseif($one->direction==-1)
-                        <span style="color:red;">-{{ $one->amount }}</span>
-                        @else
-                        方向错误
-                        @endif
-                    </td>
-                    <td>{{ $one->after_balance }}</td>
+                    <td>{{ $one->phone }}</td>
+                    <td>{{ $one->realname }}</td>
+                    <td>{{ $one->asset }}</td>
+                    <td>{{ $one->balance }}</td>
+                    <td>{{ $one->integration }}</td>
+                    <td>{{ $one->platform_coin }}</td>
                     <td>{{ $one->created_at }}</td>
                     <td>
-                        {{ $one->details }}  
-                        @if($one->financial_type==3)
-                        <a href="{{ route('charge.show',[ 'charge'=>json_decode($one->extra, true)['charge_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['charge_id'] }}</a>
-                        @endif
+                        <a href="" class="btn btn-primary">查看团队</a>
+                        <a href="" class="btn btn-warning">编辑</a>
+                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
+                         method="post"
+                         style="float:right;" onsubmit="javascript:return del()">
+                            {{ csrf_field() }}
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">删除</button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td><strong>财务类型</strong></td>
-                    <td>&nbsp;</td>
-                    <td><strong>合计</strong></td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-            </tfoot>
+            </tbody>            
         </table>
         <nav aria-label="page">
               <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
         </nav>
     </div>
-
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/dist/js/adminlte.min.js?v=3.2.0"></script>
@@ -165,6 +142,16 @@
             });
         })
         })
+    </script>
+    <script>
+    function del() { 
+        var msg = "您真的确定要删除吗？\n\n请确认！"; 
+        if (confirm(msg)==true){ 
+            return true; 
+        }else{ 
+            return false; 
+        }
+    }
     </script>
 </body>
 </html>

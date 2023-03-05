@@ -9,15 +9,16 @@ return [
     ],
     //项目管理
     'projects' => [ '项目列表'=>'/project', '项目分类'=>'/projectcate', 
-                '已投项目'=>'/invested_project', '返息明细'=>'/interest'],
+                '已投项目'=>'/order1', '返息明细'=>'/interest'],
     //商城管理
-    'shop'=>['商品管理'=>'/goods', '订单管理'=>'/orders_productions'],
+    'shop'=>['商品管理'=>'/goods', '订单管理'=>'/order2'],
     //生活服务
-    'service_life'=>['充值缴费'=>'/life','订单管理'=>'/orders_service'],
+    'service_life'=>['充值缴费'=>'/life','订单管理'=>'/order3'],
     //用户中心
-    'user_center'=>['会员列表'=>'/list_members','会员等级管理'=>'/level','团队等级管理'=>'/teamlevel',
-    '用户钱包列表'=>'/wallets','流水记录'=>'/financial_records',
-    '充值审核'=>'/charge_records','提现审核'=>'/withdrawal_records'],
+    'user_center'=>['会员列表'=>'/customer','会员等级管理'=>'/level','团队等级管理'=>'/teamlevel',
+    '用户钱包列表'=>'/wallet','余额流水记录'=>'/balance','资产流水记录'=>'/asset',
+    '积分流水记录'=>'/integration','平台币流水记录'=>'/platformcoin',
+    '资产充值审核'=>'/charge','余额提现审核'=>'/withdrawal'],
     //奖励管理
     'awards'=>['系统奖励'=>'/award', '签到奖励'=>'/sign'],
     //信息管理
@@ -38,9 +39,5 @@ return [
     'smsapi_array' => [
         1=>'短信宝', 2=>'阿里云短信'
     ],
-    //返利模式
-    'return_mode'=>[
-        1=>'每小时返利，到期返本', 2=>'每日返利，到期返本', 
-        3=>'每周返利，到期返本', 4=>'每月返利，到期返本',5=>'到期返本返利'
-    ],
+    
 ];

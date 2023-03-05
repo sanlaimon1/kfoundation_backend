@@ -15,35 +15,17 @@ class FinancialBalanceController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * 余额流水记录
      */
     public function index()
     {
-        //
-    }
+        $records = FinancialBalance::orderBy('created_at', 'desc')->paginate(20);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $types = config('types.balance_financial_type');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $title = '余额流水记录';
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return view( 'financialbalance.index', compact('records', 'types', 'title') );
     }
 
 }

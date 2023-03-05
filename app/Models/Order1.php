@@ -13,12 +13,12 @@ class Order1 extends Model
     //关联客户
     public function customer() {
         
-        return $this->hasOne('App\Models\Customer', 'cid', 'id');
+        return $this->hasOne('App\Models\Customer', 'id', 'cid');
     }
 
     //关联项目
     public function goods() {
         
-        return $this->hasOne('App\Models\Project', 'pid', 'id');
+        return $this->hasOne('App\Models\Project', 'id', 'pid');
     }
 }
