@@ -111,7 +111,7 @@
                                 <label for="{{$sub_path}}destory">delete</label>
                             </div>
                             <div class="col-3">
-                                <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                                <button type="submit" class="btn btn-primary mt-4">保存</button>
                             </div>
                         </span>
                     </li>
