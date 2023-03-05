@@ -45,11 +45,15 @@ class PermissionController extends Controller
             'role_id' => ['required', 'integer'],
         ]);
 
-        $query = Permission::where('path_name', "=", $request->path_name)->where("role_id", "=", $request->role_id)->first();
+        $role_id = $request->role_id;
+
+        $query = Permission::where('path_name', "=", $request->path_name)->where("role_id", "=", $role_id)->first();
 
         if (!empty($query)) {
             return back()->with("message", "that path and user already set!!!");
         }
+
+        $one_role = Role::find($role_id);
 
         DB::beginTransaction();
         try {
@@ -64,7 +68,7 @@ class PermissionController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
             $newlog->ip = "127.0.0.1";
             $newlog->route = 'permission.store';
             $newlog->parameters = json_encode($request->all());

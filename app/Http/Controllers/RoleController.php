@@ -66,7 +66,19 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $first_menus = config('data.main_menu');    //一级菜单
+        $id = (int)$id;
+        $all_datas = config('data');
+
+        $items = [];
+
+        foreach($first_menus as $urlpath=>$item_name ) {
+            if(array_key_exists($urlpath, $all_datas)) {
+                $items[ $urlpath ] = ['main_name'=>$item_name, 'sub_menu'=>$all_datas[ $urlpath ]];
+            }
+        }
+
+        return view('role.show', compact('first_menus', 'id', 'items') );
     }
 
     /**

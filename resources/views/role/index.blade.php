@@ -40,7 +40,7 @@
                     <th>创建时间</th>
                     <th>排序</th>
                     <th>描述</th>
-                    <th style="width:160px;">操作</th>
+                    <th style="width:260px;">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +59,8 @@
                     </td>
                     <td>
                         @if($one->rid!=1)
+                        <a href="{{ route('role.show', ['role'=>$one->rid]) }}" class="btn btn-primary">编辑权限</a>
+                        |
                         <a href="{{ route('role.edit', ['role'=>$one->rid]) }}" class="btn btn-warning">编辑</a>
                         |
                         <form action="{{ route('role.destroy', ['role'=>$one->rid]) }}" 
