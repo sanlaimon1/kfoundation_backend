@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <title>系统角色管理</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <style>
-        #app
-        {
+        #app {
             padding-top: 1rem;
         }
-        #app td
-        {
+
+        #app td {
             height: 20px;
             line-height: 20px;
         }
@@ -42,43 +42,42 @@
                 </tr>
             </thead>
             <tbody>
-                
+                @foreach($permissions as $permission)
                 <tr>
-                    <td>1</td>
-                    <td>/article</td>
+                    <td>{{$permission->id}}</td>
+                    <td>{{$permission->path_name}}</td>
                     <td>
-                        管理人员
+                        {{$permission->role->title}}
                     </td>
                     <td>
-                        
-                        <a href="" class="btn btn-warning">编辑</a>
+
+                        <a href="{{ route('permission.edit', $permission->id) }}" class="btn btn-warning">编辑</a>
                         |
-                        <form action="" 
-                         method="post"
-                         style="float:right;" onsubmit="javascript:return del()">
+                        <form action="{{ route('permission.destroy', $permission->id) }}" method="post" style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">删除</button>
                         </form>
-                       
+
                     </td>
                 </tr>
-                
+                @endforeach
             </tbody>
         </table>
-        
-        
-        
+
+
+
     </div>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+        function del() {
+            var msg = "您真的确定要删除吗？\n\n请确认！";
+            if (confirm(msg) == true) {
+                return true;
+            } else {
+                return false;
+            }
         }
-    }
     </script>
 </body>
+
 </html>

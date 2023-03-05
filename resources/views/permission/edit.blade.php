@@ -48,7 +48,7 @@
                         <select id="first-menu">
                             <option>--请选择栏目--</option>
                             @foreach( $first_menus as $key=>$one_item )
-                            <option value="{{ $key }}">{{ $one_item }}</option>
+                            <option value="{{ $key }}" @if($permission->path_name == $key) selected @endif >{{ $one_item }}</option>
                             @endforeach
                         </select>
                     </div>

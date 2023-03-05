@@ -34,7 +34,7 @@
         </nav>
         
         <div class="container">
-            <form action="{{ route('role.store') }}" method="post">
+            <form action="{{ route('role.store') }}" method="POST">
                 {{ csrf_field() }}
                 <div class="form-group">
                     <label for="title">标题</label>
