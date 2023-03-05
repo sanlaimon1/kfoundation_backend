@@ -53,43 +53,79 @@ class PermissionController extends Controller
         $query = Permission::where('path_name', "=", $request->path_name)->where("role_id", "=", $role_id)->first();
 
         if (!empty($query)) {
-            return back()->with("message", "that path and user already set!!!");
+            // return back()->with("message", "that path and user already set!!!");
+            DB::beginTransaction();
+            try {
+                $query->path_name = $request->path_name;
+                $query->role_id = $request->role_id;
+                $query->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
+    
+                if (!$query->save())
+                    throw new \Exception('事务中断1');
+    
+                $one_role = Role::find($role_id);
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();;
+                $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
+                $newlog->ip = "127.0.0.1";
+                $newlog->route = 'permission.update';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断2');
+    
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return '添加错误，事务回滚';
+            }
+        }
+        else{
+            DB::beginTransaction();
+            try {
+                $permission = new Permission();
+                $permission->path_name = $request->path_name;
+                $permission->role_id = $request->role_id;
+                $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
+    
+                if (!$permission->save())
+                    throw new \Exception('事务中断1');
+    
+                $one_role = Role::find($role_id);
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();;
+                $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
+                $newlog->ip = "127.0.0.1";
+                $newlog->route = 'permission.store';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断2');
+    
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return '添加错误，事务回滚';
+            }
         }
 
-        DB::beginTransaction();
-        try {
-            $permission = new Permission();
-            $permission->path_name = $request->path_name;
-            $permission->role_id = $request->role_id;
-            $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
-
-            if (!$permission->save())
-                throw new \Exception('事务中断1');
-
-            $one_role = Role::find($role_id);
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
-            $newlog->ip = "127.0.0.1";
-            $newlog->route = 'permission.store';
-            $newlog->parameters = json_encode($request->all());
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if (!$newlog->save())
-                throw new \Exception('事务中断2');
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            //$errorMessage = $e->getMessage();
-            //return $errorMessage;
-            return '添加错误，事务回滚';
-        }
+        
 
         return redirect(route("role.index"));
     }
