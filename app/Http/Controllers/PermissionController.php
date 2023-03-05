@@ -58,7 +58,7 @@ class PermissionController extends Controller
             try {
                 $query->path_name = $request->path_name;
                 $query->role_id = $request->role_id;
-                $query->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
+                $query->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->store ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
     
                 if (!$query->save())
                     throw new \Exception('事务中断1');
@@ -66,7 +66,7 @@ class PermissionController extends Controller
                 $one_role = Role::find($role_id);
                 $username = Auth::user()->username;
                 $newlog = new Log();
-                $newlog->adminid = Auth::id();;
+                $newlog->adminid = Auth::id();
                 $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
                 $newlog->ip = "127.0.0.1";
                 $newlog->route = 'permission.update';
@@ -94,7 +94,7 @@ class PermissionController extends Controller
                 $permission = new Permission();
                 $permission->path_name = $request->path_name;
                 $permission->role_id = $request->role_id;
-                $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
+                $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->store ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
     
                 if (!$permission->save())
                     throw new \Exception('事务中断1');

@@ -80,7 +80,6 @@
                 <form action="{{ route('permission.store') }}" method="post">
                     {{ csrf_field() }}
                     <li class="sub-item">
-
                         <input type="text" name="role_id" value="{{$id}}" hidden>
                         <input type="text" class="sub_path border-0" name="path_name" value="{{$sub_path}}" hidden>
                         <span class="sub_name">{{ $sub_name }}</span>
@@ -88,27 +87,31 @@
                         <span class="sub_permission">
                             <div class="col-2">
                                 <input type="checkbox" id="{{$sub_path}}index" name="index" value="1">
-                                <label for="{{$sub_path}}index">index</label>
+                                <label for="{{$sub_path}}index">列出</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}store" name="create" value="2">
-                                <label for="{{$sub_path}}store">store</label>
+                                <input type="checkbox" id="{{$sub_path}}create" name="create" value="2">
+                                <label for="{{$sub_path}}create">创建页面</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}show" name="show" value="4">
-                                <label for="{{$sub_path}}show">show</label>
+                                <input type="checkbox" id="{{$sub_path}}store" name="store" value="4">
+                                <label for="{{$sub_path}}store">创建逻辑</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}edit" name="edit" value="8">
-                                <label for="{{$sub_path}}edit">edit</label>
+                                <input type="checkbox" id="{{$sub_path}}show" name="show" value="8">
+                                <label for="{{$sub_path}}show">显示</label>
+                            </div>
+                            <div class="col-2">
+                                <input type="checkbox" id="{{$sub_path}}edit" name="edit" value="16">
+                                <label for="{{$sub_path}}edit">编辑页面</label>
                             </div>
                             <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}update" name="update" value="16">
-                                <label for="{{$sub_path}}update">update</label>
+                                <input type="checkbox" id="{{$sub_path}}update" name="update" value="32">
+                                <label for="{{$sub_path}}update">编辑逻辑</label>
                             </div>
                             <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}destory" name="destory" value="32">
-                                <label for="{{$sub_path}}destory">delete</label>
+                                <input type="checkbox" id="{{$sub_path}}destory" name="destory" value="64">
+                                <label for="{{$sub_path}}destory">删除</label>
                             </div>
                             <div class="col-3">
                                 <button type="submit" class="btn btn-primary mt-4">保存</button>
