@@ -180,27 +180,45 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('customer.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-users"></i>
                                         <p>会员列表</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('asset.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-money-bill"></i>
-                                        <p>流水记录</p>
+                                        <p>资产流水记录</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('balance.index') }}" class="nav-link" target="content">
+                                        <i class="fa fa-money-bill"></i>
+                                        <p>余额流水记录</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('integration.index') }}" class="nav-link" target="content">
+                                        <i class="fa fa-money-bill"></i>
+                                        <p>积分流水记录</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('platformcoin.index') }}" class="nav-link" target="content">
+                                        <i class="fa fa-money-bill"></i>
+                                        <p>平台币流水记录</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('withdrawal.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-money-check"></i>
-                                        <p>提现记录</p>
+                                        <p>余额提现审核</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('charge.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-file-contract"></i>
-                                        <p>充值记录</p>
+                                        <p>资产充值审核</p>
                                     </a>
                                 </li>
                             </ul>
@@ -216,19 +234,19 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('project.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-cog fa-fw"></i>
                                         <p>项目列表</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('order1.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-user"></i>
                                         <p>已购项目</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link" target="content">
+                                    <a href="{{ route('interest.index') }}" class="nav-link" target="content">
                                         <i class="fa fa-blog"></i>
                                         <p>返息明细</p>
                                     </a>

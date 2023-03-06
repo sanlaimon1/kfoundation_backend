@@ -96,3 +96,5 @@ Route::resource('wallet', 'App\Http\Controllers\WalletController');
 Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_search')->name('wallet_search');
 //用户列表
 Route::resource('customer', 'App\Http\Controllers\CustomerController');
+//返息明细
+Route::resource('interest', 'App\Http\Controllers\InterestController');

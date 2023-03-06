@@ -1,10 +1,7 @@
-<?php
-    use App\models\Admin;
-?>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>站内信列表</title>
+    <title>{{ $title }}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -16,24 +13,38 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">项目管理</li>
-                <li class="breadcrumb-item active" aria-current="page">项目列表</li>
+                <li class="breadcrumb-item">用户中心</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
             </ol>
         </nav>
-        <br />
+        <h3 class="text-center text-primary">{{ $title }}</h3>
         <nav class="row">
-            <div class="col-3">
-                <label class="form-label">项目名称：</label>
-                <input type="text" name="action" id="username" class="form-control" />
+            <div class="col-2">
+                <label class="form-label">项目名称</label>
+                <input type="text" name="pid" id="pid" class="form-control" />
             </div>
 
             <div class="col-2">
-                <label class="form-label">项目分类：</label>
-                <select id="type" name="type" class="form-select">
+                <label class="form-label">用户名：</label>
+                <input type="text" name="action" id="action" class="form-control" />
+            </div>
+
+            <div class="col-2">
+                <label class="form-label">投资时间</label>
+                <input type="date" name="created_at" id="created_at" class="form-control" />
+            </div>
+
+            <div class="col-2">
+                <label class="form-label">返款时间</label>
+                <input type="date" name="date" id="date" class="form-control" />
+            </div>
+
+            <div class="col-2">
+                <label class="form-label">状态：</label>
+                <select name="status" id="status" class="form-select">
                     <option>--请选择--</option>
-                    @foreach( $types as $key=>$one_type )
-                    <option value="{{ $key }}">{{ $one_type }}</option>
-                    @endforeach
+                    <option value="0">未返款</option>
+                    <option value="1">已返款</option>
                 </select>
             </div>
 
@@ -46,49 +57,43 @@
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">项目名称</th>
-                    <th scope="col">项目分类</th>
-                    <th scope="col">项目规模</th>
-                    <th scope="col">收益率</th>
-                    <th scope="col">项目期限</th>
-                    <th scope="col">起购金额</th>
-                    <th scope="col">限购次数</th>
-                    <th scope="col">项目进度</th>
-                    <th scope="col">发布时间</th>
-                    <th scope="col" style="width:200px;">操作</th>
+                    <th scope="col">编号</th>
+                    <th scope="col">项目ID/名称</th>
+                    <th scope="col">投资人ID/账号</th>
+                    <th scope="col">预计返还金额</th>
+                    <th scope="col">预计返还时间</th>
+                    <th scope="col">实际返还数</th>
+                    <th scope="col">投资时间</th>
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($projects as $one)
+                @foreach ($records as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
-                    <td>{{ $one->project_name }}</td>
-                    <td>{{ $one->projectcate->cate_name }}</td>
-                    <td>{{ $one->project_scale }}</td>
-                    <td>{{ $one->benefit_rate }}</td>
-                    <td>{{ $one->days }}天</td>
-                    <td>{{ $one->amount }}</td>
-                    <td>{{ $one->max_times }}</td>
-                    <td>{{ $one->fake_process }}%</td>
-                    <td>{{ $one->created_at }}</td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('project.show', ['project'=>$one->id]) }}">查看</a>
-                        <a class="btn btn-warning" href="{{ route('project.edit', ['project'=>$one->id]) }}">编辑</a>
-                        <form action="{{ route('project.destroy', ['project'=>$one->id]) }}" 
-                         method="post"
-                         style="float:right;" onsubmit="javascript:return del()">
-                            {{ csrf_field() }}
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">删除</button>
-                        </form>
+                        {{ $one->project->id }}/{{ $one->project->project_name }}
                     </td>
+                    <td>
+                        {{ $one->customer->id }}/{{ $one->customer->phone }}
+                    </td>
+                    <td>
+                        {{ $one->refund_amount }}
+                    </td>
+                    <td>{{ $one->refund_time }}</td>
+                    <td>
+                        @if($one->status!=0)
+                        {{ $one->real_refund_amount }}
+                        @else
+                        未返款
+                        @endif
+                    </td>
+                    <td>{{ $one->created_at }}</td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
         <nav aria-label="page">
-              <strong>总数: {{ $projects->total() }}</strong>  <br /> {{ $projects->links() }}
+              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
         </nav>
     </div>
 
@@ -96,15 +101,6 @@
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/dist/js/adminlte.min.js?v=3.2.0"></script>
     <script>
-        function del() { 
-            var msg = "您真的确定要删除吗？\n\n请确认！"; 
-            if (confirm(msg)==true){ 
-                return true; 
-            }else{ 
-                return false; 
-            }
-        }
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -133,9 +129,7 @@
                         console.log(v);
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.username}</td>
                                 <td>${v.action}</td>
-                                <td>${v.ip}</td>
                                 <td>${v.route}</td>
                                 <td>${v.created_at}</td>
                                 <td>
