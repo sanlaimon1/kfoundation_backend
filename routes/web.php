@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +70,8 @@ Route::resource('goods', 'App\Http\Controllers\GoodsController');
 Route::resource('inbox', 'App\Http\Controllers\InboxController');
 //项目管理
 Route::resource('project', 'App\Http\Controllers\ProjectController');
+//項目搜索
+Route::post('project_search', [ProjectController::class, 'project_search'])->name('project_search');
 //角色管理列出URI
 Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
 //权限表
@@ -93,6 +96,7 @@ Route::resource('charge', 'App\Http\Controllers\AssetCheckController');
 Route::resource('withdrawal', 'App\Http\Controllers\BalanceCheckController');
 //用户钱包列表
 Route::resource('wallet', 'App\Http\Controllers\WalletController');
+Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_search')->name('wallet_search');
 //用户列表
 Route::resource('customer', 'App\Http\Controllers\CustomerController');
 //返息明细
