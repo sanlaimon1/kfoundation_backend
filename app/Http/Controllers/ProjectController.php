@@ -20,7 +20,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('enable', 1)->paginate(10);
+        $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate(10);
 
         return view('project.index', compact('projects'));
     }

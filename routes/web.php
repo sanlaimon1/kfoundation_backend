@@ -95,3 +95,5 @@ Route::resource('withdrawal', 'App\Http\Controllers\BalanceCheckController');
 Route::resource('wallet', 'App\Http\Controllers\WalletController');
 //用户列表
 Route::resource('customer', 'App\Http\Controllers\CustomerController');
+//返息明细
+Route::resource('interest', 'App\Http\Controllers\InterestController');
