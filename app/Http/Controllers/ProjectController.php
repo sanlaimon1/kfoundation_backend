@@ -120,4 +120,13 @@ class ProjectController extends Controller
 
         return redirect()->route('project.index');
     }
+
+    public function project_search(Request $request)
+    {
+        $search_projects = Project::where('enable', 1)->where('project_name','like', '%' . $request->project_name . '%')
+                                ->where('cid',$request->cate_type)
+                                ->orderBy('created_at', 'desc')
+                                ->get()->load('projectcate');
+        return response()->json($search_projects);
+    }
 }
