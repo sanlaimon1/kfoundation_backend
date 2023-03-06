@@ -45,7 +45,7 @@
             <div class="col-3">
                 <label class="form-label">钱包类型：</label>
                 <select name="payid" id="payid"  class="form-select">
-                    <option>--请选择--</option>
+                    <option value="0">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
                     @endforeach
@@ -59,7 +59,7 @@
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="wallet_search">查询</button>
             </div>
         </nav>
         <br />
@@ -97,7 +97,7 @@
                         {{ $one->origin }}
                     </td>
                     <td>
-                        <form action="{{ route('wallet.destroy', ['wallet'=>$one->id]) }}" 
+                        <form action="{{ route('wallet.destroy', ['wallet'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
@@ -107,7 +107,7 @@
                     </td>
                 </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
         </table>
         <nav aria-label="page">
               <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
@@ -123,33 +123,51 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
-            var date = $("#date").val();
+            $("#wallet_search").click(function(){
+            var fid = $("#fid").val();
+            var phone = $("#phone").val();
+            var payid = $("#payid").val();
+            var created_at = $("#created_at").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
-                "date" : date,
+                "fid": fid,
+                "phone": phone,
+                "payid" : payid,
+                "created_at" : created_at
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/wallet_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
                     console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response.search_wallet,function(i,v){
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
+                                <td>${v.customerid}</td>
+                                <td>${v.realname}</td>
+                                <td>${v.phone}</td>
+                                <td>${response.types[v.payid]}</td>
+                                <td>${v.address}</td>
                                 <td>${v.created_at}</td>
                                 <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                    <a href="${v.qrcode}" target="_blank">
+                                        <img src="${v.qrcode}" />
+                                    </a>
+                                </td>
+                                <td>
+                                    ${v.origin}
+                                </td>
+                                <td>
+                                    <form action="{{ url('/wallet/${v.id}') }}"
+                                    method="post"
+                                    style="float:right;" onsubmit="javascript:return del()">
+                                        {{ csrf_field() }}
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">删除</button>
+                                    </form>
                                 </td>
                             </tr>`;
                     })
@@ -160,12 +178,12 @@
         })
     </script>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
         }
     }
     </script>
