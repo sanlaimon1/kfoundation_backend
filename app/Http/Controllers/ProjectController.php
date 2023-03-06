@@ -42,7 +42,15 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        //项目类型
+        $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
+
+        $types = [];
+        foreach($cates as $one_cat) {
+            $types[ $one_cat->id ] = $one_cat->cate_name;
+        }
+
+        return view('project.create', compact('types'));
     }
 
     /**
@@ -58,7 +66,8 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $project = Project::find($id);
+        return view('project.show', compact('project'));
     }
 
     /**
@@ -66,7 +75,17 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $project = Project::find($id);
+
+        //项目类型
+        $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
+
+        $types = [];
+        foreach($cates as $one_cat) {
+            $types[ $one_cat->id ] = $one_cat->cate_name;
+        }
+
+        return view('project.edit', compact('projects', 'types'));
     }
 
     /**

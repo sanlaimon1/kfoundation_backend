@@ -41,6 +41,10 @@
                 <br />
                 <button class="btn btn-success" id="project_search">查询</button>
             </div>
+            <div class="col-2 offset-4">
+                <br />
+                <a href="{{route('project.create')}}" class="btn bg-primary">创建项目</a>
+            </div>
         </nav>
         <br />
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
