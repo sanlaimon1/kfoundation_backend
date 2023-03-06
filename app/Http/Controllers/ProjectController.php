@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\ProjectCate;
+use App\Models\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -22,7 +26,15 @@ class ProjectController extends Controller
     {
         $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('project.index', compact('projects'));
+        //项目类型
+        $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
+
+        $types = [];
+        foreach($cates as $one_cat) {
+            $types[ $one_cat->id ] = $one_cat->cate_name;
+        }
+
+        return view('project.index', compact('projects', 'types'));
     }
 
     /**
@@ -66,10 +78,46 @@ class ProjectController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * not to delete really ,   set enable=0
+     * and with transcation
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        $id = (int)$id;
+        $one = Project::find($id);
+        if(empty($one))
+            return '项目不存在';
+
+        DB::beginTransaction();
+        try {
+            $one->enable = 0;
+            if(!$one->save())
+                    throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 删除项目 ' . $id . ' ' . $one->project_name;
+            $newlog->ip = $request->ip();
+            $newlog->route = 'project.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+
+        return redirect()->route('project.index');
     }
 }

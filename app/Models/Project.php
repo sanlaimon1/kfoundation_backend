@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
     use HasFactory;
+
+    //关联项目分类
+    public function projectcate() {
+        
+        return $this->hasOne('App\Models\ProjectCate', 'id', 'cid');
+    }
 }
