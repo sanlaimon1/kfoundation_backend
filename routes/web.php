@@ -86,6 +86,7 @@ Route::resource('order3', 'App\Http\Controllers\Order3Controller');
 Route::resource('asset', 'App\Http\Controllers\FinancialAssetController');
 //用户余额流水账
 Route::resource('balance', 'App\Http\Controllers\FinancialBalanceController');
+Route::post('balance_search', 'App\Http\Controllers\FinancialBalanceController@balance_search')->name('balance_search');
 //用户积分流水账
 Route::resource('integration', 'App\Http\Controllers\FinancialIntegrationController');
 //平台币流水账
@@ -101,3 +102,4 @@ Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_searc
 Route::resource('customer', 'App\Http\Controllers\CustomerController');
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
+Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');
