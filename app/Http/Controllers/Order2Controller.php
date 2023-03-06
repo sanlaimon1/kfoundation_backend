@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Order2;
 class Order2Controller extends Controller
 {
     public function __construct()
@@ -12,13 +12,14 @@ class Order2Controller extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $order2 = Order2::orderBy('created_at','desc')->paginate(20);
+        return view('order2.index',compact('order2'));
     }
 
     /**
