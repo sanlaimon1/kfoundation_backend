@@ -26,7 +26,7 @@
 
             <div class="col-2">
                 <label class="form-label">用户名：</label>
-                <input type="text" name="action" id="action" class="form-control" />
+                <input type="text" name="customer" id="customer" class="form-control" />
             </div>
 
             <div class="col-2">
@@ -50,7 +50,7 @@
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="interest_search">查询</button>
             </div>
         </nav>
         <br />
@@ -107,34 +107,44 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
+            $("#interest_search").click(function(){
+            var pid = $("#pid").val();
+            var customer = $("#customer").val();
+            var created_at = $("#created_at").val();
             var date = $("#date").val();
+            var status = $('#status').val();
             var data = {
-                "adminid": adminid,
-                "action": action,
-                "date" : date,
+                "pid": pid,
+                "customer": customer,
+                "created_at" : created_at,
+                "date": date,
+                "status": status,
             };
 
+            console.log(data)
+
             $.ajax({
-                url : "/log_search",
+                url : "/interest_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response.interest_search,function(i,v){
+                        if(v.status != 0)
+                        {
+                            var real_refund_amount = v.real_refund_amount;
+                        } else {
+                            var real_refund_amount = '未返款';
+                        }
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
+                                <td>${v.pid} / ${v.pname}</td>
+                                <td>${v.cid} / ${v.cphone}</td>
+                                <td>${v.refund_amount}</td>
+                                <td>${v.refund_time}</td>
+                                <td>${real_refund_amount}</td>
                                 <td>${v.created_at}</td>
-                                <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
-                                </td>
                             </tr>`;
                     })
                     $("#search_data").html(html);
