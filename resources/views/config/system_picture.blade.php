@@ -36,71 +36,12 @@
 
         $(function(){
 
-            function webpConvert2($file, $compression_quality = 100)
-            {
-                console.log("Reach" , file_exists($file));
-                // // check if file exists
-                // if (!file_exists($file)) {
-                //     return false;
-                // }
-                // $file_type = exif_imagetype($file);
-                // $output_file =  $file . '.webp';
-                
-                // if (file_exists($output_file)) {
-                //     return $output_file;
-                // }
-                // if (function_exists('imagewebp')) {
-                //     switch ($file_type) {
-                //         case '1': //IMAGETYPE_GIF
-                //             $image = imagecreatefromgif($file);
-                //             break;
-                //         case '2': //IMAGETYPE_JPEG
-                //             $image = imagecreatefromjpeg($file);
-                //             break;
-                //         case '3': //IMAGETYPE_PNG
-                //                 $image = imagecreatefrompng($file);
-                //                 imagepalettetotruecolor($image);
-                //                 imagealphablending($image, true);
-                //                 imagesavealpha($image, true);
-                //                 break;
-                //         case '6': // IMAGETYPE_BMP
-                //             $image = imagecreatefrombmp($file);
-                //             break;
-                //         case '15': //IMAGETYPE_Webp
-                //         return false;
-                //             break;
-                //         case '16': //IMAGETYPE_XBM
-                //             $image = imagecreatefromxbm($file);
-                //             break;
-                //         default:
-                //             return false;
-                //     }
-                //     // Save the image
-                //     $result = imagewebp($image, $output_file, $compression_quality);
-                //     if (false === $result) {
-                //         return false;
-                //     }
-                //     // Free up memory
-                //     imagedestroy($image);
-                //     return $output_file;
-                // } else if (class_exists('Imagick')) {
-                //     $image = new Imagick();
-                //     $image->readImage($file);
-                //     if ($file_type === "3") {
-                //         $image->setImageFormat('webp');
-                //         $image->setImageCompressionQuality($compression_quality);
-                //         $image->setOption('webp:lossless', 'true');
-                //     }
-                //     $image->writeImage($output_file);
-                //     return $output_file;
-                // }
-                // return false;
-            }
-
             const fileSelect = document.getElementById("fileSelect");
             const fileElem   = document.getElementById("fileElem");
             const fileList   = document.getElementById("fileList");
             const imgList    = document.getElementById("imgList");
+            const list = document.createElement("ul");
+            const img_arr = [];
             fileSelect.addEventListener("click", (e) => {
 
                 if(fileElem){
@@ -111,28 +52,30 @@
             fileElem.addEventListener("change", handleFiles);
 
             function handleFiles(){
+                // const lis = fileList.attr(src);
+                // console.log(lis);
                 let temp=imgList.children.length;
-                if(temp+this.files.length<=5){
+                // if(temp+this.files.length<=3){
                     var image = document.getElementById('showImg');
-                    // if(image == null){
-                        fileList.innerHTML = "";
-                        const list = document.createElement("ul");
-                        fileList.appendChild(list);
-                        for(let i=0;i<this.files.length;i++){
-                            var li = document.createElement("li");
-                            list.appendChild(li);
-                            const img = document.createElement("img");
-                            img.src = URL.createObjectURL(this.files[i]);
-                            img.height = 120;
-                            img.width = 120;
-                            img.onload = () => {
-                                URL.revokeObjectURL(img.src);
-                            }
-                            li.appendChild(img);
+                    fileList.innerHTML = "";
+                    fileList.appendChild(list);
+                    for(let i=0;i<this.files.length;i++){
+                        var li = document.createElement("li");
+                        list.appendChild(li);
+                        
+                        const img = document.createElement("img");
+                        img.src = URL.createObjectURL(this.files[i]);
+                        img.height = 120;
+                        img.width = 120;
+                        img.onload = () => {
+                            URL.revokeObjectURL(img.src);
                         }
-                }else{
-                    alert('You can upload only 5 images');
-                }
+                        li.appendChild(img);
+                        img_arr.push(this.files[i].name);
+                    }
+                // }else{
+                //     alert('You can upload only 5 images');
+                // }
                 $('#upload_submit_btn').removeClass('disabled');
             }
 
@@ -146,15 +89,22 @@
                 var myFile = $('#fileElem').prop('files');
             }
 
-            $('#upload_submit_btn').click(function(e){
-                // var index = $('#fileElem').files; // to get the index, this index is 0 based
-                var index = document.getElementById('fileElem');
-                for(var i = 0; i < index.files.length; i++){
-                    console.log(index.files[i].name);
-                    const image_result = webpConvert2(index.files[i].name , 100)
-                    console.log("Reach image result", image_result);
-                }
-
+            $("#save_upload_file").click(function(){
+                // const data = JSON.stringify(img_arr);
+                img_arr.forEach(img => {
+                    $.ajax({
+                        url : "/save_image",
+                        dataType : "json",
+                        type: "POST",
+                        data: {'data': img},
+                        success: function(response){
+                            console.log(response);
+                            if(response){
+                                location.reload();
+                            }
+                        }
+                    });
+                });
             })
         });
     </script>
@@ -187,7 +137,8 @@
             </ul>
             </div>
         </div>
-        <button class="btn btn-success mt-4 disabled" id="upload_submit_btn" type="button">保存配置</button>
+        <button class="btn btn-success mt-4" type="" id="save_upload_file">保存配置</button>
+        
     </div>
     
 </body>
