@@ -84,13 +84,16 @@ Route::resource('order2', 'App\Http\Controllers\Order2Controller');
 Route::resource('order3', 'App\Http\Controllers\Order3Controller');
 //用户资产流水账
 Route::resource('asset', 'App\Http\Controllers\FinancialAssetController');
+Route::post('asset_search', 'App\Http\Controllers\FinancialAssetController@asset_search')->name('asset_search');
 //用户余额流水账
 Route::resource('balance', 'App\Http\Controllers\FinancialBalanceController');
 Route::post('balance_search', 'App\Http\Controllers\FinancialBalanceController@balance_search')->name('balance_search');
 //用户积分流水账
 Route::resource('integration', 'App\Http\Controllers\FinancialIntegrationController');
+Route::post('integration_search', 'App\Http\Controllers\FinancialIntegrationController@integration_search')->name('integration_search');
 //平台币流水账
 Route::resource('platformcoin', 'App\Http\Controllers\FinancialPlatformCoinController');
+Route::post('platformcoin_search', 'App\Http\Controllers\FinancialPlatformCoinController@platformcoin_search')->name('platformcoin_search');
 //资产充值审核
 Route::resource('charge', 'App\Http\Controllers\AssetCheckController');
 //余额提现审核
