@@ -24,17 +24,22 @@
         <nav class="row">
             <div class="col-3">
                 <label class="form-label">项目名称：</label>
-                <input type="text" name="action" id="username" class="form-control" />
+                <input type="text" name="project_name" id="project_name" class="form-control" />
             </div>
 
             <div class="col-2">
-                <label class="form-label">展示类型：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <label class="form-label">项目分类：</label>
+                <select id="cate_type" name="type" class="form-select">
+                    <option>--请选择--</option>
+                    @foreach( $types as $key=>$one_type )
+                    <option value="{{ $key }}">{{ $one_type }}</option>
+                    @endforeach
+                </select>
             </div>
-
+            
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="project_search">查询</button>
             </div>
         </nav>
         <br />
@@ -43,6 +48,13 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">项目名称</th>
+                    <th scope="col">项目分类</th>
+                    <th scope="col">项目规模</th>
+                    <th scope="col">收益率</th>
+                    <th scope="col">项目期限</th>
+                    <th scope="col">起购金额</th>
+                    <th scope="col">限购次数</th>
+                    <th scope="col">项目进度</th>
                     <th scope="col">发布时间</th>
                     <th scope="col" style="width:200px;">操作</th>
                 </tr>
@@ -52,6 +64,13 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->project_name }}</td>
+                    <td>{{ $one->projectcate->cate_name }}</td>
+                    <td>{{ $one->project_scale }}</td>
+                    <td>{{ $one->benefit_rate }}</td>
+                    <td>{{ $one->days }}天</td>
+                    <td>{{ $one->amount }}</td>
+                    <td>{{ $one->max_times }}</td>
+                    <td>{{ $one->fake_process }}%</td>
                     <td>{{ $one->created_at }}</td>
                     <td>
                         <a class="btn btn-primary" href="{{ route('project.show', ['project'=>$one->id]) }}">查看</a>
@@ -92,35 +111,43 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
-            var date = $("#date").val();
+            $("#project_search").click(function(){
+            var project_name = $("#project_name").val();
+            var cate_type = $("#cate_type").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
-                "date" : date,
+                "project_name": project_name,
+                "cate_type": cate_type,
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/project_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response,function(i,v){
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.username}</td>
-                                <td>${v.action}</td>
-                                <td>${v.ip}</td>
-                                <td>${v.route}</td>
-                                <td>${v.created_at}</td>
+                                <td>${v.project_name}</td>
+                                <td>${v.projectcate.cate_name}</td>
+                                <td>${v.project_scale }</td>
+                                <td>${v.benefit_rate }</td>
+                                <td>${v.days }天</td>
+                                <td>${ v.amount }</td>
+                                <td>${ v.max_times }</td>
+                                <td>${v.fake_process }%</td>
+                                <td>${ v.created_at }</td>
                                 <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                    <a class="btn btn-primary" href="/project/${v.id}">查看</a>
+                                    <a class="btn btn-warning" href="/project/edit/${v.id}">编辑</a>
+                                    <form action="{{url('/project/${v.id}')}}" 
+                                    method="post"
+                                    style="float:right;" onsubmit="javascript:return del()">
+                                        {{ csrf_field() }}
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">删除</button>
+                                    </form>
                                 </td>
                             </tr>`;
                     })
