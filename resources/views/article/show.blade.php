@@ -41,7 +41,10 @@
             <li class="list-group-item"><strong>标题:</strong> {{$article->title}} </li>
             <li class="list-group-item"><strong>分类:</strong> {{$article->category->cate_name}} </li>
             <li class="list-group-item"><strong>管理员id:</strong> {{$article->admin->username}} </li>
-            <li class="list-group-item"><strong>内容:</strong> <br>{!! $article->content !!} </li>
+            @php
+                $content = html_entity_decode($article->content)
+            @endphp
+            <li class="list-group-item"><strong>内容:</strong> <br>{!! $content !!}</li>
         </ul>
 
     </div>

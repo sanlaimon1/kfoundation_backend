@@ -156,32 +156,30 @@
                         var type = response.types[v.financial_type];
                         if(v.direction == 1){
                             var amount = `<span style='color:green;'> +${v.amount} </span>`
-                        } else if(direction == -1) {
-                            var amount = `<span style='color:red;'> +${v.amount} </span>`
+                        } else if(v.direction == -1) {
+                            var amount = `<span style='color:red;'> -${v.amount} </span>`
                         } else {
                             var amount = '方向错误'
                         };
-                        if(financial_type == 0){
-                            total_amount += parseFloat(v.amount);
-                        }
-                        if(v.financial_type == 2){
-                            var withdrawal_id = JSON.parse(v.extra, true)['withdrawal_id']
-                            var url = `{{ route('withdrawal.show',[ 'withdrawal'=> ':withdrawal_id' ]) }}`
-                            url = url.replace(':withdrawal_id', withdrawal_id)
-                            var withdrawal_link = `<a href="${url}">申请记录编号 ${withdrawal_id}</a>`
+                        total_amount += parseFloat(v.amount);
+                        if(v.financial_type == 3){
+                            var charge_id = JSON.parse(v.extra, true)['charge_id']
+                            var url = `{{ route('charge.show',[ 'charge'=> ':charge_id' ]) }}`
+                            url = url.replace(':charge_id', charge_id)
+                            var charge_link = `<a href="${url}">申请记录编号 ${charge_id}</a>`
                         } else {
-                            withdrawal_link = ''
+                            charge_link = ''
                         }
                     html +=`<tr>
                                 <td>${v.id}</td>
                                 <td>${v.phone}</td>
                                 <td>${type}</td>
                                 <td>${v.balance}</td>
-                                <td>${v.amount}</td>
+                                <td>${amount}</td>
                                 <td>${v.after_balance}</td>
                                 <td>${v.created_at}</td>
                                 <td>${v.details}
-                                    ${withdrawal_link}
+                                    ${charge_link}
                                 </td>
                             </tr>`;
                     })
