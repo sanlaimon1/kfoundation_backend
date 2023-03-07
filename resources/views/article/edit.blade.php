@@ -130,19 +130,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3">
-                        <label for="adminid" class="form-label">管理员id</label>
-                        @error('adminid')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <select id="adminid" name="adminid"  class="form-select" >
-                            @foreach( $admins as $admin )
-                            <option value="{{ $admin->id }}"  @if($admin->id == $article->adminid) selected @endif> {{ $admin->username }} </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
             </section>
 
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
