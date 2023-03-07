@@ -41,12 +41,12 @@ class RoleController extends Controller
     public function index()
     {
         // $path_name = "/" . $request->path();
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        // $role_id = Auth::user()->rid;        
+        // $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 1) ){
-            return "您没有权限访问这个路径";
-        }
+        // if( !($permission->auth2 & 1) ){
+        //     return "您没有权限访问这个路径";
+        // }
 
 
         $roles = Role::where('status', 1)->orderBy('sort', 'asc')->paginate(10);
@@ -59,12 +59,11 @@ class RoleController extends Controller
      */
     public function create()
     {
-
-        // $path_name = "/" . $request->path();
+        
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 2) ){
+        if( !(($permission->auth2 ?? 0) & 2) ){
             return "您没有权限访问这个路径";
         }
 
@@ -83,7 +82,7 @@ class RoleController extends Controller
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 4) ){
+        if( !(($permission->auth2 ?? 0) & 4) ){
             return "您没有权限访问这个路径";
         }
 
@@ -168,7 +167,7 @@ class RoleController extends Controller
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 16) ){
+        if( !(($permission->auth2 ?? 0) & 16) ){
             return "您没有权限访问这个路径";
         }
 
@@ -185,7 +184,7 @@ class RoleController extends Controller
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 32) ){
+        if( !(($permission->auth2 ?? 0) & 32) ){
             return "您没有权限访问这个路径";
         }
 
@@ -248,7 +247,7 @@ class RoleController extends Controller
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !($permission->auth2 & 64) ){
+        if( !(($permission->auth2 ?? 0) & 64) ){
             return "您没有权限访问这个路径";
         }
 
