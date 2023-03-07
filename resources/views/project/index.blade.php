@@ -144,7 +144,7 @@
                                 <td>${ v.created_at }</td>
                                 <td>
                                     <a class="btn btn-primary" href="/project/${v.id}">查看</a>
-                                    <a class="btn btn-warning" href="/project/edit/${v.id}">编辑</a>
+                                    <a class="btn btn-warning" href="/project/${v.id}/edit">编辑</a>
                                     <form action="{{url('/project/${v.id}')}}" 
                                     method="post"
                                     style="float:right;" onsubmit="javascript:return del()">

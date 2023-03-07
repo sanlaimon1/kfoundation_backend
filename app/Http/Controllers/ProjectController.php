@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Level;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\ProjectCate;
@@ -50,7 +51,8 @@ class ProjectController extends Controller
             $types[ $one_cat->id ] = $one_cat->cate_name;
         }
 
-        return view('project.create', compact('types'));
+        $levels = Level::all();
+        return view('project.create', compact('types','levels'));
     }
 
     /**
@@ -58,7 +60,87 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "project_name" => "required",
+            "cate_name" => "required",
+            "guarantee" => "required",
+            "risk" => "required",
+            "usage" => "required",
+            "frontend" => "required",
+            "return_mode" => "required",
+            "amount" => "required",
+            "is_given" => "required",
+            "team_rate" => "required",
+            "like_rate" => "required",
+            "benefit_rate" => "required",
+            "fake_process" => "required",
+            "days" => "required",
+            "min_invest" => "required",
+            "max_invest" => "required",
+            "max_time" => "required",
+            "desc" => "required",
+            "is_homepage" => "required",
+            "is_recommend" => "required",
+            "level_id" => "required",
+            "litpic" => "required",
+            "detail" => "required",
+        ]);
+        DB::beginTransaction();
+        try {
+
+            $project = new Project();
+            $project->project_name  = $request->project_name;
+            $project->cid  = $request->cate_name;
+            $project->guarantee  = $request->guarantee;
+            $project->risk  = $request->risk;
+            $project->usage  = $request->usage;
+            $project->frontend  = $request->frontend;
+            $project->return_mode  = $request->return_mode;
+            $project->amount  = $request->amount;
+            $project->is_given  = $request->is_given;
+            $project->team_rate  = $request->team_rate;
+            $project->like_rate = $request->like_rate;
+            $project->benefit_rate  = $request->benefit_rate;
+            $project->fake_process  = $request->fake_process;
+            $project->days  = $request->days;
+            $project->min_invest  = $request->min_invest;
+            $project->max_invest  = $request->max_invest;
+            $project->max_times  = $request->max_time;
+            $project->desc  = $request->desc;
+            $project->is_homepage  = $request->is_homepage;
+            $project->is_recommend  = $request->is_recommend;
+            $project->level_id  = $request->level_id;
+            $project->litpic = $request->litpic;
+            $project->details = $request->detail;
+            $project->save();
+            if(!$project->save())
+            throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存储条目 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'project.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('project.index');
+
     }
 
     /**
