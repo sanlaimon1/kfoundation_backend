@@ -52,7 +52,9 @@ class ProjectController extends Controller
         }
 
         $levels = Level::all();
-        return view('project.create', compact('types','levels'));
+        $return_modes = config('types.return_mode');
+        
+        return view('project.create', compact('types','levels','return_modes'));
     }
 
     /**
@@ -85,6 +87,11 @@ class ProjectController extends Controller
             "litpic" => "required",
             "detail" => "required",
         ]);
+        if($request->hasFile('litpic')){
+            $litpic = time().'.'.$request->litpic->extension();
+            $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
+            $litpic = '/images/project_imgs/'.$litpic;
+        }
         DB::beginTransaction();
         try {
 
@@ -110,7 +117,7 @@ class ProjectController extends Controller
             $project->is_homepage  = $request->is_homepage;
             $project->is_recommend  = $request->is_recommend;
             $project->level_id  = $request->level_id;
-            $project->litpic = $request->litpic;
+            $project->litpic = $litpic;
             $project->details = $request->detail;
             $project->save();
             if(!$project->save())
@@ -157,6 +164,7 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
+        
         $project = Project::find($id);
 
         //项目类型
@@ -166,8 +174,8 @@ class ProjectController extends Controller
         foreach($cates as $one_cat) {
             $types[ $one_cat->id ] = $one_cat->cate_name;
         }
-
-        return view('project.edit', compact('projects', 'types'));
+        $levels = Level::all();
+        return view('project.edit', compact('project', 'types','levels'));
     }
 
     /**
