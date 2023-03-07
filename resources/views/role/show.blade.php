@@ -93,32 +93,37 @@
                         <span class="sub_name">{{ $sub_name }}</span>
                         <span class="sub_path">{{ $sub_path }}</span>
                         <span class="sub_permission">
+
+                            @php
+                                $permission = App\Models\Permission::where("path_name" , "=", $sub_path)->where("role_id", "=", Auth::user()->rid)->first();
+                            @endphp                            
+                            
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}index" name="index" value="1">
+                                <input type="checkbox" id="{{$sub_path}}index" name="index" value="1" @if( ($permission['auth2']??0) & 1 ) checked @endif>
                                 <label for="{{$sub_path}}index">列出</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}create" name="create" value="2">
+                                <input type="checkbox" id="{{$sub_path}}create" name="create" value="2" @if( ($permission['auth2']??0) & 2 ) checked @endif>
                                 <label for="{{$sub_path}}create">创建页面</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}store" name="store" value="4">
+                                <input type="checkbox" id="{{$sub_path}}store" name="store" value="4" @if( ($permission['auth2']??0) & 4 ) checked @endif>
                                 <label for="{{$sub_path}}store">创建逻辑</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}show" name="show" value="8">
+                                <input type="checkbox" id="{{$sub_path}}show" name="show" value="8" @if( ($permission['auth2']??0) & 8 ) checked @endif>
                                 <label for="{{$sub_path}}show">显示</label>
                             </div>
                             <div class="col-2">
-                                <input type="checkbox" id="{{$sub_path}}edit" name="edit" value="16">
+                                <input type="checkbox" id="{{$sub_path}}edit" name="edit" value="16" @if( ($permission['auth2']??0) & 16 ) checked @endif>
                                 <label for="{{$sub_path}}edit">编辑页面</label>
                             </div>
                             <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}update" name="update" value="32">
+                                <input type="checkbox" id="{{$sub_path}}update" name="update" value="32" @if( ($permission['auth2']??0) & 32 ) checked @endif>
                                 <label for="{{$sub_path}}update">编辑逻辑</label>
                             </div>
                             <div class="col-3">
-                                <input type="checkbox" id="{{$sub_path}}destory" name="destory" value="64">
+                                <input type="checkbox" id="{{$sub_path}}destory" name="destory" value="64" @if( ($permission['auth2']??0) & 64 ) checked @endif>
                                 <label for="{{$sub_path}}destory">删除</label>
                             </div>
                             <div class="col-3">
