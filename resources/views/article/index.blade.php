@@ -51,9 +51,9 @@
                     <td>{{ $article->category->cate_name }}</td>
                     <td>{{ $article->admin->username }}</td>
                     <td>
-                        <a href="{{ route('article.edit', ['article'=>$article->id]) }}" class="btn btn-warning">编辑</a>
+                        <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-primary">查看</a>
                         |
-                        <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-info">細節</a>
+                        <a href="{{ route('article.edit', ['article'=>$article->id]) }}" class="btn btn-warning">编辑</a>
                         |
                         <form action="{{ route('article.destroy', ['article'=>$article->id]) }}" 
                          method="post"
