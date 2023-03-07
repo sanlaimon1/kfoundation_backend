@@ -24,18 +24,18 @@
         <nav class="row">
             <div class="col-3">
                 <label class="form-label">财务编号：</label>
-                <input type="text" name="id" id="action" class="form-control" />
+                <input type="text" name="platformcoin_id" id="platformcoin_id" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">用户名：</label>
-                <input type="text" name="action" id="action" class="form-control" />
+                <input type="text" name="customer" id="customer" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">财务类型：</label>
                 <select name="financial_type" id="financial_type"  class="form-select">
-                    <option>--请选择--</option>
+                    <option value="0">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
                     @endforeach
@@ -49,7 +49,7 @@
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="platformcoin_search">查询</button>
             </div>
         </nav>
         <br />
@@ -101,7 +101,7 @@
                     <td><strong>财务类型</strong></td>
                     <td>&nbsp;</td>
                     <td><strong>合计</strong></td>
-                    <td>&nbsp;</td>
+                    <td id="total_amount">&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -123,36 +123,60 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
+            $("#platformcoin_search").click(function(){
+            var platformcoin_id = $("#platformcoin_id").val();
+            var customer = $("#customer").val();
+            var financial_type = $("#financial_type").val();
             var date = $("#date").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
+                "platformcoin_id": platformcoin_id,
+                "customer": customer,
+                "financial_type": financial_type,
                 "date" : date,
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/platformcoin_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    var total_amount = 0;
+                    $.each(response.platformcoin_search ,function(i,v){
+                        var type = response.types[v.financial_type];
+                        if(v.direction == 1){
+                            var amount = `<span style='color:green;'> +${v.amount} </span>`
+                        } else if(v.direction == -1) {
+                            var amount = `<span style='color:red;'> -${v.amount} </span>`
+                        } else {
+                            var amount = '方向错误'
+                        };
+
+                        total_amount += parseFloat(v.amount);
+                        
+                        if(v.financial_type == 2){
+                            var withdrawal_id = JSON.parse(v.extra, true)['withdrawal_id']
+                            var url = `{{ route('withdrawal.show',[ 'withdrawal'=> ':withdrawal_id' ]) }}`
+                            url = url.replace(':withdrawal_id', withdrawal_id)
+                            var withdrawal_link = `<a href="${url}">申请记录编号 ${withdrawal_id}</a>`
+                        } else {
+                            withdrawal_link = ''
+                        }
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
+                                <td>${v.phone}</td>
+                                <td>${type}</td>
+                                <td>${v.balance}</td>
+                                <td>${amount}</td>
+                                <td>${v.after_balance}</td>
                                 <td>${v.created_at}</td>
-                                <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                <td>${v.details}
+                                    ${withdrawal_link}
                                 </td>
                             </tr>`;
                     })
+                    $('#total_amount').html(total_amount);
                     $("#search_data").html(html);
                 }
             });

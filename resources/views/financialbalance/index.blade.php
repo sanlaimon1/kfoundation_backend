@@ -141,8 +141,6 @@
                 "date" : date,
             };
 
-            console.log(financial_type)
-
             $.ajax({
                 url : "/balance_search",
                 dataType : "json",
@@ -154,14 +152,14 @@
                     $.each(response.balance_search,function(i,v){
                         if(v.direction == 1){
                             var amount = `<span style='color:green;'> +${v.amount} </span>`
-                        } else if(direction == -1) {
-                            var amount = `<span style='color:red;'> +${v.amount} </span>`
+                        } else if(v.direction == -1) {
+                            var amount = `<span style='color:red;'> -${v.amount} </span>`
                         } else {
                             var amount = '方向错误'
                         };
-                        if(financial_type == 0){
-                            total_amount += parseFloat(v.amount);
-                        }
+
+                        total_amount += parseFloat(v.amount);
+                        
                         var type = response.types[v.financial_type];
                         if(v.financial_type == 2){
                             var withdrawal_id = JSON.parse(v.extra, true)['withdrawal_id']
