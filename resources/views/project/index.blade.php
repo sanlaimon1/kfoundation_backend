@@ -43,7 +43,7 @@
             </div>
             <div class="col-2 offset-4">
                 <br />
-                <a href="{{route('project.create')}}" class="btn bg-primary">创建项目</a>
+                <a href="{{route('project.create')}}" class="btn btn-primary">创建项目</a>
             </div>
         </nav>
         <br />

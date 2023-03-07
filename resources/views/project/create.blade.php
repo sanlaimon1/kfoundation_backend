@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 </head>
 
 <body>
@@ -95,7 +98,7 @@
                         @enderror
                         <select id="return_mode" name="return_mode"  class="form-select" >
                             @foreach( $return_modes as $key=>$return_mode)
-                            <option value="{{ $key }}" > {{ $return_mode }} </option>
+                            <option value="{{ $key }}" <?=($key==2) ? 'selected' : '' ?>> {{ $return_mode }} </option>
                             @endforeach
                         </select>
                     </div>
@@ -114,7 +117,10 @@
                         @error('is_given')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="is_given" name="is_given" placeholder="" >
+                        <select id="is_given" name="is_given"  class="form-select" >
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                        </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="team_rate" class="form-label">团购收益率</label>
@@ -206,7 +212,10 @@
                         @error('is_homepage')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="is_homepage" name="is_homepage" placeholder="" >
+                        <select id="is_homepage" name="is_homepage"  class="form-select" >
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
                     </div>
                 </div>
 
@@ -216,7 +225,10 @@
                         @error('is_recommend')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="is_recommend" name="is_recommend" placeholder="" >
+                        <select id="is_recommend" name="is_recommend"  class="form-select" >
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="level_id" class="form-label">会员等级</label>
@@ -233,14 +245,14 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="litpic" class="form-label">项目封面图片</label>
                         @error('litpic')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="file" class="form-control" id="litpic" name="litpic" placeholder="" >
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="detail" class="form-label">项目详情</label>
                         @error('detail')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -258,6 +270,10 @@
     </div>
     @include('loading')
     @include('modal')
-
+    <script>
+        $(document).ready(function() {
+            $('#detail').summernote();
+        });
+    </script>
 </body>
 </html>
