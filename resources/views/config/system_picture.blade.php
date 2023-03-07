@@ -36,12 +36,46 @@
 
         $(function(){
 
+            $(".close").click(function(){
+                var del_img = event.target.getAttribute('data-src');
+                
+                $.ajax({
+                    url : "/delete_image",
+                    dataType : "json",
+                    type: "POST",
+                    data: {'data': del_img},
+                    success: function(response){
+                        console.log("Reach",response);
+                        if(response == 'success'){
+                            location.reload();
+                            // event.target.parentElement.remove();
+                            // let imgElement_src=event.target.getAttribute('data-src');
+                        }
+                    }
+                });
+            })
+
+            function removeImg(){
+                event.target.parentElement.remove();
+                let imgElement_src=event.target.getAttribute('data-src');
+            }
+            
+            function removePreviewImg(j){
+                event.target.parentElement.remove();
+                var img_array = [];
+                var myFile = $('#fileElem').prop('files');
+
+                img_arr.splice(j);
+                arr_len = arr_len - 1;
+            }
+
             const fileSelect = document.getElementById("fileSelect");
             const fileElem   = document.getElementById("fileElem");
             const fileList   = document.getElementById("fileList");
             const imgList    = document.getElementById("imgList");
             const list = document.createElement("ul");
             const img_arr = [];
+            let arr_len = 0;
             fileSelect.addEventListener("click", (e) => {
 
                 if(fileElem){
@@ -52,10 +86,11 @@
             fileElem.addEventListener("change", handleFiles);
 
             function handleFiles(){
+                arr_len = arr_len + (this.files.length);
+                var file_count = document.getElementById('file_count').value
                 // const lis = fileList.attr(src);
-                // console.log(lis);
                 let temp=imgList.children.length;
-                // if(temp+this.files.length<=3){
+                if(file_count < 3){
                     var image = document.getElementById('showImg');
                     fileList.innerHTML = "";
                     fileList.appendChild(list);
@@ -71,41 +106,41 @@
                             URL.revokeObjectURL(img.src);
                         }
                         li.appendChild(img);
+
+                        const cross = document.createElement("a");
+                        cross.innerHTML = `x`;
+                        li.appendChild(cross);
+                        cross.addEventListener("click",function(){
+                                removePreviewImg(i);
+                        });
+
                         img_arr.push(this.files[i].name);
                     }
-                // }else{
-                //     alert('You can upload only 5 images');
-                // }
-                $('#upload_submit_btn').removeClass('disabled');
+                }else{
+                    alert('You can upload only 3 images');
+                    $('#save_upload_file').addClass('disabled');
+                    arr_len = arr_len - (this.files.length);
+                }
+                $('#save_upload_file').removeClass('disabled');
             }
 
-            function removeImg(){
-                event.target.parentElement.remove();
-                let imgElement_src=event.target.getAttribute('data-src');
-            }
-            function removePreviewImg(j){
-                event.target.parentElement.remove();
-                var img_array = [];
-                var myFile = $('#fileElem').prop('files');
-            }
-
-            $("#save_upload_file").click(function(){
-                // const data = JSON.stringify(img_arr);
-                img_arr.forEach(img => {
-                    $.ajax({
-                        url : "/save_image",
-                        dataType : "json",
-                        type: "POST",
-                        data: {'data': img},
-                        success: function(response){
-                            console.log(response);
-                            if(response){
-                                location.reload();
-                            }
-                        }
-                    });
-                });
-            })
+            // $("#save_upload_file").click(function(){
+            //     // const data = JSON.stringify(img_arr);
+            //     img_arr.forEach(img => {
+            //         $.ajax({
+            //             url : "/save_image",
+            //             dataType : "json",
+            //             type: "POST",
+            //             data: {'data': img},
+            //             success: function(response){
+            //                 console.log(response);
+            //                 if(response){
+            //                     location.reload();
+            //                 }
+            //             }
+            //         });
+            //     });
+            // })
         });
     </script>
 
@@ -125,20 +160,33 @@
         </nav>
         
         <a href="" class="btn btn-info my-3" id="fileSelect">多图片上传</a>
-        <input type="file" id="fileElem" class="fileElem" multiple accept="images/*" name="upload_new_file[]"  style="display: none"  />
-        <div class="card mt-3" style="height:150">
-            <p class="mx-2 mt-2">预览图：</p>
-            <div id="fileList" class="previewImg py-2" >
-            <ul id="imgList">
-                <li id="li">
-                    <img src="#" style="height: 120px; width: 120px;" id="showImg"/>
-                    <a class="close" data-src="#" onclick="removeImg()" id="delete" >x</a>
-                </li>
-            </ul>
+        <form action="{{ route('save_image') }}" method="post" enctype="multipart/form-data">
+        @csrf
+            <input type="file" id="fileElem" class="fileElem" multiple accept="images/*" name="upload_new_file"  style="display: none"  />
+            <div class="card mt-3" style="height:150">
+                <p class="mx-2 mt-2">预览图：</p>
+                <div id="fileList" class="previewImg py-2" >
+                    <ul id="imgList">
+                        <li id="li">
+                            <img src="#" style="height: 120px; width: 120px;" id="showImg"/>
+                            <a class="close" data-src="#" onclick="removeImg()" id="delete" >x</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="previewImg py-2" >
+                    <input type="hidden" value="{{count($get_images)}}" id="file_count">
+                    <ul id="imgList">
+                        @foreach($get_images as $get_image)
+                        <li id="li">
+                            <img src="{{ asset('/images/webpimg/'.$get_image->getFilename()) }}" style="height: 120px; width: 120px;"/>
+                            <a class="close" data-src="{{ asset('/images/webpimg/'.$get_image->getFilename()) }}">x</a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
-        </div>
-        <button class="btn btn-success mt-4" type="" id="save_upload_file">保存配置</button>
-        
+            <button class="btn btn-success mt-4" type="submit" id="save_upload_file">保存配置</button>
+        </form>
     </div>
     
 </body>

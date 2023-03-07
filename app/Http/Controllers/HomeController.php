@@ -61,103 +61,62 @@ class HomeController extends Controller
 
    public function slide()
    {
-        return view('config.system_picture');
+        $get_files = public_path('images/webpimg/');
+        // $get_images = glob($get_files . "*.webp");
+        $get_images = \File::allFiles($get_files);
+
+        return view('config.system_picture', compact('get_images'));
    }
 
    public function save_image(Request $request)
    {
-        if($request->data){
-            $name = time().'.'.$request->data;
-
-            $path = Storage::path($name);
-
-            // 指定原始图片路径和保存的webp图片路径
-            $source_image = $path;
-            $webp_image = '/images/image.webp';
-
-            // 读取原始图片
-            $image = imagecreatefromjpg($source_image);
-
-            // 转换为WebP格式并保存
-            imagewebp($image, $webp_image);
-
-            // 释放内存
-            imagedestroy($image);
-
-            // $result = $this->webpConvert2($name, 80);
-
-            dd($result);
+        if($request->hasFile('upload_new_file')){
+            $get_upload_new_file = time().'.'.$request->upload_new_file->extension();
+            $request->upload_new_file->move(public_path('/images/'),$get_upload_new_file);
+            $upload_new_file_value = '/images/'.$get_upload_new_file;
         }
-        // return response()->json("success");
+
+        $ext = pathinfo($upload_new_file_value, PATHINFO_EXTENSION);
+
+        if($ext == "jpg"){
+            $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
+        }else if($ext == "png"){
+            $get_image = imagecreatefrompng(public_path($upload_new_file_value));
+        }else if($ext == "jpeg"){
+            $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
+        }
+
+        // Create a blank WebP image with the same dimensions
+        $webp_image = imagecreatetruecolor(imagesx($get_image), imagesy($get_image));
+
+        // Convert the PNG image to WebP
+        imagepalettetotruecolor($webp_image);
+        imagealphablending($webp_image, true);
+        imagesavealpha($webp_image, true);
+        $quality = 80; // Quality of the WebP image (0-100)
+        $get_webp_name = time().'.webp';
+        $webp_path = 'images/webpimg/'.$get_webp_name;
+        imagewebp($get_image, $webp_path, $quality);
+
+        // Free up memory
+        imagedestroy($get_image);
+        imagedestroy($webp_image);
+
+        $get_files = public_path('/images/webpimg/');
+        $get_images = glob($get_files . "*.webp");
+
+        return redirect()->route('slide');
    }
 
-    // function webpConvert2($file, $compression_quality = 80)
-    // {
-    //     // // check if file exists
-    //     // if (!file_exists($file)) {
-    //     //     return false;
-    //     // }
-    //     $file_type = exif_imagetype($file);
-    //     // dd("reach",$file_type);
-    //     //https://www.php.net/manual/en/function.exif-imagetype.php
-    //     //exif_imagetype($file);
-    //     // 1    IMAGETYPE_GIF
-    //     // 2    IMAGETYPE_JPEG
-    //     // 3    IMAGETYPE_PNG
-    //     // 6    IMAGETYPE_BMP
-    //     // 15   IMAGETYPE_WBMP
-    //     // 16   IMAGETYPE_XBM
-    //     $output_file =  $file . '.webp';
-    //     if (file_exists($output_file)) {
-    //         return $output_file;
-    //     }
-    //     if (function_exists('imagewebp')) {
-    //         switch ($file_type) {
-    //             case '1': //IMAGETYPE_GIF
-    //                 $image = imagecreatefromgif($file);
-    //                 break;
-    //             case '2': //IMAGETYPE_JPEG
-    //                 $image = imagecreatefromjpeg($file);
-    //                 break;
-    //             case '3': //IMAGETYPE_PNG
-    //                     $image = imagecreatefrompng($file);
-    //                     imagepalettetotruecolor($image);
-    //                     imagealphablending($image, true);
-    //                     imagesavealpha($image, true);
-    //                     break;
-    //             case '6': // IMAGETYPE_BMP
-    //                 $image = imagecreatefrombmp($file);
-    //                 break;
-    //             case '15': //IMAGETYPE_Webp
-    //             return false;
-    //                 break;
-    //             case '16': //IMAGETYPE_XBM
-    //                 $image = imagecreatefromxbm($file);
-    //                 break;
-    //             default:
-    //                 return false;
-    //         }
-    //         // Save the image
-    //         $result = imagewebp($image, $output_file, $compression_quality);
-    //         if (false === $result) {
-    //             return false;
-    //         }
-    //         // Free up memory
-    //         imagedestroy($image);
-    //         return $output_file;
-    //     } elseif (class_exists('Imagick')) {
-    //         $image = new Imagick();
-    //         $image->readImage($file);
-    //         if ($file_type === "3") {
-    //             $image->setImageFormat('webp');
-    //             $image->setImageCompressionQuality($compression_quality);
-    //             $image->setOption('webp:lossless', 'true');
-    //         }
-    //         $image->writeImage($output_file);
-    //         return $output_file;
-    //     }
-    //     return false;
-    // }
+   public function delete_image(Request $request)
+   {
 
+        if (\File::exists(public_path($request->data))) {
+            $delete_file = \File::delete(public_path($request->data));
+        }
+        if($delete_file){
+            return response()->json( "success" );
+        }
+   }
    
 }

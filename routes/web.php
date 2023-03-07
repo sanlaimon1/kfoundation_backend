@@ -57,6 +57,7 @@ Route::resource('article', 'App\Http\Controllers\ArticleController');
 //系统图片设置
 Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
 Route::post('/save_image', 'App\Http\Controllers\HomeController@save_image')->name('save_image');
+Route::post('/delete_image', 'App\Http\Controllers\HomeController@delete_image')->name('delete_image');
 //生活缴费
 Route::resource('life', 'App\Http\Controllers\LifeController');
 //会员等级
