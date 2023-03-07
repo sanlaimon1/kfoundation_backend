@@ -156,7 +156,8 @@ class ProjectController extends Controller
     public function show(string $id)
     {
         $project = Project::find($id);
-        return view('project.show', compact('project'));
+        $return_modes = config('types.return_mode');
+        return view('project.show', compact('project','return_modes'));
     }
 
     /**
