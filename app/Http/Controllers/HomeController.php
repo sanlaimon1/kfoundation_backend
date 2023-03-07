@@ -70,42 +70,44 @@ class HomeController extends Controller
 
    public function save_image(Request $request)
    {
-        if($request->hasFile('upload_new_file')){
-            $get_upload_new_file = time().'.'.$request->upload_new_file->extension();
-            $request->upload_new_file->move(public_path('/images/'),$get_upload_new_file);
-            $upload_new_file_value = '/images/'.$get_upload_new_file;
+        if($request->upload_new_file){
+            if($request->hasFile('upload_new_file')){
+                $get_upload_new_file = time().'.'.$request->upload_new_file->extension();
+                $request->upload_new_file->move(public_path('/images/'),$get_upload_new_file);
+                $upload_new_file_value = '/images/'.$get_upload_new_file;
+            }
+    
+            $ext = pathinfo($upload_new_file_value, PATHINFO_EXTENSION);
+    
+            if($ext == "jpg"){
+                $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
+            }else if($ext == "png"){
+                $get_image = imagecreatefrompng(public_path($upload_new_file_value));
+            }else if($ext == "jpeg"){
+                $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
+            }
+    
+            // Create a blank WebP image with the same dimensions
+            $webp_image = imagecreatetruecolor(imagesx($get_image), imagesy($get_image));
+    
+            // Convert the PNG image to WebP
+            imagepalettetotruecolor($webp_image);
+            imagealphablending($webp_image, true);
+            imagesavealpha($webp_image, true);
+            $quality = 80; // Quality of the WebP image (0-100)
+            $get_webp_name = time().'.webp';
+            $webp_path = 'images/webpimg/'.$get_webp_name;
+            imagewebp($get_image, $webp_path, $quality);
+    
+            // Free up memory
+            imagedestroy($get_image);
+            imagedestroy($webp_image);
+    
+            $get_files = public_path('/images/webpimg/');
+            $get_images = glob($get_files . "*.webp");
+    
+            return redirect()->route('slide');
         }
-
-        $ext = pathinfo($upload_new_file_value, PATHINFO_EXTENSION);
-
-        if($ext == "jpg"){
-            $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
-        }else if($ext == "png"){
-            $get_image = imagecreatefrompng(public_path($upload_new_file_value));
-        }else if($ext == "jpeg"){
-            $get_image = imagecreatefromjpeg(public_path($upload_new_file_value));
-        }
-
-        // Create a blank WebP image with the same dimensions
-        $webp_image = imagecreatetruecolor(imagesx($get_image), imagesy($get_image));
-
-        // Convert the PNG image to WebP
-        imagepalettetotruecolor($webp_image);
-        imagealphablending($webp_image, true);
-        imagesavealpha($webp_image, true);
-        $quality = 80; // Quality of the WebP image (0-100)
-        $get_webp_name = time().'.webp';
-        $webp_path = 'images/webpimg/'.$get_webp_name;
-        imagewebp($get_image, $webp_path, $quality);
-
-        // Free up memory
-        imagedestroy($get_image);
-        imagedestroy($webp_image);
-
-        $get_files = public_path('/images/webpimg/');
-        $get_images = glob($get_files . "*.webp");
-
-        return redirect()->route('slide');
    }
 
    public function delete_image(Request $request)
