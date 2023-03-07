@@ -58,37 +58,28 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="guarantee" class="form-label">担保机构</label>
                         @error('guarantee')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="guarantee" name="guarantee" value="{{$project->guarantee}}" >
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="risk" class="form-label">投资零风险</label>
                         @error('risk')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="risk" name="risk" value="{{$project->risk}}" >
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="usage" class="form-label">资金用途</label>
                         @error('usage')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="usage" name="usage" value="{{$project->usage}}" >
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="frontend" class="form-label">前台展示</label>
-                        @error('frontend')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <input type="text" class="form-control" id="frontend" name="frontend" value="{{$project->frontend}}" >
-                    </div>
+                    
                 </div>
 
                 <div class="row">

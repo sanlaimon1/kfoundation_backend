@@ -68,7 +68,6 @@ class ProjectController extends Controller
             "guarantee" => "required",
             "risk" => "required",
             "usage" => "required",
-            "frontend" => "required",
             "return_mode" => "required",
             "amount" => "required",
             "is_given" => "required",
@@ -101,7 +100,6 @@ class ProjectController extends Controller
             $project->guarantee  = $request->guarantee;
             $project->risk  = $request->risk;
             $project->usage  = $request->usage;
-            $project->frontend  = $request->frontend;
             $project->return_mode  = $request->return_mode;
             $project->amount  = $request->amount;
             $project->is_given  = $request->is_given;
@@ -192,7 +190,6 @@ class ProjectController extends Controller
             "guarantee" => "required",
             "risk" => "required",
             "usage" => "required",
-            "frontend" => "required",
             "return_mode" => "required",
             "amount" => "required",
             "is_given" => "required",
@@ -227,7 +224,6 @@ class ProjectController extends Controller
             $project->guarantee  = $request->guarantee;
             $project->risk  = $request->risk;
             $project->usage  = $request->usage;
-            $project->frontend  = $request->frontend;
             $project->return_mode  = $request->return_mode;
             $project->amount  = $request->amount;
             $project->is_given  = $request->is_given;
