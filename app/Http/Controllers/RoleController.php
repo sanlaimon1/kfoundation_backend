@@ -45,7 +45,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 1) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
 
@@ -65,7 +65,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 2) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
         //一级栏目
@@ -84,7 +84,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 4) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
         $request->validate([
@@ -169,7 +169,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 16) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
         $role = Role::findOrFail($id);
@@ -186,7 +186,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 32) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
         $request->validate([
@@ -249,7 +249,7 @@ class RoleController extends Controller
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !($permission->auth2 & 64) ){
-            return "you have not permission this route";
+            return "您没有权限访问这个路径";
         }
 
         DB::beginTransaction();
