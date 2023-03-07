@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>文章列表</title>
+    <title>参数设置</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -42,7 +42,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/website/' + dataid,
@@ -76,9 +76,6 @@
             });
         });
     </script>
-    <!-- include summernote css/js -->
-    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
-    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 
 </head>
 
@@ -87,63 +84,87 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">信息管理</li>
+                <li class="breadcrumb-item">用户中心</li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('article.index') }}">文章列表</a>
+                    <a href="{{ route('customer.index') }}">用户中心</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">编辑文章列表</li>
+                <li class="breadcrumb-item active" aria-current="page">编辑客户信息 <strong style="color:red;">{{ $onecustomer->realname }}</strong></li>
             </ol>
         </nav>
-        
-        <form action="{{ route('article.update',['article'=>$article->id]) }}" method="post">
+
+        @if(session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
+
+        <form action="{{ route('customer.update',['customer'=>$onecustomer->id]) }}" method="post">
             {{ csrf_field() }}
             @method('PATCH')
+            <input type="hidden" name="id" value="{{ $onecustomer->id }}" />
             <section class="row frame">
                 <div class="row">
                     <div class="mb-3">
-                        <label for="title" class="form-label">标题</label>
-                        @error('title')
+                        <label for="phone" class="form-label">手机号</label>
+                        @error('phone')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="title" name="title" placeholder="标题" value="{{$article->title}}">
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="手机号" value="{{ $onecustomer->phone }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="mb-3">
-                        <label for="content" class="form-label">内容</label>
-                        @error('content')
+                        <label for="realname" class="form-label">姓名</label>
+                        @error('realname')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea class="form-control" id="summernote" name="content">{{ html_entity_decode( $article->content ) }}</textarea>
+                        <input type="text" class="form-control" id="realname" name="realname" placeholder="姓名" value="{{$onecustomer->realname}}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="mb-3">
-                        <label for="categoryid" class="form-label">分类</label>
-                        @error('categoryid')
+                        <label for="asset" class="form-label">余额</label>
+                        @error('asset')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <select id="categoryid" name="categoryid" class="form-select" >
-                            @foreach( $categories as $category )
-                            <option value="{{ $category->id }}" @if($category->id == $article->categoryid) selected @endif> {{ $category->cate_name }} </option>
-                            @endforeach
-                        </select>
+                        <input type="number" step="any" class="form-control" id="asset" name="asset" placeholder="0.00" value="{{ $onecustomer->asset }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="balance" class="form-label">资产</label>
+                        @error('balance')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" step="any" class="form-control" id="balance" name="balance" placeholder="0.00" value="{{ $onecustomer->balance }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="integration" class="form-label">积分</label>
+                        @error('integration')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" class="form-control" id="integration" name="integration" placeholder="0" value="{{ $onecustomer->integration }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="platform_coin" class="form-label">平台币</label>
+                        @error('platform_coin')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" class="form-control" id="platform_coin" name="platform_coin" placeholder="0" value="{{ $onecustomer->platform_coin }}">
                     </div>
                 </div>
             </section>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')
-
-    <script>
-        $(document).ready(function() {
-            $('#summernote').summernote();
-        });
-    </script>
 
 </body>
 </html>

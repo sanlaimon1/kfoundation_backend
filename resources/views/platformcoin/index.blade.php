@@ -142,19 +142,19 @@
                 data: data,
                 success: function(response){
                     var html = "";
-                    var total_amount  = 0;
+                    var total_amount = 0;
                     $.each(response.platformcoin_search ,function(i,v){
                         var type = response.types[v.financial_type];
                         if(v.direction == 1){
                             var amount = `<span style='color:green;'> +${v.amount} </span>`
-                        } else if(direction == -1) {
-                            var amount = `<span style='color:red;'> +${v.amount} </span>`
+                        } else if(v.direction == -1) {
+                            var amount = `<span style='color:red;'> -${v.amount} </span>`
                         } else {
                             var amount = '方向错误'
                         };
-                        if(financial_type == 0){
-                            total_amount += parseFloat(v.amount);
-                        }
+
+                        total_amount += parseFloat(v.amount);
+                        
                         if(v.financial_type == 2){
                             var withdrawal_id = JSON.parse(v.extra, true)['withdrawal_id']
                             var url = `{{ route('withdrawal.show',[ 'withdrawal'=> ':withdrawal_id' ]) }}`
@@ -168,7 +168,7 @@
                                 <td>${v.phone}</td>
                                 <td>${type}</td>
                                 <td>${v.balance}</td>
-                                <td>${v.amount}</td>
+                                <td>${amount}</td>
                                 <td>${v.after_balance}</td>
                                 <td>${v.created_at}</td>
                                 <td>${v.details}

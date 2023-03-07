@@ -49,7 +49,7 @@
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="customer_search">查询</button>
             </div>
         </nav>
         <br />
@@ -79,9 +79,9 @@
                     <td>{{ $one->platform_coin }}</td>
                     <td>{{ $one->created_at }}</td>
                     <td>
-                        <a href="" class="btn btn-primary">查看团队</a>
-                        <a href="" class="btn btn-warning">编辑</a>
-                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
+                        <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
+                        <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
+                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
@@ -91,7 +91,7 @@
                     </td>
                 </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
         </table>
         <nav aria-label="page">
               <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
@@ -107,33 +107,44 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
-            var date = $("#date").val();
-            var data = {
-                "adminid": adminid,
-                "action": action,
-                "date" : date,
-            };
+            $("#customer_search").click(function(){
+                var fid = $("#fid").val();
+                var phone = $("#phone").val();
+                var created_at = $("#created_at").val();
+                var data = {
+                    "fid": fid,
+                    "phone": phone,
+                    "created_at" : created_at
+                };
 
             $.ajax({
-                url : "/log_search",
+                url : "/customer_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
                     console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response.search_customer,function(i,v){
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
+                                <td>${v.phone}</td>
+                                <td>${v.realname}</td>
+                                <td>${v.asset}</td>
+                                <td>${v.balance}</td>
+                                <td>${v.integration}</td>
+                                <td>${v.platform_coin}</td>
                                 <td>${v.created_at}</td>
                                 <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                    <a href="{{ url('customer/${v.id}') }}" class="btn btn-primary">查看团队</a>
+                                    <a href="{{url('customer/${v.id}/edit')}}" class="btn btn-warning">编辑</a>
+                                    <form action="{{ url('/customer/${v.id}') }}"
+                                    method="post"
+                                    style="float:right;" onsubmit="javascript:return del()">
+                                        {{ csrf_field() }}
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">删除</button>
+                                    </form>
                                 </td>
                             </tr>`;
                     })
@@ -144,12 +155,12 @@
         })
     </script>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
         }
     }
     </script>
