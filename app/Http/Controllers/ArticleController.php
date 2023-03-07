@@ -7,6 +7,8 @@ use App\Models\Article;
 use App\Models\Admin;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class ArticleController extends Controller
 {
@@ -53,13 +55,38 @@ class ArticleController extends Controller
         $content = trim( htmlspecialchars( $request->get('content') ));
         $categoryid = trim($request->get('categoryid'));
 
-        $newarticle = new Article;
-        $newarticle->title = $title;
-        $newarticle->content = $content;
-        $newarticle->categoryid = $categoryid;
-        $newarticle->adminid = Auth::id();
-        
-        $newarticle->save();
+        DB::beginTransaction();
+        try {
+            //code...
+            $newarticle = new Article;
+            $newarticle->title = $title;
+            $newarticle->content = $content;
+            $newarticle->categoryid = $categoryid;
+            $newarticle->adminid = Auth::id();
+
+            $newarticle->save();
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'article.store';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('article.index');
     }
@@ -96,15 +123,40 @@ class ArticleController extends Controller
         ]);
 
         $title = trim($request->get('title'));
-        $content = trim($request->get('content'));
+        $content = trim( htmlspecialchars( $request->get('content') ));
         $categoryid = trim($request->get('categoryid'));
 
-        $newarticle = Article::find($id);
-        $newarticle->title = $title;
-        $newarticle->content = $content;
-        $newarticle->categoryid = $categoryid;
-        
-        $newarticle->save();
+        DB::beginTransaction();
+        try {
+            //code...
+            $newarticle = Article::find($id);
+            $newarticle->title = $title;
+            $newarticle->content = $content;
+            $newarticle->categoryid = $categoryid;
+            
+            $newarticle->save();
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'article.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('article.index');
     }
@@ -112,10 +164,35 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-        $article = Article::find($id);
-        $article->delete();
+        DB::beginTransaction();
+        try {
+            //code...
+            $article = Article::find($id);
+            $article->delete();
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'article.destroy';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
         return redirect()->route('article.index');
     }
 }
