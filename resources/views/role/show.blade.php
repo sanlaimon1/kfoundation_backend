@@ -70,7 +70,15 @@
             </ol>
         </nav>
         <ul>
-            
+
+            <!-- index 1
+            create 2
+            store 4
+            show 8
+            edit 16
+            update 32
+            destory 64 -->
+
             <!-- 权限列表 -->
             @foreach( $items as $uripath=>$one_item )
             <li>
