@@ -3,13 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Role;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class RoleController extends Controller
 {
+
+
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/role";
+
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -17,11 +34,21 @@ class RoleController extends Controller
         //$this->middleware('injection')->only('login');
     }
 
+   
     /**
      * 列出所有角色 list all of roles
      */
     public function index()
     {
+        // $path_name = "/" . $request->path();
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
+
         $roles = Role::where('status', 1)->orderBy('sort', 'asc')->paginate(10);
 
         return view('role.index', compact('roles'));
@@ -32,6 +59,15 @@ class RoleController extends Controller
      */
     public function create()
     {
+
+        // $path_name = "/" . $request->path();
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         //一级栏目
         $first_menus = config('data.main_menu');
 
@@ -43,6 +79,14 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string'],
             'status' => ['required', 'integer'],
@@ -98,6 +142,8 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
+
+
         $first_menus = config('data.main_menu');    //一级菜单
         $id = (int)$id;
         $all_datas = config('data');
@@ -118,6 +164,14 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $role = Role::findOrFail($id);
         return view('role.edit', compact('role'));
     }
@@ -127,6 +181,14 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string'],
             'status' => ['required', 'integer'],
@@ -182,6 +244,14 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !($permission->auth2 & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         DB::beginTransaction();
         try {
 
