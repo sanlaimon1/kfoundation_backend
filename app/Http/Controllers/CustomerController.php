@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Query\Builder;
 
 class CustomerController extends Controller
 {
@@ -23,7 +24,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $records = Customer::orderBy('created_at', 'desc')->paginate(20);
+        $records = Customer::where('status',1)
+                  ->orderBy('created_at', 'desc')->paginate(20);
 
         $title = "会员列表";
 
@@ -122,9 +124,37 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request,string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            //code...
+            $customer = Customer::find($id);
+            $customer->status = 0;
+            $customer->save();
+
+            $myself = Auth::user();
+            $log = new Log();
+            $log->adminid = $myself->id;
+            $log->action = '管理员'. $myself->username. '删除用户' .$customer->realname;
+            $log->ip = $request->ip();
+            $log->route = 'customer.destroy';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $log->parameters = $input_json;  // 请求参数
+            $log->created_at = date('Y-m-d H:i:s');
+
+            $log->save();
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '修改错误，事务回滚';
+        }
+
+        return redirect()->route('customer.index');
     }
 
     public function customer_search(Request $request)
@@ -136,20 +166,22 @@ class CustomerController extends Controller
         {
             $search_customer = DB::table('customers')
                             ->whereDate('customers.created_at','=',$created_at)
-                            ->where([['customers.id','=',$fid],['customers.phone','=',$phone]])
+                            ->where([['customers.id','=',$fid],['customers.phone','=',$phone],['customers.status','=',1]])
                             ->orderBy('customers.created_at','desc')
                             ->select('customers.*')
                             ->get();
+
         }else{
             $search_customer = DB::table('customers')
-                            ->whereDate('customers.created_at','=',$created_at)
-                            ->orwhere('customers.id','=',$fid)
-                            ->orwhere('customers.phone','=',$phone)
-                            ->orderBy('customers.created_at','desc')
-                            ->select('customers.*')
-                            ->get();
-        }
+                                ->where('customers.status',1)
+                                ->whereDate('customers.created_at','=',$created_at)
+                                ->orwhere([['customers.id','=',$fid],['customers.status',1]])
+                                ->orwhere([['customers.phone','=',$phone],['customers.status',1]])
+                                ->orderBy('customers.created_at','desc')
+                                ->select('customers.*')
+                                ->get();
 
+        }
         return response()->json([
             "search_customer" => $search_customer
         ]);
