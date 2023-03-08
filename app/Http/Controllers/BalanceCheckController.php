@@ -10,6 +10,7 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Redis;
 
 class BalanceCheckController extends Controller
 {
@@ -37,16 +38,16 @@ class BalanceCheckController extends Controller
      */
     public function index()
     {
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 1) ){
+        if (!(($permission->auth2 ?? 0) & 1)) {
             return "您没有权限访问这个路径";
         }
 
         $records = BalanceCheck::orderBy('created_at', 'desc')->paginate(20);
 
-        $types = [0=>'待审核', 1=>'通过', 2=>'拒绝'];
+        $types = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         $title = '余额提现审核';
 
@@ -58,18 +59,18 @@ class BalanceCheckController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 8) ){
+        if (!(($permission->auth2 ?? 0) & 8)) {
             return "您没有权限访问这个路径";
         }
 
         $id = (int)$id;
-        $one = BalanceCheck::find( $id );
+        $one = BalanceCheck::find($id);
 
         //状态 0 待审核 1 通过 2 拒绝  
-        $status = [0=>'待审核', 1=>'通过', 2=>'拒绝'];
+        $status = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         return view('withdrawal.show', compact('id', 'one', 'status'));
     }
@@ -79,18 +80,18 @@ class BalanceCheckController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 16) ){
+        if (!(($permission->auth2 ?? 0) & 16)) {
             return "您没有权限访问这个路径";
         }
 
         $id = (int)$id;
-        $one = BalanceCheck::find( $id );
+        $one = BalanceCheck::find($id);
 
         //状态 0 待审核 1 通过 2 拒绝  
-        $status = [0=>'待审核', 1=>'通过', 2=>'拒绝'];
+        $status = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         return view('withdrawal.edit', compact('id', 'one', 'status'));
     }
@@ -103,10 +104,10 @@ class BalanceCheckController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 32) ){
+        if (!(($permission->auth2 ?? 0) & 32)) {
             return "您没有权限访问这个路径";
         }
 
@@ -116,11 +117,13 @@ class BalanceCheckController extends Controller
         try {
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             //更改订单状态
-            $one = BalanceCheck::find( $id );
+            $one = BalanceCheck::find($id);
             $one->status = 1;
             $one->adminid = Auth::id();
-            if(!$one->save())
+            if (!$one->save())
                 throw new \Exception('事务中断1');
+            $balance_check = BalanceCheck::where('status', "=", 0)->get();
+            Redis::set('balance_check_status', $balance_check->count());
 
             $username = Auth::user()->username;
             //添加管理员日志
@@ -129,11 +132,11 @@ class BalanceCheckController extends Controller
             $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
             $newlog->ip = $request->ip();
             $newlog->route = 'withdrawal.update';
-            $newlog->parameters = json_encode( $request->all() );
+            $newlog->parameters = json_encode($request->all());
             $newlog->created_at = date('Y-m-d H:i:s');
-            if(!$newlog->save())
+            if (!$newlog->save())
                 throw new \Exception('事务中断2');
-            
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -147,7 +150,7 @@ class BalanceCheckController extends Controller
             //return '审核通过错误，事务回滚';
         }
 
-        return redirect()->route('withdrawal.show', ['withdrawal'=>$id]);
+        return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
 
     /**
@@ -158,10 +161,10 @@ class BalanceCheckController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
+        if (!(($permission->auth2 ?? 0) & 64)) {
             return "您没有权限访问这个路径";
         }
 
@@ -176,19 +179,19 @@ class BalanceCheckController extends Controller
         try {
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             //更改订单状态
-            $one = BalanceCheck::find( $id );
+            $one = BalanceCheck::find($id);
             $one->status = 2;
             $one->adminid = Auth::id();
             $one->comment = $comment;
-            if(!$one->save())
+            if (!$one->save())
                 throw new \Exception('事务中断1');
 
             //更改用户余额
             $userid = $one->userid;
-            $one_user = Customer::find( $userid );
+            $one_user = Customer::find($userid);
             $balance = $one_user->balance; //更改前的余额
             $one_user->balance = $balance + $one->amount;
-            if(!$one_user->save())
+            if (!$one_user->save())
                 throw new \Exception('事务中断2');
 
             //添加财务记录
@@ -201,11 +204,11 @@ class BalanceCheckController extends Controller
             $newfinance->financial_type = 2;  //提现
             $newfinance->created_at = date('Y-m-d H:i:s');
             $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
-            $order_arr = [ 'withdrawal_id'=>$id ];
-            $newfinance->extra = json_encode( $order_arr );  //{"withdrawal_id": 1}
+            $order_arr = ['withdrawal_id' => $id];
+            $newfinance->extra = json_encode($order_arr);  //{"withdrawal_id": 1}
             $newfinance->after_balance = $one_user->balance;
 
-            if(!$newfinance->save())
+            if (!$newfinance->save())
                 throw new \Exception('事务中断3');
 
             //添加管理员日志
@@ -214,11 +217,11 @@ class BalanceCheckController extends Controller
             $newlog->action = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
             $newlog->ip = $request->ip();
             $newlog->route = 'withdrawal.destroy';
-            $newlog->parameters = json_encode( $request->all() );
+            $newlog->parameters = json_encode($request->all());
             $newlog->created_at = date('Y-m-d H:i:s');
-            if(!$newlog->save())
+            if (!$newlog->save())
                 throw new \Exception('事务中断4');
-            
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -232,6 +235,6 @@ class BalanceCheckController extends Controller
             //return '审核通过错误，事务回滚';
         }
 
-        return redirect()->route('withdrawal.show', ['withdrawal'=>$id]);
+        return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
 }
