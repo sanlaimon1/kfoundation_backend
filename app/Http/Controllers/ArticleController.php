@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Admin;
+use App\Models\Permission;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
@@ -12,6 +13,18 @@ use DB;
 
 class ArticleController extends Controller
 {
+
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/article";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -24,6 +37,13 @@ class ArticleController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate(10);
 
         return view('article.index', compact('articles'));
@@ -34,6 +54,13 @@ class ArticleController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         $admins = Admin::select('id','username')->get();
         $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
         
@@ -45,6 +72,13 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string'],
             'content' => ['required'],
@@ -96,6 +130,13 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 8) ){
+            return "您没有权限访问这个路径";
+        }
+
         $article = Article::find($id);
         return view('article.show', compact('article'));
     }
@@ -105,6 +146,14 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $article = Article::find($id);
         $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
         $admins = Admin::select('id','username')->get();
@@ -116,6 +165,13 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
@@ -166,6 +222,14 @@ class ArticleController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         DB::beginTransaction();
         try {
             //code...
