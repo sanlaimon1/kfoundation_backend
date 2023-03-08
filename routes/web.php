@@ -116,3 +116,5 @@ Route::resource('interest', 'App\Http\Controllers\InterestController');
 Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');
 
 Route::get("/check_count",  [App\Http\Controllers\HomeController::class, 'check_count'])->name('check.count');
+//用户登录日志
+Route::resource('loginlog', 'App\Http\Controllers\LoginLogController');
