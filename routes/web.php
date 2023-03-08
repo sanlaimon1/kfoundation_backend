@@ -112,6 +112,7 @@ Route::get('kickout/{id}', 'App\Http\Controllers\CustomerController@kickout')->n
 Route::get('kick/{id}', 'App\Http\Controllers\CustomerController@kick')->name('customer.kick'); //踢出会员
 Route::get('customer_charge/{id}', 'App\Http\Controllers\CustomerController@charge')->name('customer.charge'); //上分
 Route::get('customer_withdrawal/{id}', 'App\Http\Controllers\CustomerController@withdrawal')->name('customer.withdrawal'); //下分
+Route::get('customer_password/{id}', 'App\Http\Controllers\CustomerController@modify_pass')->name('customer.modify_pass'); //下分
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
 Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');

@@ -53,7 +53,7 @@
             </div>
             <div class="col-2">
                 <br />
-                <a class="btn btn-primary" href="{{ route('customer.create') }}">创建新用户</a>
+                <a href="{{route('customer.create')}}" class="btn btn-primary">创建客户</a>
             </div>
         </nav>
         <br />
@@ -65,11 +65,8 @@
                     <th scope="col">姓名</th>
                     <th scope="col">会员等级</th>
                     <th scope="col">推荐人</th>
-                    <th scope="col">余额</th>
-                    <th scope="col">资产</th>
-                    <th scope="col">积分</th>
-                    <th scope="col">平台币</th>
-                    <th scope="col" style="width: 530px;">操作</th>
+                    <th scope="col" style="width: 620px;">操作</th>
+                    
                 </tr>
             </thead>
             <tbody id="search_data">
@@ -80,18 +77,15 @@
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->level->level_name }}</td>
                     <td>{{ $one->getParentName(); }}</td>
-                    <td>{{ $one->asset }}</td>
-                    <td>{{ $one->balance }}</td>
-                    <td>{{ $one->integration }}</td>
-                    <td>{{ $one->platform_coin }}</td>
                     <td>
+                        <a class="btn btn-primary" href="{{ route('customer.modify_pass', ['id'=>$one->id]) }}">修改密码</a>
                         <a class="btn btn-success" href="{{ route('customer.charge', ['id'=>$one->id]) }}">上分</a>
                         <a class="btn btn-primary" href="{{ route('customer.withdrawal', ['id'=>$one->id]) }}">下分</a>
                         <a class="btn btn-danger" href="{{ route('customer.kickout', ['id'=>$one->id]) }}">踢出</a>
                         <a class="btn btn-success" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
                         <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                         <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
-                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
+                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
