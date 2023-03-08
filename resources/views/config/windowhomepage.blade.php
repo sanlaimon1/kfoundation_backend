@@ -61,7 +61,7 @@
                 
                 $.ajax({
                     type: "patch",
-                    url: '/website/' + dataid,
+                    url: '/windowhomepage/' + dataid,
                     dataType: "json",
                     data: { config_value:  config_value_string },
                     success: function(msg){
