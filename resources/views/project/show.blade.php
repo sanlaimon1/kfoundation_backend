@@ -77,7 +77,10 @@
             <li class="list-group-item"><strong>项目封面图片:</strong> 
                 <img src="{{$project->litpic}}" alt="" class="img-fluid w-25 px-5 mx-5"> 
             </li>
-            <li class="list-group-item"><strong>项目详情:</strong> {{ $project->details }}</li>
+            @php
+                $details = html_entity_decode($project->details)
+            @endphp
+            <li class="list-group-item"><strong>项目详情:</strong> {!! $details !!}</li>
 
             <li class="list-group-item"><strong>发布时间:</strong> {{ $project->created_at }}</li>
 
