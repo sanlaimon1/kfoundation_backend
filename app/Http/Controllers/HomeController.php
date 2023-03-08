@@ -126,9 +126,11 @@ class HomeController extends Controller
 
     public function check_count()
     {
+        // $asset_check_status = Redis::get('asset_check_status');
+        // $balance_check_status = Redis::get('balance_check_status');
 
-        $asset_check_status = Redis::get('asset_check_status');
-        $balance_check_status = Redis::get('balance_check_status');
+        $asset_check_status = 0;
+        $balance_check_status = 0;
 
         return response()->json([
             'code' => 1,

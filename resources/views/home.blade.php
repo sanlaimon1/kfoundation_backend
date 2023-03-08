@@ -35,15 +35,14 @@
             color: white;
         }
 
-        ul#sys-menu 
-        {
+        ul#sys-menu {
             margin: 0 auto;
             padding: 0;
             display: flex;
             width: 80%;
         }
-        ul#sys-menu li
-        {
+
+        ul#sys-menu li {
             flex: 1;
             list-style-type: none;
             text-align: center;
@@ -51,21 +50,78 @@
             line-height: 2.5rem;
             cursor: pointer;
         }
-        ul#sys-menu li.active, ul#sys-menu li:hover
-        {
+
+        ul#sys-menu li.active,
+        ul#sys-menu li:hover {
             background-color: #007bff;
             border-radius: 5px;
             color: #fff;
         }
-        ul#sys-menu li.active a, ul#sys-menu li:hover a
-        {
+
+        ul#sys-menu li.active a,
+        ul#sys-menu li:hover a {
             color: #fff;
+        }
+    </style>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            margin-top: 15%;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+        }
+
+        /* The Close Button */
+        .close {
+            display: inline;
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
-
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand navbar-white
                 navbar-light">
@@ -131,8 +187,7 @@
                         <div class="user-nav d-sm-flex d-none">
                             <span>{{ Auth::user()->username }}</span>
                             <span>
-                                <img src="/static/images/logout.jpg" class="img-circle"
-                                    style="width:30px; height:30px;" />
+                                <img src="/static/images/logout.jpg" class="img-circle" style="width:30px; height:30px;" />
                             </span>
                         </div>
                     </a>
@@ -154,14 +209,12 @@
         <aside class="main-sidebar sidebar-light-primary elevation-4
                 bg-light">
             <a href="{{route('home')}}" class="brand-link">
-                <img src="/static/images/logo.png" alt="Logo" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
+                <img src="/static/images/logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-bold">DBSchenker</span>
             </a>
             <div class="sidebar">
                 <nav class="mt-2">
-                    <ul id="nav-tree" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false">
+                    <ul id="nav-tree" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                         <li class="nav-item">
                             <a href="{{ route('satistatics') }}" target="content" class="nav-link">
@@ -169,7 +222,7 @@
                                 <p>后台统计</p>
                             </a>
                         </li>
-                        
+
                         <li class="nav-item">
                             <a href="" class="nav-link">
                                 <i class="fa fa-users"></i>
@@ -290,8 +343,31 @@
             <circle id="2" transform="translate(85, 16.698730) rotate(-150) translate(-85, -16.698730) " cx="85" cy="16.6987298" r="10"></circle>
             <circle id="1" cx="60" cy="10" r="10"></circle>
         </g>
-        <use xlink:href="#circle" class="use"/>
+        <use xlink:href="#circle" class="use" />
     </svg>
+
+    <audio id="remind">
+        <source src="/static/audio/cztx.mp3" type="audio/mpeg">
+    </audio>
+
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-10">
+                    <p id="display_message"></p>
+                </div>
+                <div class="col-2">
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
 
@@ -299,17 +375,70 @@
     <script src="/static/adminlte/dist/js/adminlte.min.js?v=3.2.0"></script>
 
     <script>
-        $(function () {
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        setInterval(function() {
+
+            $.get(
+                '<?= route('check.count') ?>', {},
+                function(json) {
+                    var code = json.code;
+                    var asset_check_status = json.asset_check_status;
+                    var balance_check_status = json.balance_check_status;
+
+                    // if (code == 2) {
+                    //     var message = json.message;
+                    //     alert(message);
+                    //     //登出
+                    //     document.getElementById('logout-form').submit();
+                    //     return;
+                    // }
+
+                    if ((asset_check_status > 0 || balance_check_status > 0) && (code == 1)) {
+
+                        // alert( "您有" + asset_check_status +  "条充值订单"  + "  " + balance_check_status + "条提现订单  未处理");
+                        var audioEle = $("#remind").get(0);
+                        // console.log(audioEle);
+                        audioEle.play();
+
+                        document.getElementById('display_message').innerText = "您有" + asset_check_status + "条充值订单" + "  " + balance_check_status + "条提现订单  未处理";
+
+                        modal.style.display = "block";
+                    }
+                },
+                'json'
+            );
+        }, 5000);
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    <script>
+        $(function() {
             $("#includedNav_sidebar").load("nav_sidebar.html");
             //加载a 为target="content"
             //$('#nav-tree a').attr("target", "content");
-            $('#nav-tree a').click(function () {
+            $('#nav-tree a').click(function() {
                 $('#nav-tree a, #nav-tree .nav-item p').removeClass("active");
                 $(this).addClass("active");
             });
 
             //点击主菜单，变换状态，并且加载数据到左侧
-            $('#sys-menu li[subkey]').click(function(){
+            $('#sys-menu li[subkey]').click(function() {
                 var subkey = $(this).attr('subkey');
                 var ss = $(this);
                 //加载动画
@@ -319,17 +448,17 @@
                     type: "GET",
                     url: subkey,
                     dataType: "json",
-                    success: function(msg){
+                    success: function(msg) {
                         $('#nav-tree').html('');
                         //构建目录结构
                         var item_name = msg.item_name;
                         var subitems = msg.subitems;
-                        var html_string = '<li class="nav-item menu-is-opening menu-open"><a href="" class="nav-link"><i class="fa fa-cog fa-fw"></i><p>'
-                                    + item_name + '<i class="fas fa-angle-left right"></i></p></a><ul class="nav nav-treeview">';
+                        var html_string = '<li class="nav-item menu-is-opening menu-open"><a href="" class="nav-link"><i class="fa fa-cog fa-fw"></i><p>' +
+                            item_name + '<i class="fas fa-angle-left right"></i></p></a><ul class="nav nav-treeview">';
 
                         $.each(subitems, function(index, value) {
-                            html_string += '<li class="nav-item"><a href="' + value + '" class="nav-link" target="content">'
-                                    + '<i class="fa fa-link"></i><p>' + index + '</p></a></li>';
+                            html_string += '<li class="nav-item"><a href="' + value + '" class="nav-link" target="content">' +
+                                '<i class="fa fa-link"></i><p>' + index + '</p></a></li>';
                         });
                         html_string += '</ul></li>';
 
@@ -341,7 +470,7 @@
                         //关闭动画
                         $('.loading').hide();
                     },
-                    'error': function (jqXHR, textStatus, errorThrown) {
+                    'error': function(jqXHR, textStatus, errorThrown) {
                         alert(errorThrown);
                     }
                 });
