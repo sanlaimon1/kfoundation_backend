@@ -89,9 +89,9 @@
                         <a class="btn btn-warning btn-sm" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
                         <a class="btn btn-info btn-sm" href="">充值</a>
                         <a class="btn btn-success btn-sm" href="">提现</a>
+                        <a class="btn btn-secondary btn-sm" href="">踢掉</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
-                         method="post"
-                         style="float:right;" onsubmit="javascript:return del()">
+                         method="post"  onsubmit="javascript:return del()" class=" d-inline-block">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">删除</button>
