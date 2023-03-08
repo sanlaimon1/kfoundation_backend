@@ -9,74 +9,9 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
-    <style>
-        #app
-        {
-            padding-top: 1rem;
-        }
-        #app .form-label
-        {
-            color: green;
-            font-size: 14px;
-        }
-        #app .alert
-        {
-            font-size: 14px;
-        }
-        #app .frame
-        {
-            border: 1px solid black;
-            border-radius:5px;
-            margin-top: .5rem;
-        }
-    </style>
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $(function(){
-            $('button.btn[data]').click(function(){
-                $('.loading').show();
-                var dataid = $(this).attr('data');
-                var config_value_string = $('#item-' + dataid).val();
-
-                $.ajax({
-                    type: "patch",
-                    url: '/website/' + dataid,
-                    dataType: "json",
-                    data: { config_value:  config_value_string },
-                    success: function(msg){
-                        $('.modal-body').html(msg.message);
-                        $('#myModal').show();
-                        $('.loading').hide();   //关闭动画  close the loading animation
-                        //window.reload();
-                    },
-                    'error': function (jqXHR, textStatus, errorThrown) {
-                        if(jqXHR.status==419) {
-                            $('.modal-body').html('网页已过期, 请刷新后再修改数据');
-                            $('#myModal').show();
-                        } else if(jqXHR.status==500) {
-                            $('.modal-body').html('服务器内部错误 500');
-                            $('#myModal').show();
-                        } else {
-                            $('.modal-body').html(errorThrown);
-                            $('#myModal').show();
-                        }
-                        $('.loading').hide();
-                    }
-                });
-            });
-
-            $('button.btn-close, #btn-close').click(function(){
-                $('#myModal').hide();
-                location.reload();
-            });
-        });
-    </script>
-
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 </head>
 
 <body>
@@ -85,10 +20,8 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
                 <li class="breadcrumb-item">用户中心</li>
-                <li class="breadcrumb-item">
-                    <a href="{{ route('customer.index') }}">用户中心</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">编辑客户信息 <strong style="color:red;">{{ $onecustomer->realname }}</strong></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer.index') }}">会员列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">编辑客户</li>
             </ol>
         </nav>
 
@@ -97,74 +30,128 @@
                 {{ session('message') }}
             </div>
         @endif
-
-        <form action="{{ route('customer.update',['customer'=>$onecustomer->id]) }}" method="post">
-            {{ csrf_field() }}
-            @method('PATCH')
-            <input type="hidden" name="id" value="{{ $onecustomer->id }}" />
-            <section class="row frame">
+        
+        <form action="{{route('customer.update',$customer->id)}}" method="post" enctype="multipart/form-data">
+            @csrf
+            @method('put')
+            <section class="row frame mt-5 mx-5 px-5">
                 <div class="row">
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">手机号</label>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">用户手机号</label>
                         @error('phone')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="phone" name="phone" placeholder="手机号" value="{{ $onecustomer->phone }}">
+                        <input type="number" class="form-control" id="phone" name="phone" readonly value="{{$customer->phone}}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3">
+
+                    <div class="col-md-6 mb-3">
                         <label for="realname" class="form-label">姓名</label>
                         @error('realname')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="realname" name="realname" placeholder="姓名" value="{{$onecustomer->realname}}">
+                        <input type="text" class="form-control" id="realname" name="realname" value="{{$customer->realname}}">
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="mb-3">
-                        <label for="asset" class="form-label">余额</label>
-                        @error('asset')
+                    <div class="col-md-6 mb-3">
+                        <label for="is_allowed_code" class="form-label">允许邀请码</label>
+                        @error('is_allowed_code')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="asset" name="asset" placeholder="0.00" value="{{ $onecustomer->asset }}">
+                        <select id="is_allowed_code" name="is_allowed_code"  class="form-select" >
+                            <option value="0" {{ $customer->is_allowed_code == 0? 'selected' : ''}}>不允许</option>
+                            <option value="1"{{ $customer->is_allowed_code == 1? 'selected' : ''}}>允许</option>
+                        </select>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3">
-                        <label for="balance" class="form-label">资产</label>
-                        @error('balance')
+
+                    <div class="col-md-6 mb-3">
+                        <label for="identity" class="form-label">身份</label>
+                        @error('identity')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="balance" name="balance" placeholder="0.00" value="{{ $onecustomer->balance }}">
+                        <select id="identity" name="identity"  class="form-select" >
+                            <option value="0" {{ $customer->identity == 0? 'selected' : ''}}>真实账号</option>
+                            <option value="1" {{ $customer->identity == 1? 'selected' : ''}}>一级内部账号</option>
+                            <option value="2" {{ $customer->identity == 2? 'selected' : ''}}>二级内部账号</option>
+                        </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3">
-                        <label for="integration" class="form-label">积分</label>
-                        @error('integration')
+
+                <div class="row">                    
+                    <div class="col-md-4 mb-3">
+                        <label for="is_sure" class="form-label">认证</label>
+                        @error('is_sure')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="integration" name="integration" placeholder="0" value="{{ $onecustomer->integration }}">
+                        <select id="is_sure" name="is_sure"  class="form-select" >
+                            <option value="0" {{ $customer->is_sure == 0? 'selected' : ''}}>未认证</option>
+                            <option value="1" {{ $customer->is_sure == 1? 'selected' : ''}}>已认证</option>
+                        </select>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3">
-                        <label for="platform_coin" class="form-label">平台币</label>
-                        @error('platform_coin')
+
+                    <div class="col-md-4 mb-3">
+                        <label for="level_id" class="form-label">会员等级</label>
+                        @error('level_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="platform_coin" name="platform_coin" placeholder="0" value="{{ $onecustomer->platform_coin }}">
+                        
+                        <select id="level_id" name="level_id"  class="form-select" >
+                            @foreach( $levels as $level )
+                            <option value="{{ $level->level_id }}" {{ $customer->level_id == $level->level_id? 'selected' : ''}}> {{ $level->level_name }} </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="team_id" class="form-label">团队等级</label>
+                        @error('team_id')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        
+                        <select id="team_id" name="team_id"  class="form-select" >
+                            @foreach( $teamlevels as $teamlevel )
+                            <option value="{{ $teamlevel->tid }}" {{ $customer->team_id == $teamlevel->tid? 'selected' : ''}}> {{ $teamlevel->level_name }} </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+
+              
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="idcard_front" class="form-label">身份证正面</label>
+                        @error('idcard_front')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="file" class="form-control" id="idcard_front" name="idcard_front" >
+                        <input type="hidden" name="old_idcard_front" value="{{$customer->idcard_front}}">
+                        <img src="{{$customer->idcard_front}}" alt="" class="img-fluid w-25 py-5">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="idcard_back" class="form-label">身份证背面</label>
+                        @error('idcard_back')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="file" class="form-control" id="idcard_back" name="idcard_back">
+                        <input type="hidden" name="old_idcard_back" value="{{$customer->idcard_back}}">
+                        <img src="{{$customer->idcard_back}}" alt="" class="img-fluid w-25 py-5">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-25 col-4 offset-4" >修改</button>
+
             </section>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
         </form>
-
+        
     </div>
     @include('loading')
     @include('modal')
-
+    <script>
+        $(document).ready(function() {
+            $('#detail').summernote();
+        });
+    </script>
 </body>
 </html>

@@ -255,7 +255,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary w-25 " >修改</button>
+                <button type="submit" class="btn btn-primary w-25 col-4 offset-4" >修改</button>
 
             </section>
 
