@@ -41,7 +41,6 @@ class AwardController extends Controller
             return "您没有权限访问这个路径";
         }
 
-
         $items = Award::all();
 
         $item_cate = [];
