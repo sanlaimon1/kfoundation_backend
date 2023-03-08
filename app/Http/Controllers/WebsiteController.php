@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Config;
+use App\Models\Permission;
+use Illuminate\Support\Facades\Auth;
+
 
 class WebsiteController extends Controller
 {
+    private $path_name = "/website";
     /**
      * Create a new controller instance.
      *
@@ -25,6 +29,12 @@ class WebsiteController extends Controller
     public function index()
     {
         //查询 cate=1 的数据
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
         $items = Config::where('cate', 1)->get();
 
         $item_cate1 = [];
@@ -43,7 +53,7 @@ class WebsiteController extends Controller
         $logo = $item_cate1['logo'];  //网站logo
         $video_homepage = $item_cate1['video_homepage'];  //首页视频
 
-        return view('config.website', compact('website','domain_name','customer_service', 
+        return view('config.website', compact('website','domain_name','customer_service',
         'min_withdrawal', 'min_charge', 'times_withdrawal_everyday','kline_homepage','logo','video_homepage') );
     }
 
@@ -84,6 +94,13 @@ class WebsiteController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         //修改数据
         if(!is_numeric($id)) {
             $arr = ['code'=>-1, 'message'=>'id必须是整数'];
@@ -112,14 +129,14 @@ class WebsiteController extends Controller
         $one_config = Config::find($id);
         $one_config->config_value = $config_value;
         $one_config->save();
-        
+
         if($id == 8 || $id == 9){
             return redirect()->route('website.index');
         }else{
             $arr = ['code'=>1, 'message'=>'保存成功'];
             return response()->json( $arr );
         }
-        
+
     }
 
     /**
