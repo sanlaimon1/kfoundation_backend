@@ -51,6 +51,10 @@
                 <br />
                 <button class="btn btn-success" id="customer_search">查询</button>
             </div>
+            <div class="col-2">
+                <br />
+                <a href="{{route('customer.create')}}" class="btn btn-primary">创建客户</a>
+            </div>
         </nav>
         <br />
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
@@ -64,6 +68,7 @@
                     <th scope="col">积分</th>
                     <th scope="col">平台币</th>
                     <th scope="col">注册时间</th>
+                    <th scope="col">最后登录地址</th>
                     <th scope="col" style="width: 240px;">操作</th>
                 </tr>
             </thead>
@@ -78,15 +83,18 @@
                     <td>{{ $one->integration }}</td>
                     <td>{{ $one->platform_coin }}</td>
                     <td>{{ $one->created_at }}</td>
+                    <td></td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
-                        <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
+                        <a class="btn btn-primary btn-sm" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
+                        <a class="btn btn-warning btn-sm" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
+                        <a class="btn btn-info btn-sm" href="{{ route('customer.show', ['customer'=>$one->id]) }}">充值</a>
+                        <a class="btn btn-success btn-sm" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">提现</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">删除</button>
+                            <button type="submit" class="btn btn-danger btn-sm">删除</button>
                         </form>
                     </td>
                 </tr>
