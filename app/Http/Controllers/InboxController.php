@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Inbox;
 use App\Models\Log;
@@ -10,6 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 class InboxController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/inbox";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -23,6 +35,13 @@ class InboxController extends Controller
      */
     public function index(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $title = $request->title ;
         $date = $request->date;
 
@@ -54,6 +73,13 @@ class InboxController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         return view( 'inbox.create');
     }
 
@@ -62,6 +88,13 @@ class InboxController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string', 'max:45'],
             'content' => ['required', 'string'],
@@ -115,6 +148,13 @@ class InboxController extends Controller
      */
     public function show(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 8) ){
+            return "您没有权限访问这个路径";
+        }
+
         $mail = Inbox::find($id);
         return view( 'inbox.show', compact('mail') );
     }
@@ -124,6 +164,13 @@ class InboxController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $mail = Inbox::find($id);
         return view( 'inbox.edit', compact('mail') );
     }
@@ -133,6 +180,13 @@ class InboxController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'title' => ['required', 'string', 'max:45'],
             'content' => ['required', 'string'],
@@ -185,6 +239,13 @@ class InboxController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         DB::beginTransaction();
         try {
