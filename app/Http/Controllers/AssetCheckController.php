@@ -9,9 +9,22 @@ use App\Models\FinancialAsset;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Permission;
 
 class AssetCheckController extends Controller
 {
+
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/charge";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -24,6 +37,13 @@ class AssetCheckController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $records = AssetCheck::orderBy('created_at', 'desc')->paginate(20);
 
         $types = [0=>'待审核', 1=>'通过', 2=>'拒绝'];
@@ -54,6 +74,14 @@ class AssetCheckController extends Controller
      */
     public function show(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 8) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = AssetCheck::find( $id );
 
@@ -68,6 +96,14 @@ class AssetCheckController extends Controller
      */
     public function edit(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = AssetCheck::find( $id );
 
@@ -82,6 +118,13 @@ class AssetCheckController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         //事务开启
         DB::beginTransaction();
@@ -151,6 +194,14 @@ class AssetCheckController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'comment' => ['required', 'string', 'max:200'],
         ]);
