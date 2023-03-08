@@ -70,8 +70,9 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-4">Submit</button>
-                <a class="btn btn-secondary" href="{{ route('role.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">取消</a>
+                <!-- <a class="btn btn-secondary mt-4" href="{{ route('role.index') }}" style="margin-top:1rem; margin-right:1rem;">返回</a> -->
+                <button class="btn btn-secondary mt-4" action="action"  onclick="window.history.go(-1); return false;" style="margin-top:1rem; margin-right:1rem;">返回</button>
+                <button type="submit" class="btn btn-primary mt-4">编辑</button>
             </form>
 
         </div>
