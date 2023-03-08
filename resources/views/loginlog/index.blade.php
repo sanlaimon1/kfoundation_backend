@@ -32,7 +32,7 @@
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="loginlog_search">查询</button>
             </div>
         </nav>
         <br />
@@ -85,32 +85,34 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
+            $("#loginlog_search").click(function(){
+            var phone = $("#phone").val();
             var action = $("#action").val();
             var date = $("#date").val();
             var data = {
-                "adminid": adminid,
+                "phone": phone,
                 "action": action,
                 "date" : date,
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/loginlog_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
                     console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response.loginlog_search,function(i,v){
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.username}</td>
+                                <td>${v.phone}</td>
                                 <td>${v.action}</td>
                                 <td>${v.ip}</td>
-                                <td>${v.route}</td>
+                                <td>${v.state}</td>
+                                <td>${v.province}</td>
+                                <td>${v.city}</td>
+                                <td>${v.isp}</td>
                                 <td>${v.created_at}</td>
                                 <td>
                                     <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
