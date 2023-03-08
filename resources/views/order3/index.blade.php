@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>站内信列表</title>
+    <title>生活服务订单管理</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -16,8 +16,8 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">项目管理</li>
-                <li class="breadcrumb-item active" aria-current="page">项目列表</li>
+                <li class="breadcrumb-item">生活服务</li>
+                <li class="breadcrumb-item active" aria-current="page">生活服务订单管理</li>
             </ol>
         <br />
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">

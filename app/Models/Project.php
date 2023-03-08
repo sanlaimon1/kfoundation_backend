@@ -14,4 +14,9 @@ class Project extends Model
         
         return $this->hasOne('App\Models\ProjectCate', 'id', 'cid');
     }
+
+    public function level() {
+        
+        return $this->hasOne('App\Models\Level', 'level_id', 'level_id');
+    }
 }

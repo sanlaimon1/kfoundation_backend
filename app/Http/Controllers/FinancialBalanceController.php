@@ -2,12 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\FinancialBalance;
 use DB;
+use Illuminate\Support\Facades\Auth;
 
 class FinancialBalanceController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/balance";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -20,6 +33,13 @@ class FinancialBalanceController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $records = FinancialBalance::orderBy('created_at', 'desc')->paginate(20);
 
         $types = config('types.balance_financial_type');

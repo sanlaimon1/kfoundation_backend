@@ -2,12 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Goods;
 use App\Models\Level;
+use Illuminate\Support\Facades\Auth;
 
 class GoodsController extends Controller
 {
+
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/goods";
 
     public function __construct()
     {
@@ -22,6 +35,13 @@ class GoodsController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $goods = Goods::where('enable',1)->orderBy('sort', 'asc')->paginate(20);
         
         return view('goods.index', compact('goods'));
@@ -32,6 +52,13 @@ class GoodsController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         $levels = Level::select('level_id','level_name')->get();
 
         $level_items = [];
@@ -48,6 +75,13 @@ class GoodsController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'goods_name' => ['required', 'string', 'max:45'],
             "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
@@ -109,6 +143,14 @@ class GoodsController extends Controller
      */
     public function edit(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $goods = Goods::find($id);
 
         $levels = Level::select('level_id','level_name')->get();
@@ -127,6 +169,13 @@ class GoodsController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'goods_name' => ['required', 'string', 'max:45'],
             "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
@@ -183,6 +232,14 @@ class GoodsController extends Controller
      */
     public function destroy(string $id)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = Goods::find($id);
         $one->enable = 0;
