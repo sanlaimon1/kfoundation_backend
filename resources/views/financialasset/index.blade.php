@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
     <style>
         #app td, #app th
         {
@@ -51,7 +54,7 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="text" name="date" id="date" class="form-control" />
             </div>
 
             <div class="col-1">
@@ -94,7 +97,7 @@
                     <td>{{ $one->after_balance }}</td>
                     <td>{{ $one->created_at }}</td>
                     <td>
-                        {{ $one->details }}  
+                        {{ $one->details }}
                         @if($one->financial_type==3)
                         <a href="{{ route('charge.show',[ 'charge'=>json_decode($one->extra, true)['charge_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['charge_id'] }}</a>
                         @endif
@@ -130,6 +133,14 @@
             }
         });
         $(document).ready(function(){
+             //datepicker
+             flatpickr("#date",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+             //asset_search function
             $("#asset_search").click(function(){
             var financialasset_id = $("#financialasset_id").val();
             var customer = $("#customer").val();

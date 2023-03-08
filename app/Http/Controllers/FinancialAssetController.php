@@ -7,21 +7,23 @@ use Illuminate\Http\Request;
 use App\Models\FinancialAsset;
 use DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+
 
 class FinancialAssetController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/asset";
-    
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -34,7 +36,7 @@ class FinancialAssetController extends Controller
      */
     public function index()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
@@ -56,7 +58,8 @@ class FinancialAssetController extends Controller
         $financialasset_id = $request->financialasset_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = $request->date;
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+
         if($financialasset_id != null && $customer != null && $financial_type != 0 && $date != null)
         {
             $asset_search = DB::table('financial_asset')
