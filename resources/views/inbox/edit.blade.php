@@ -80,7 +80,9 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-4">修改</button>
+                <!-- <a class="btn btn-secondary mt-4" href="{{ route('inbox.index') }}" style="margin-top:1rem; margin-right:1rem;">返回</a> -->
+                <button class="btn btn-secondary mt-4" action="action" onclick="window.history.go(-1); return false;" style="margin-top:1rem; margin-right:1rem;">返回</button>
+                <button type="submit" class="btn btn-primary mt-4">编辑</button>
             </form>
 
         </div>

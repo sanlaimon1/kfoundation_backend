@@ -8,17 +8,18 @@ use App\Models\Inbox;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class InboxController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/inbox";
 
@@ -28,14 +29,14 @@ class InboxController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
-     * Display a listing of inbox.   
+     * Display a listing of inbox.
      * 显示站内信
      */
     public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
@@ -52,20 +53,20 @@ class InboxController extends Controller
                 $mails = Inbox::where("title", "LIKE", '%' . $title . '%')->whereDate('created_at', "=", $date )->orderBy('is_top','desc')->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
                 return view( 'inbox.index', compact('mails') );
             }
-            else{ 
+            else{
                 $mails = Inbox::where("title", "LIKE", '%' . $title . '%')->orderBy('sort','desc')->orderBy('is_top','desc')->orderBy('created_at','desc')->paginate(10);
                 // dd($mails);
                 return view( 'inbox.index', compact('mails') );
-            }            
+            }
         }
         else{
             $mails = Inbox::orderBy('is_top','desc')->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(10);
 
             return view( 'inbox.index', compact('mails') );
-            
+
         }
 
-        
+
     }
 
     /**
@@ -73,7 +74,7 @@ class InboxController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -88,7 +89,7 @@ class InboxController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -102,7 +103,7 @@ class InboxController extends Controller
             'sort' => ['required', 'integer','gte:0'],
             // 'user_phone' => ['required', 'string'],
         ]);
-        
+
         DB::beginTransaction();
         try {
             $mail = new Inbox();
@@ -112,7 +113,7 @@ class InboxController extends Controller
             $mail->sort = $request->sort;
             $mail->user_phone = $request->user_phone;
             $mail->created_at = date('Y-m-d H:i:s');
-            
+
             if(!$mail->save())
                 throw new \Exception('事务中断1');
 
@@ -148,7 +149,7 @@ class InboxController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){
@@ -164,7 +165,7 @@ class InboxController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -180,7 +181,7 @@ class InboxController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -194,7 +195,7 @@ class InboxController extends Controller
             'sort' => ['required', 'integer','gte:0'],
             // 'user_phone' => ['required', 'string'],
         ]);
-        
+
         DB::beginTransaction();
         try {
             $mail = Inbox::find($id);
@@ -230,7 +231,7 @@ class InboxController extends Controller
             //return $errorMessage;
             return '修改错误，事务回滚';
         }
-        
+
         return redirect()->route('inbox.index');
     }
 
@@ -239,7 +240,7 @@ class InboxController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){

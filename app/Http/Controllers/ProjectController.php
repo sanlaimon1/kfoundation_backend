@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Level;
 use Illuminate\Http\Request;
 use App\Models\Project;
@@ -12,6 +13,16 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/project";
 
     public function __construct()
     {
@@ -25,6 +36,13 @@ class ProjectController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate(10);
 
         //项目类型
@@ -43,6 +61,13 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         //项目类型
         $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
 
@@ -62,6 +87,13 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             "project_name" => ['required', 'string', 'max:45'],
             "cate_name" =>  ['required', 'integer', 'exists:project_categories,id'],
@@ -153,6 +185,13 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 8) ){
+            return "您没有权限访问这个路径";
+        }
+
         $project = Project::find($id);
         $return_modes = config('types.return_mode');
         return view('project.show', compact('project','return_modes'));
@@ -163,6 +202,12 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
         
         $project = Project::find($id);
 
@@ -184,6 +229,13 @@ class ProjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             "project_name" => ['required', 'string', 'max:45'],
             "cate_name" =>  ['required', 'integer', 'exists:project_categories,id'],
@@ -279,6 +331,13 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = Project::find($id);
         if(empty($one))

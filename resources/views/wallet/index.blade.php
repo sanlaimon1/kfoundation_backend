@@ -9,6 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+        <!-- 引入 flatpickr 的 CSS 和 JS -->
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
     <style>
         #app td
         {
@@ -54,7 +58,7 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="created_at" id="created_at" class="form-control" />
+                <input type="text" name="created_at" id="created_at" class="form-control" lang="zh-CN" />
             </div>
 
             <div class="col-1">
@@ -123,6 +127,14 @@
             }
         });
         $(document).ready(function(){
+            //datepicker
+            flatpickr("#created_at",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
             $("#wallet_search").click(function(){
             var fid = $("#fid").val();
             var phone = $("#phone").val();
@@ -189,3 +201,6 @@
     </script>
 </body>
 </html>
+
+
+

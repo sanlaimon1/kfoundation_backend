@@ -2,11 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Config;
+use Illuminate\Support\Facades\Auth;
 
 class VersionController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/version";
+
     /**
      * Create a new controller instance.
      *
@@ -24,6 +37,13 @@ class VersionController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         //查询 cate=3 的数据
         $items = Config::where('cate', 3)->get();
 
@@ -78,6 +98,13 @@ class VersionController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+        
         //修改数据
         if(!is_numeric($id)) {
             $arr = ['code'=>-1, 'message'=>'id必须是整数'];

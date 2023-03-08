@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Config;
+use App\Models\Permission;
+use Illuminate\Support\Facades\Auth;
 
 class WindowhomepageController extends Controller
 {
-     /**
+    private $path_name = "/windowhomepage";
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -24,6 +27,12 @@ class WindowhomepageController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
         //查询 cate=2 的数据
         $items = Config::where('cate', 2)->get();
 
@@ -35,7 +44,7 @@ class WindowhomepageController extends Controller
 
         $window_details = $item_cate1['window_details'];  //弹窗详情
         $is_shown = $item_cate1['is_shown'];  //是否显示
-        
+
         return view('config.windowhomepage', compact('window_details','is_shown') );
     }
 

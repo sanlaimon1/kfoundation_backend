@@ -6,11 +6,15 @@ use Illuminate\Http\Request;
 use App\Models\Wallet;
 use App\Models\Log;
 use App\Models\Customer;
+use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class WalletController extends Controller
 {
+
+    private $path_name = "/wallet";
 
     public function __construct()
     {
@@ -24,6 +28,13 @@ class WalletController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $records = Wallet::orderBy('created_at', 'desc')->paginate(20);
 
         $types = config('types.client_wallet_types');
@@ -38,6 +49,13 @@ class WalletController extends Controller
      */
     public function destroy(Request $request,string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         DB::beginTransaction();
         try {
             //code...
@@ -73,11 +91,13 @@ class WalletController extends Controller
 
     public function wallet_search(Request $request)
     {
+
         $types = config('types.client_wallet_types');
         $fid = $request->fid;
         $phone = $request->phone;
         $payid = $request->payid;
-        $created_at = $request->created_at;
+        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
+
         if($fid !=null && $phone != null &&  $payid !=null && $created_at!=null)
         {
             $search_wallet = DB::table('wallets')

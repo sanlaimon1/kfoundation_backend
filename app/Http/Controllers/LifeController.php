@@ -2,11 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Life;
+use Illuminate\Support\Facades\Auth;
 
 class LifeController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/life";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -19,6 +32,13 @@ class LifeController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $lifes = Life::orderBy('sort','asc')->paginate(10);
         return view( 'life.index', compact('lifes') );
     }
@@ -28,6 +48,13 @@ class LifeController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         return view('life.create');
     }
 
@@ -36,6 +63,13 @@ class LifeController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+        
         $request->validate([
             'production_name'=> ['required', 'string', 'between:1,40'],
             'sort'=> ['required', 'integer', 'gt:0'],
@@ -79,6 +113,13 @@ class LifeController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $life = Life::find($id);
         return view('life.edit', compact('life'));
     }
@@ -88,6 +129,13 @@ class LifeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'production_name'=> ['required', 'string', 'between:1,40'],
             'sort'=> ['required', 'integer', 'gt:0'],
@@ -125,6 +173,13 @@ class LifeController extends Controller
      */
     public function destroy(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $life = Life::find($id);
         $life->delete();
         return redirect()->route('life.index');

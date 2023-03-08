@@ -255,8 +255,11 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary w-25 col-4 offset-4" >修改</button>
-
+                <div align="center">
+                    <!-- <a class="btn btn-secondary w-25" href="{{ route('project.index') }}" style="margin-right:1rem;">返回</a> -->
+                    <button class="btn btn-secondary  w-25" action="action" onclick="window.history.go(-1); return false;" style="margin-right:1rem;">返回</button>
+                    <button type="submit" class="btn btn-primary w-25 " >编辑</button>
+                </div>
             </section>
 
         </form>
