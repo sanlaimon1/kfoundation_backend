@@ -133,6 +133,7 @@
             </section>
 
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
+            <a class="btn btn-secondary" href="{{ route('projectcate.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">取消</a>
         </form>
 
     </div>

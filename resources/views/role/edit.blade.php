@@ -71,6 +71,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                <a class="btn btn-secondary" href="{{ route('role.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">取消</a>
             </form>
 
         </div>

@@ -256,7 +256,7 @@
                 </div>
                 
                 <button type="submit" class="btn btn-primary w-25 " >修改</button>
-
+                <a class="btn btn-secondary" href="{{ route('project.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">取消</a>
             </section>
 
         </form>
