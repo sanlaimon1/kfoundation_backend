@@ -56,7 +56,6 @@ class FinancialPlatformCoinController extends Controller
         $platformcoin_id = $request->platformcoin_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = $request->date;
         $date = Carbon::parse($request->date)->format('Y-m-d');
         if($platformcoin_id != null && $customer != null && $financial_type != 0 && $date != null)
         {

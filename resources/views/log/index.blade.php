@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
 </head>
 
 <body>
@@ -32,7 +35,7 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="text" name="date" id="date" class="form-control" />
             </div>
 
             <div class="col-1">
@@ -84,6 +87,14 @@
             }
         });
         $(document).ready(function(){
+            //datepicker
+            flatpickr("#date",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
             $("#log_search").click(function(){
             var adminid = $("#adminid").val();
             var action = $("#action").val();
