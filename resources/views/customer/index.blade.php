@@ -87,8 +87,8 @@
                     <td>
                         <a class="btn btn-primary btn-sm" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
                         <a class="btn btn-warning btn-sm" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
-                        <a class="btn btn-info btn-sm" href="{{ route('customer.show', ['customer'=>$one->id]) }}">充值</a>
-                        <a class="btn btn-success btn-sm" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">提现</a>
+                        <a class="btn btn-info btn-sm" href="">充值</a>
+                        <a class="btn btn-success btn-sm" href="">提现</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
