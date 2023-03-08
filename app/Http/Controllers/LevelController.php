@@ -2,12 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Level;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class LevelController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/level";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -20,6 +33,13 @@ class LevelController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $levels = Level::orderBy('level_id', 'desc')->paginate(20);
 
         return view('level.index', compact('levels'));
@@ -30,6 +50,13 @@ class LevelController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         return view('level/create');
     }
 
@@ -38,6 +65,13 @@ class LevelController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'level_name' => ['required', 'string', 'between:1,45'],
             'accumulative_amount' => ['required','integer','gt:0'],
@@ -88,6 +122,13 @@ class LevelController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $level = Level::find($id);
         return view('level.edit', compact('level'));
     }
@@ -97,6 +138,13 @@ class LevelController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'level_name' => ['required', 'string', 'between:1,45'],
             'accumulative_amount' => ['required','integer','gt:0'],
@@ -139,6 +187,13 @@ class LevelController extends Controller
      */
     public function destroy(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $level = Level::find($id);
         $level->delete();
         return redirect()->route('level.index');

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+// use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+
+    // Redis::set('name', 'www');
+    // dd(Redis::get('name'));
+
     return view('welcome');
 });
 
@@ -109,3 +114,5 @@ Route::post('customer_search','App\Http\Controllers\CustomerController@customer_
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
 Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');
+
+Route::get("/check_count",  [App\Http\Controllers\HomeController::class, 'check_count'])->name('check.count');
