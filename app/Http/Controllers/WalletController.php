@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class WalletController extends Controller
 {
@@ -90,11 +91,13 @@ class WalletController extends Controller
 
     public function wallet_search(Request $request)
     {
+
         $types = config('types.client_wallet_types');
         $fid = $request->fid;
         $phone = $request->phone;
         $payid = $request->payid;
-        $created_at = $request->created_at;
+        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
+
         if($fid !=null && $phone != null &&  $payid !=null && $created_at!=null)
         {
             $search_wallet = DB::table('wallets')
