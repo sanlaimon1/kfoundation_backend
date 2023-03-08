@@ -2,13 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class SysUsersController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/sysusers";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -21,6 +34,13 @@ class SysUsersController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         //列出管理员
         $sysusers = Admin::select('id','username','status','create_at','desc','rid','login_at')
             ->where('is_deleted', 0)
@@ -35,6 +55,13 @@ class SysUsersController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         //查询所有角色
         $role_items = Role::select('rid','title')->where('status', 1)->orderBy('sort','asc')->get();
         $roles = [];
@@ -50,6 +77,13 @@ class SysUsersController extends Controller
      */
     public function store(Request $request)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        }
+
         $rules = [
             'username' => ['required', 'string', 'between:6,10', 'unique:admins'],
             'desc' => ['required', 'string', 'max:100'],
@@ -106,6 +140,13 @@ class SysUsersController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = Admin::find($id);
         //查询所有角色
@@ -134,6 +175,13 @@ class SysUsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $rules = [
             'desc' => ['required', 'string', 'max:100'],
             'status' => ['required', 'integer', 'in:0,1'],
@@ -213,6 +261,13 @@ class SysUsersController extends Controller
      */
     public function destroy(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $id = (int)$id;
         $one = Admin::find($id);
         $one->is_deleted = 1;

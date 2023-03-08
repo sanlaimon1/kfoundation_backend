@@ -21,7 +21,7 @@
         <br />
 
         <ul class="list-group list-group-flush" style="margin-top:1rem;">
-            <li class="list-group-item"><strong>ID:</strong> {{ $one->id }}</li>
+        <li class="list-group-item"><strong>ID:</strong> {{ $one->id }}</li>
             <li class="list-group-item"><strong>操作:</strong> {{ $one->action }}</li>
             <li class="list-group-item"><strong>路由:</strong> {{ $one->route }}</li>
             <li class="list-group-item"><strong>时间:</strong> {{ $one->created_at }}</li>

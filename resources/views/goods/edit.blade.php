@@ -171,7 +171,9 @@
 
             </section>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">修改</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">编辑</button>
+            <button class="btn btn-secondary" action="action" onclick="window.history.go(-1); return false;" style="margin-top:1rem; margin-right:1rem; float:right;">返回</button>
+            <!-- <a class="btn btn-secondary" href="{{ route('goods.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">返回</a> -->
         </form>
         
     </div>

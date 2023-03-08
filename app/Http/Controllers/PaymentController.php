@@ -2,11 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/payment";
+
     public function __construct()
     {
         $this->middleware('auth');  //用户权限
@@ -19,6 +32,13 @@ class PaymentController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $payments = Payment::select('pid', 'sort','show','payment_name','ptype', 'logo')->orderBy('sort','asc')->paginate(10);
 
         return view('config.payment', compact('payments'));
@@ -53,6 +73,13 @@ class PaymentController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         if(!is_numeric($id)) {
             $arr = ['code'=>-1, 'message'=>'id必须是整数'];
             return response()->json( $arr );
@@ -77,6 +104,13 @@ class PaymentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         //获得支付分类的字符串
         $ptypes_array  = config('data.payment_ways');
         $arr = [];

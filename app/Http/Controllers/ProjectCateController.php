@@ -2,12 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\ProjectCate;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectCateController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/projectcate";
 
     public function __construct()
     {
@@ -21,6 +33,13 @@ class ProjectCateController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $projectcates = ProjectCate::orderBy('sort', 'asc')->paginate(10);
 
         return view('projectcate.index', compact('projectcates'));
@@ -31,6 +50,13 @@ class ProjectCateController extends Controller
      */
     public function create()
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 2) ){
+            return "您没有权限访问这个路径";
+        }
+
         return view('projectcate/create');
     }
 
@@ -39,6 +65,13 @@ class ProjectCateController extends Controller
      */
     public function store(Request $request)
     {
+
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 4) ){
+            return "您没有权限访问这个路径";
+        } 
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
             'comment' => ['required','string','max:200'],
@@ -74,6 +107,13 @@ class ProjectCateController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $oneprojectcate = ProjectCate::find($id);
         return view('projectcate.edit', compact('oneprojectcate'));
     }
@@ -83,6 +123,13 @@ class ProjectCateController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
             'comment' => ['required','string','max:200'],
@@ -108,6 +155,13 @@ class ProjectCateController extends Controller
      */
     public function destroy(string $id)
     {
+        $role_id = Auth::user()->rid;        
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         $one = ProjectCate::find($id);
         $one->enable = 0;
         $one->save();

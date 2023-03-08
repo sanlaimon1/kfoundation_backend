@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>查看订单状态</title>
+    <title>系统日志列表</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
@@ -13,8 +13,8 @@
 
         <nav aria-label="breadcrumb" style="margin-top: 1rem;">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('log.index') }}">日志列表</a></li>
-                <li class="breadcrumb-item active" aria-current="page">查看管理</li>
+                <li class="breadcrumb-item"><a href="{{ route('log.index') }}">系统日志列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">查看系统日志</li>
             </ol>
         </nav>
 
