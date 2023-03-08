@@ -131,7 +131,7 @@
         </div>
 
         <div class="row">
-        <div class="card col-6">
+            <div class="card col-4">
                 <label class="card-title bg-success text-white">
                     {{ $android->comment }}
                 </label>
@@ -143,7 +143,19 @@
                 </div>
             </div>
 
-            <div class="card col-6">
+            <div class="card col-4">
+                <label class="card-title bg-success text-white">
+                    {{ $android_apk->comment }}
+                </label>
+                <div class="card-body">
+                    <input class="form-control" id="item-{{ $android_apk->cid }}"
+                     name="{{ $android_apk->config_name }}" value="{{ $android_apk->config_value }}" />
+                    
+                    <button class="btn btn-danger" data="{{ $android_apk->cid }}">保存</button>
+                </div>
+            </div>
+
+            <div class="card col-4">
                 <label class="card-title bg-success text-white">
                     {{ $ios->comment }}
                 </label>

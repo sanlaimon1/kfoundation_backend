@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Query\Builder;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Redis;
 
 class CustomerController extends Controller
 {
@@ -62,8 +63,10 @@ class CustomerController extends Controller
             return "您没有权限访问这个路径";
         }
 
+        $customer_identity = config('types.customer_identity');
+
         $customer = Customer::find($id);
-        return view('customer.show',compact('customer'));
+        return view('customer.show',compact('customer', 'customer_identity'));
     }
 
     /**
@@ -161,7 +164,8 @@ class CustomerController extends Controller
             //code...
             $customer = Customer::find($id);
             $customer->status = 0;
-            $customer->save();
+            if(!$customer->save())
+                throw new \Exception('事务中断5');
 
             $myself = Auth::user();
             $log = new Log();
@@ -174,7 +178,8 @@ class CustomerController extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
-            $log->save();
+            if(!$log->save())
+                throw new \Exception('事务中断6');
 
             DB::commit();
 
@@ -216,4 +221,82 @@ class CustomerController extends Controller
             "search_customer" => $search_customer
         ]);
     }
+
+    /**
+     * 踢出  kick out
+     */
+    public function kickout(string $id) {
+
+        $id = (int)$id;
+        $one = Customer::find($id);
+
+        return view('customer.kickout',compact('id','one'));
+    }
+
+    /**
+     * 踢出逻辑  kick logic
+     */
+    public function kick(Request $request, string $id) {
+
+        $id = (int)$id;
+        $one = Customer::find($id);
+
+        if($one->access_token==='null') {
+            
+            return '无需操作';
+        }
+
+        DB::beginTransaction();
+        try {
+            $one->access_token = 'null';
+            if (!$one->save())
+                throw new \Exception('事务中断7');
+            
+            if( Redis::exists($one->access_token) )
+            {
+                Redis::del($one->access_token);
+            }
+            //添加管理员日志
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . Auth::user()->username . '对用户' . $one->phone . ' 踢出';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'customer.kick';
+            $newlog->parameters = json_encode($request->all());
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if (!$newlog->save())
+                throw new \Exception('事务中断8');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '踢出错误，事务回滚';
+        }
+
+        return redirect()->route('customer.kickout', ['id'=>$id]);
+    }
+
+    //上分
+    public function charge(string $id) {
+        $id = (int)$id;
+        $one = Customer::find($id);
+
+        return view('customer.charge', compact('id', 'one'));
+    }
+
+    //下分
+    public function withdrawal(string $id) {
+        $id = (int)$id;
+        $one = Customer::find($id);
+
+        return view('customer.withdrawal', compact('id', 'one'));
+    }
+
 }

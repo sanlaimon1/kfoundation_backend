@@ -56,9 +56,10 @@ class VersionController extends Controller
         $app_version = $item_cate3['app_version'];  //APP版本号
         $android = $item_cate3['android'];  //网站域名
         $ios = $item_cate3['ios'];  //客服链接
-        $app_update = $item_cate3['app_update'];  //最低提现金额
+        $app_update = $item_cate3['app_update'];  //android 
+        $android_apk = $item_cate3['android_apk'];  //安卓apk更新地址
 
-        return view('config.version', compact('app_version','android','ios','app_update') );
+        return view('config.version', compact('app_version','android','ios','app_update', 'android_apk') );
     }
 
     /**

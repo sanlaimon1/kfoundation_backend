@@ -149,7 +149,7 @@
                         <input type="text" class="form-control" id="benefit_rate" name="benefit_rate" placeholder="" >
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="fake_process" class="form-label">模似进度</label>
+                        <label for="fake_process" class="form-label">模拟进度</label>
                         @error('fake_process')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
