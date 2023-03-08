@@ -63,14 +63,14 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "project_name" => "required",
-            "cate_name" => "required",
-            "guarantee" => "required",
-            "risk" => "required",
-            "usage" => "required",
-            "return_mode" => "required",
+            "project_name" => ['required', 'string', 'max:45'],
+            "cate_name" =>  ['required', 'integer', 'exists:project_categories,id'],
+            "guarantee" => ['required', 'string', 'max:45'],
+            "risk" => ['required', 'string', 'max:45'],
+            "usage" => ['required', 'string', 'max:45'],
+            "return_mode" => ['required', 'integer'],
             "amount" => "required",
-            "is_given" => "required",
+            "is_given" => ['required', 'integer', 'in:0,1'],
             "team_rate" => "required",
             "like_rate" => "required",
             "benefit_rate" => "required",
@@ -79,18 +79,19 @@ class ProjectController extends Controller
             "min_invest" => "required",
             "max_invest" => "required",
             "max_time" => "required",
-            "desc" => "required",
-            "is_homepage" => "required",
-            "is_recommend" => "required",
-            "level_id" => "required",
-            "litpic" => "required",
-            "detail" => "required",
+            "desc" => ['required', 'string', 'max:100'],
+            "is_homepage" => ['required', 'integer', 'in:0,1'],
+            "is_recommend" => ['required', 'integer', 'in:0,1'],
+            "level_id" => ['required', 'integer', 'exists:levels,level_id'],
+            "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+            "detail" => ['required','string'],
         ]);
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
             $litpic = '/images/project_imgs/'.$litpic;
         }
+        $detail = trim( htmlspecialchars( $request->detail ));
         DB::beginTransaction();
         try {
 
@@ -116,8 +117,7 @@ class ProjectController extends Controller
             $project->is_recommend  = $request->is_recommend;
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
-            $project->details = $request->detail;
-            $project->save();
+            $project->details = $detail;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -185,14 +185,14 @@ class ProjectController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            "project_name" => "required",
-            "cate_name" => "required",
-            "guarantee" => "required",
-            "risk" => "required",
-            "usage" => "required",
-            "return_mode" => "required",
+            "project_name" => ['required', 'string', 'max:45'],
+            "cate_name" =>  ['required', 'integer', 'exists:project_categories,id'],
+            "guarantee" => ['required', 'string', 'max:45'],
+            "risk" => ['required', 'string', 'max:45'],
+            "usage" => ['required', 'string', 'max:45'],
+            "return_mode" => ['required', 'integer'],
             "amount" => "required",
-            "is_given" => "required",
+            "is_given" => ['required', 'integer', 'in:0,1'],
             "team_rate" => "required",
             "like_rate" => "required",
             "benefit_rate" => "required",
@@ -201,13 +201,14 @@ class ProjectController extends Controller
             "min_invest" => "required",
             "max_invest" => "required",
             "max_time" => "required",
-            "desc" => "required",
-            "is_homepage" => "required",
-            "is_recommend" => "required",
-            "level_id" => "required",
-            "litpic" => "required|sometimes",
-            "detail" => "required",
+            "desc" => ['required', 'string', 'max:100'],
+            "is_homepage" => ['required', 'integer', 'in:0,1'],
+            "is_recommend" => ['required', 'integer', 'in:0,1'],
+            "level_id" => ['required', 'integer', 'exists:levels,level_id'],
+            "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            "detail" => ['required','string'],
         ]);
+        
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
@@ -215,6 +216,7 @@ class ProjectController extends Controller
         }else{
             $litpic = $request->old_liptic;
         }
+        $detail = trim( htmlspecialchars( $request->detail ));
         DB::beginTransaction();
         try {
 
@@ -240,7 +242,7 @@ class ProjectController extends Controller
             $project->is_recommend  = $request->is_recommend;
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
-            $project->details = $request->detail;
+            $project->details = $detail;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');
