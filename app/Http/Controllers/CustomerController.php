@@ -8,9 +8,20 @@ use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Query\Builder;
+use App\Models\Permission;
 
 class CustomerController extends Controller
 {
+    /* 
+    index   1
+    create  2
+    store   4
+    show    8
+    edit    16
+    update  32
+    destory 64  
+    */
+    private $path_name = "/customer";
 
     public function __construct()
     {
@@ -24,6 +35,13 @@ class CustomerController extends Controller
      */
     public function index()
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 1) ){
+            return "您没有权限访问这个路径";
+        }
+
         $records = Customer::where('status',1)
                   ->orderBy('created_at', 'desc')->paginate(20);
 
@@ -37,6 +55,13 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 8) ){
+            return "您没有权限访问这个路径";
+        }
+
         $customer = Customer::find($id);
         return view('customer.show',compact('customer'));
     }
@@ -46,6 +71,13 @@ class CustomerController extends Controller
      */
     public function edit(string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
         $onecustomer = Customer::find($id);
         return view('customer.edit', compact('onecustomer'));
     }
@@ -55,6 +87,13 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
         $request->validate([
             'phone' => ['required', 'string', 'between:1,20'],
             'realname' => ['required','string','between:1,45'],
@@ -110,6 +149,13 @@ class CustomerController extends Controller
      */
     public function destroy(Request $request,string $id)
     {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 64) ){
+            return "您没有权限访问这个路径";
+        }
+
         DB::beginTransaction();
         try {
             //code...
