@@ -81,14 +81,22 @@
             </form>
         </div>
         <div class="card my-3">
-            <div class="card-body">
-                <h5 class="card-title">给平台币上分</h5>
-                <label for="platform_coin" class="form-label my-3">金额:</label>
-                <input type="text" name="platform_coin" id="platform_coin" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
-            </div>
+            <form action="{{route('financial_platform_coin')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">给平台币上分</h5>
+                    <label for="platform_coin" class="form-label my-3">金额:</label>
+                    @error('financial_platform_coin_amount')
+                        <div class="alert alert-danger">{{$message}}</div>
+                        
+                    @enderror
+                    <input type="text" name="financial_platform_coin_amount" id="platform_coin" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>

@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\FinancialAsset;
 use App\Models\FinancialBalance;
 use App\Models\FinancialIntegration;
+use App\Models\FinancialPlatformCoin;
 use App\Models\Level;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
@@ -645,7 +646,7 @@ class CustomerController extends Controller
         $customer_id = $request->customer_id;
         $customer = Customer::find($customer_id);
         $amount =  $request->financial_integration_amount;
-        $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
         DB::beginTransaction();
         try{
             $financial_integration = new FinancialIntegration();
@@ -669,6 +670,55 @@ class CustomerController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
                 throw new \Exception('事务中断16');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //存儲金融平台幣
+    public function financial_platform_coin(Request $request)
+    {
+        $request->validate([
+            'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->financial_platform_coin_amount;
+        $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_platform_coin = new FinancialPlatformCoin();
+            $financial_platform_coin->userid = $customer->id;
+            $financial_platform_coin->amount = $amount;
+            $financial_platform_coin->balance = $customer->balance;
+            $financial_platform_coin->direction = 1;
+            $financial_platform_coin->financial_type = 5;
+            $financial_platform_coin->details = $detail;
+            $financial_platform_coin->after_balance = $customer->balance;
+            if(!$financial_platform_coin->save())
+            throw new \Exception('事务中断17');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲金融平台幣 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'financial_platform_coin';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断18');
 
             DB::commit();
         } catch (\Exception $e) {

@@ -119,7 +119,9 @@ Route::post('customer_password1', [CustomerController::class, 'customer_password
 Route::post('customer_password2', [CustomerController::class, 'customer_password2'])->name('customer.password2'); //存儲密碼2
 Route::post('financial_balance', [CustomerController::class, 'financial_balance'])->name('financial_balance'); //存儲財務餘額
 Route::post('financial_asset', [CustomerController::class, 'financial_asset'])->name('financial_asset'); //儲存金融資產
-Route::post('financial_integration', [CustomerController::class, 'financial_integration'])->name('financial_integration');//門店財務整合
+Route::post('financial_integration', [CustomerController::class, 'financial_integration'])->name('financial_integration'); //門店財務整合
+Route::post('financial_platform_coin', [CustomerController::class, 'financial_platform_coin'])->name('financial_platform_coin'); //存儲金融平台幣
+
 
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
