@@ -9,6 +9,7 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class InboxController extends Controller
 {
@@ -273,5 +274,34 @@ class InboxController extends Controller
             return '修改错误，事务回滚';
         }
         return redirect()->route('inbox.index');
+    }
+
+    public function inbox_search(Request $request)
+    {
+        $title  = $request->title;
+        $date = $request->date;
+
+        if($title != null && $date != null)
+        {
+            $inbox_search = DB::table('inboxs')
+                            ->whereDate('created_at', '=', $date)
+                            ->where('title', 'LIKE', '%' . $title . '%')
+                            ->orderBy('is_top', 'desc')
+                            ->orderBy('sort', 'desc')
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+        } else {
+            $inbox_search = DB::table('inboxs')
+                            ->whereDate('created_at', '=', $date)
+                            ->orwhere('title', 'LIKE', '%' . $title . '%')
+                            ->orderBy('is_top', 'desc')
+                            ->orderBy('sort', 'desc')
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+        };
+
+        return response()->json([
+            "inbox_search" => $inbox_search,
+        ]);
     }
 }

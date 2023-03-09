@@ -40,7 +40,7 @@
 
                 <div class="col-1">
                     <br />
-                    <button class="btn btn-success" id="log_search">查询</button>
+                    <button class="btn btn-success" id="inbox_search">查询</button>
                 </div>
             </nav>
         </form>
@@ -123,35 +123,53 @@
                 locale: "zh"       // 使用中文语言
              });
 
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
+            $("#inbox_search").click(function(){
+            var title = $("#title").val();
             var date = $("#date").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
+                "title": title,
                 "date" : date,
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/inbox_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
                     $.each(response.search_logs,function(i,v){
-                        console.log(v);
-                    html +=`<tr>
+                        if(v.is_top == 1){
+                            var is_top = `<span style="color:red;">已置顶</span>`;
+                        } else {
+                            var is_top = '';
+                        }
+
+                        if(v.user_phone == null){
+                            var user_phone = `所有人`;
+                        } else {
+                            var user_phone = v.user_phone
+                        }
+
+                        html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.username}</td>
-                                <td>${v.action}</td>
-                                <td>${v.ip}</td>
-                                <td>${v.route}</td>
+                                <td>${v.sort}</td>
+                                <td>${is_top}</td>
+                                <td>${v.title}</td>
+                                <td>${user_phone}</td>
                                 <td>${v.created_at}</td>
                                 <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                <td>
+                                    <a class="btn btn-primary" href="/inbox/${v.id}">查看</a>
+                                    <a class="btn btn-warning" href="/inbox/${v.id}/edit">编辑</a>
+                                    <form action="{{url('/inbox/${v.id}')}}"
+                                    method="post"
+                                    style="float:right;" onsubmit="javascript:return del()">
+                                        {{ csrf_field() }}
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">删除</button>
+                                    </form>
+                                </td>
                                 </td>
                             </tr>`;
                     })
