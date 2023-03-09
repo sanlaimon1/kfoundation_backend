@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
+    <style>
+        .box1, .box2 {
+                display: inline-block;
+            }
+    </style>
 </head>
 
 <body>
@@ -31,12 +39,12 @@
 
             <div class="col-2">
                 <label class="form-label">投资时间</label>
-                <input type="date" name="created_at" id="created_at" class="form-control" />
+                <input type="text" name="created_at" id="created_at" class="form-control" />
             </div>
 
             <div class="col-2">
                 <label class="form-label">返款时间</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="text" name="date" id="date" class="form-control" />
             </div>
 
             <div class="col-2">
@@ -92,9 +100,25 @@
                 @endforeach
             </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('interest.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </div>
+            </form>
+        </div>
+
     </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
@@ -107,6 +131,23 @@
             }
         });
         $(document).ready(function(){
+             //datepicker
+             flatpickr("#created_at",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
+              //datepicker
+            flatpickr("#date",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
+             //interest search function
             $("#interest_search").click(function(){
             var pid = $("#pid").val();
             var customer = $("#customer").val();
