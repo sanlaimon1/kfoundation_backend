@@ -9,6 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <style>
+            .box1, .box2 {
+                display: inline-block;
+            }
+    </style>
 </head>
 
 <body>
@@ -36,7 +41,7 @@
                     @endforeach
                 </select>
             </div>
-            
+
             <div class="col-1">
                 <br />
                 <button class="btn btn-success" id="project_search">查询</button>
@@ -79,7 +84,7 @@
                     <td>
                         <a class="btn btn-primary" href="{{ route('project.show', ['project'=>$one->id]) }}">查看</a>
                         <a class="btn btn-warning" href="{{ route('project.edit', ['project'=>$one->id]) }}">编辑</a>
-                        <form action="{{ route('project.destroy', ['project'=>$one->id]) }}" 
+                        <form action="{{ route('project.destroy', ['project'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
@@ -91,21 +96,38 @@
                 @endforeach
             </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $projects->total() }}</strong>  <br /> {{ $projects->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $projects->total() }}</strong>  <br /> {{ $projects->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('project.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="10" {{ $projects->perPage() == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ $projects->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $projects->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $projects->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $projects->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </div>
+            </form>
+        </div>
+
     </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/dist/js/adminlte.min.js?v=3.2.0"></script>
     <script>
-        function del() { 
-            var msg = "您真的确定要删除吗？\n\n请确认！"; 
-            if (confirm(msg)==true){ 
-                return true; 
-            }else{ 
-                return false; 
+        function del() {
+            var msg = "您真的确定要删除吗？\n\n请确认！";
+            if (confirm(msg)==true){
+                return true;
+            }else{
+                return false;
             }
         }
 
@@ -145,7 +167,7 @@
                                 <td>
                                     <a class="btn btn-primary" href="/project/${v.id}">查看</a>
                                     <a class="btn btn-warning" href="/project/${v.id}/edit">编辑</a>
-                                    <form action="{{url('/project/${v.id}')}}" 
+                                    <form action="{{url('/project/${v.id}')}}"
                                     method="post"
                                     style="float:right;" onsubmit="javascript:return del()">
                                         {{ csrf_field() }}

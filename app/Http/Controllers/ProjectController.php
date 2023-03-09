@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/project";
 
@@ -34,16 +34,17 @@ class ProjectController extends Controller
     /**
      * 项目列表
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate($perPage);
 
         //项目类型
         $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
@@ -61,7 +62,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -78,7 +79,7 @@ class ProjectController extends Controller
 
         $levels = Level::all();
         $return_modes = config('types.return_mode');
-        
+
         return view('project.create', compact('types','levels','return_modes'));
     }
 
@@ -87,7 +88,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -185,7 +186,7 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){
@@ -202,13 +203,13 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
             return "您没有权限访问这个路径";
         }
-        
+
         $project = Project::find($id);
 
         //项目类型
@@ -229,7 +230,7 @@ class ProjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -260,7 +261,7 @@ class ProjectController extends Controller
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
         ]);
-        
+
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
@@ -331,7 +332,7 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
