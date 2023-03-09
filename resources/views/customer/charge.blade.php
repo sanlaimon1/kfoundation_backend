@@ -30,40 +30,61 @@
         </nav>
         <h3 class="text-center text-primary" style="margin-bottom: 0px;">上分</h3>
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">给余额上分</h5>
-                <label>金额:</label>
-                <input type="text" name="amount" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
-            </div>
+            <form action="{{route('financial_balance')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">给余额上分</h5>
+                    <label for="balance" class="form-label my-3">金额:</label>
+                    @error('financial_balance_amount')
+                        <div class="alert alert-danger">{{$message}}</div>
+                    @enderror
+                    <input type="text" name="financial_balance_amount" id="balance" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
+                </div>
+            </form>
+        </div>
+        <div class="card my-3">
+            <form action="{{route('financial_asset')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">给资产上分</h5>
+                    <label for="asset" class="form-label my-3">金额:</label>
+                    @error('financial_asset_amount')
+                        <div class="alert alert-danger">{{$message}}</div>                        
+                    @enderror
+                    <input type="text" name="financial_asset_amount" id="asset" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
+                </div>
+            </form>
         </div>
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">给资产上分</h5>
-                <label>金额:</label>
-                <input type="text" name="amount" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
-            </div>
+            <form action="{{route('financial_integration')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">给积分上分</h5>
+                    <label for="integration" class="form-label my-3">金额:</label>
+                    @error('financial_integration_amount')
+                        <div class="alert alert-danger">{{$message}}</div>
+                    @enderror
+                    <input type="text" name="financial_integration_amount" id="integration" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
+                </div>
+            </form>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">给积分上分</h5>
-                <label>金额:</label>
-                <input type="text" name="amount" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">上分</button>
-            </div>
-        </div>
-        <div class="card">
+        <div class="card my-3">
             <div class="card-body">
                 <h5 class="card-title">给平台币上分</h5>
-                <label>金额:</label>
-                <input type="text" name="amount" />
+                <label for="platform_coin" class="form-label my-3">金额:</label>
+                <input type="text" name="platform_coin" id="platform_coin" />
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-danger" style="float:right;">上分</button>

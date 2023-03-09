@@ -117,6 +117,9 @@ Route::get('customer_withdrawal/{id}', 'App\Http\Controllers\CustomerController@
 Route::get('customer_password/{id}', 'App\Http\Controllers\CustomerController@modify_pass')->name('customer.modify_pass'); //下分
 Route::post('customer_password1', [CustomerController::class, 'customer_password1'])->name('customer.password1'); //存儲密碼1
 Route::post('customer_password2', [CustomerController::class, 'customer_password2'])->name('customer.password2'); //存儲密碼2
+Route::post('financial_balance', [CustomerController::class, 'financial_balance'])->name('financial_balance'); //存儲財務餘額
+Route::post('financial_asset', [CustomerController::class, 'financial_asset'])->name('financial_asset'); //儲存金融資產
+Route::post('financial_integration', [CustomerController::class, 'financial_integration'])->name('financial_integration');//門店財務整合
 
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');

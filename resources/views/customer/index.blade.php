@@ -86,8 +86,7 @@
                         <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                         <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
-                         method="post"
-                         style="float:right;" onsubmit="javascript:return del()">
+                         method="post"  onsubmit="javascript:return del()" class="d-inline-block">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">冻结</button>
