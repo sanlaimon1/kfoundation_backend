@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Teamlevel;
 use App\Models\Level;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class TeamlevelController extends Controller
 {
@@ -75,7 +77,7 @@ class TeamlevelController extends Controller
 
         $request->validate([
             'level_name' => ['required', 'string', 'between:1,45'],
-            'icon' => ['required','image','mimes:jpg,png,jpeg,bmp,webp'],
+            'icon' => ['required','mimes:jpg,png,jpeg,bmp,webp'],
             'spread_members_num' => ['required','integer','gte:0'],
             'spread_leaders_num' => ['required','integer','gte:0'],
             'accumulative_amount' => ['required','integer','gte:0'],
@@ -109,18 +111,39 @@ class TeamlevelController extends Controller
         $default_level = (int)$default_level;
         $status = (int)$status;
 
-        $newteamlevel = new Teamlevel();
-        $newteamlevel->level_name = $level_name;
-        $newteamlevel->icon = $icon;
-        $newteamlevel->spread_members_num = $spread_members_num;
-        $newteamlevel->spread_leaders_num = $spread_leaders_num;
-        $newteamlevel->accumulative_amount = $accumulative_amount;
-        $newteamlevel->team_award = $team_award;
-        $newteamlevel->is_given = $is_given;
-        $newteamlevel->award_amount = $award_amount;
-        $newteamlevel->default_level = $default_level;
-        $newteamlevel->status = $status;
-        $newteamlevel->save();
+        DB::beginTransaction();
+        try {
+            $newteamlevel = new Teamlevel();
+            $newteamlevel->level_name = $level_name;
+            $newteamlevel->icon = $icon;
+            $newteamlevel->spread_members_num = $spread_members_num;
+            $newteamlevel->spread_leaders_num = $spread_leaders_num;
+            $newteamlevel->accumulative_amount = $accumulative_amount;
+            $newteamlevel->team_award = $team_award;
+            $newteamlevel->is_given = $is_given;
+            $newteamlevel->award_amount = $award_amount;
+            $newteamlevel->default_level = $default_level;
+            $newteamlevel->status = $status;
+
+            if(!$newteamlevel->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'teamlevel.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('teamlevel.index');
     }
@@ -200,18 +223,39 @@ class TeamlevelController extends Controller
         $default_level = (int)$default_level;
         $status = (int)$status;
 
-        $newteamlevel = Teamlevel::find($id);
-        $newteamlevel->level_name = $level_name;
-        $newteamlevel->icon = $icon;
-        $newteamlevel->spread_members_num = $spread_members_num;
-        $newteamlevel->spread_leaders_num = $spread_leaders_num;
-        $newteamlevel->accumulative_amount = $accumulative_amount;
-        $newteamlevel->team_award = $team_award;
-        $newteamlevel->is_given = $is_given;
-        $newteamlevel->award_amount = $award_amount;
-        $newteamlevel->default_level = $default_level;
-        $newteamlevel->status = $status;
-        $newteamlevel->save();
+        DB::beginTransaction();
+        try {
+            $newteamlevel = Teamlevel::find($id);
+            $newteamlevel->level_name = $level_name;
+            $newteamlevel->icon = $icon;
+            $newteamlevel->spread_members_num = $spread_members_num;
+            $newteamlevel->spread_leaders_num = $spread_leaders_num;
+            $newteamlevel->accumulative_amount = $accumulative_amount;
+            $newteamlevel->team_award = $team_award;
+            $newteamlevel->is_given = $is_given;
+            $newteamlevel->award_amount = $award_amount;
+            $newteamlevel->default_level = $default_level;
+            $newteamlevel->status = $status;
+
+            if(!$newteamlevel->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'teamlevel.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('teamlevel.index');
     }
@@ -219,7 +263,7 @@ class TeamlevelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -227,16 +271,29 @@ class TeamlevelController extends Controller
         if( !(($permission->auth2 ?? 0) & 64) ){
             return "您没有权限访问这个路径";
         }
-        
-        $role_id = Auth::user()->rid;        
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
-            return "您没有权限访问这个路径";
+        DB::beginTransaction();
+        try {
+            $teamlevel = Teamlevel::find($id);
+            if(!$teamlevel->delete())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'teamlevel.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
         }
-
-        $teamlevel = Teamlevel::find($id);
-        $teamlevel->delete();
         return redirect()->route('teamlevel.index');
     }
 }

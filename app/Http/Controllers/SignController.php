@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Sign;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use Illuminate\Support\Facades\DB;
 
 class SignController extends Controller
 {
@@ -85,10 +87,31 @@ class SignController extends Controller
         $signdate = trim($request->get('signdate'));
         
         // to do something
-        $one = new Sign;
-        $one->signdate = $signdate;
-        $one->save();
+        DB::beginTransaction();
+        try {
+            $one = new Sign;
+            $one->signdate = $signdate;
+            if(!$one->save())
+                throw new \Exception('事务中断1');
 
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'sign.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '修改错误，事务回滚';
+        }
         return redirect()->route('sign.index');
     }
 

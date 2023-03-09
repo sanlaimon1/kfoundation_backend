@@ -63,7 +63,8 @@ class WalletController extends Controller
             $customer_name = DB::table('customers')
                             ->where('customers.id','=',$wallet->userid)
                             ->select('realname')->first();
-            $wallet->delete();
+            if(!$wallet->delete())
+                throw new \Exception('事务中断1');
 
             $myself = Auth::user();
             $log = new Log();
@@ -76,8 +77,8 @@ class WalletController extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
-            $log->save();
-
+            if(!$log->save())
+                throw new \Exception('事务中断2');
             DB::commit();
 
         } catch (\Exception $e) {
