@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="/css/flatpickr.min.css">
     <script src="/js/flatpickr"></script>
     <script src="/js/zh.js"></script>
+    <style>
+            .box1, .box2 {
+                display: inline-block;
+            }
+    </style>
 </head>
 
 <body>
@@ -72,9 +77,27 @@
                 @endforeach
             </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $logs->total() }}</strong>  <br /> {{ $logs->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $logs->total() }}</strong>  <br /> {{ $logs->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('log.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="10" {{ $logs->perPage() == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ $logs->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $logs->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $logs->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $logs->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </div>
+            </form>
+        </div>
+
+
     </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
