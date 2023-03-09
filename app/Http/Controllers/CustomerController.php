@@ -424,14 +424,6 @@ class CustomerController extends Controller
         return redirect()->route('customer.kickout', ['id'=>$id]);
     }
 
-    //下分
-    public function withdrawal(string $id) {
-        $id = (int)$id;
-        $one = Customer::find($id);
-
-        return view('customer.withdrawal', compact('id', 'one'));
-    }
-
     //修改密码
     public function modify_pass(string $id) {
         $id = (int)$id;
@@ -567,7 +559,7 @@ class CustomerController extends Controller
             $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
             $newlog->ip = $request->ip();
-            $newlog->route = 'financial_balance';
+            $newlog->route = 'charge.financial_balance';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -616,7 +608,7 @@ class CustomerController extends Controller
             $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 儲存金融資產 ';
             $newlog->ip = $request->ip();
-            $newlog->route = 'financial_asset';
+            $newlog->route = 'charge.financial_asset';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -665,7 +657,7 @@ class CustomerController extends Controller
             $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 門店財務整合 ';
             $newlog->ip = $request->ip();
-            $newlog->route = 'financial_integration';
+            $newlog->route = 'charge.financial_integration';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -714,7 +706,7 @@ class CustomerController extends Controller
             $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 存儲金融平台幣 ';
             $newlog->ip = $request->ip();
-            $newlog->route = 'financial_platform_coin';
+            $newlog->route = 'charge.financial_platform_coin';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -734,5 +726,209 @@ class CustomerController extends Controller
         }
         return redirect()->route('customer.index');
     }
+
+    //下分
+    public function withdrawal(string $id) {
+        $id = (int)$id;
+        $customer = Customer::find($id);
+
+        return view('customer.withdrawal', compact('id', 'customer'));
+    }
+
+    //門店提款餘額
+    public function withdraw_financial_balance(Request $request)
+    {
+        $request->validate([
+            'withdraw_balance_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->withdraw_balance_amount;
+        $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_balance = new FinancialBalance();
+            $financial_balance->userid = $customer->id;
+            $financial_balance->amount = $amount;
+            $financial_balance->balance = $customer->balance;
+            $financial_balance->direction = -1;
+            $financial_balance->financial_type = 6;
+            $financial_balance->details = $detail;
+            $financial_balance->after_balance = $customer->balance;
+            if(!$financial_balance->save())
+            throw new \Exception('事务中断19');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'withdraw.financial_balance';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断20');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //存入和提取金融資產
+    public function withdraw_financial_asset(Request $request)
+    {
+        $request->validate([
+            'withdraw_asset_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->withdraw_asset_amount;
+        $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_asset = new FinancialAsset();
+            $financial_asset->userid = $customer->id;
+            $financial_asset->amount = $amount;
+            $financial_asset->balance = $customer->balance;
+            $financial_asset->direction = -1;
+            $financial_asset->financial_type = 6;
+            $financial_asset->details = $detail;
+            $financial_asset->after_balance = $customer->balance;
+            if(!$financial_asset->save())
+            throw new \Exception('事务中断21');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'withdraw.financial_asset';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断22');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //商店撤回財務整合
+    public function withdraw_financial_integration(Request $request)
+    {
+        $request->validate([
+            'withdraw_integration_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->withdraw_integration_amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_integration = new FinancialIntegration();
+            $financial_integration->userid = $customer->id;
+            $financial_integration->amount = $amount;
+            $financial_integration->balance = $customer->balance;
+            $financial_integration->direction = -1;
+            $financial_integration->financial_type = 6;
+            $financial_integration->details = $detail;
+            $financial_integration->after_balance = $customer->balance;
+            if(!$financial_integration->save())
+            throw new \Exception('事务中断23');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 商店撤回財務整合 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'withdraw.financial_integration';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断24');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+     //商店取款金融平台幣
+     public function withdraw_financial_platform_coin(Request $request)
+     {
+         $request->validate([
+             'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
+         ]);
+         $customer_id = $request->customer_id;
+         $customer = Customer::find($customer_id);
+         $amount =  $request->withdraw_platform_coin_amount;
+         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+         DB::beginTransaction();
+         try{
+             $financial_platform_coin = new FinancialPlatformCoin();
+             $financial_platform_coin->userid = $customer->id;
+             $financial_platform_coin->amount = $amount;
+             $financial_platform_coin->balance = $customer->balance;
+             $financial_platform_coin->direction = -1;
+             $financial_platform_coin->financial_type = 6;
+             $financial_platform_coin->details = $detail;
+             $financial_platform_coin->after_balance = $customer->balance;
+             if(!$financial_platform_coin->save())
+             throw new \Exception('事务中断25');
+ 
+             $username = Auth::user()->username;
+             $newlog = new Log;
+             $newlog->adminid = Auth::id();
+             $newlog->action = '管理员' . $username . ' 商店取款金融平台幣 ';
+             $newlog->ip = $request->ip();
+             $newlog->route = 'withdraw.financial_platform_coin';
+             $newlog->parameters = json_encode( $request->all() );
+             $newlog->created_at = date('Y-m-d H:i:s');
+             if(!$newlog->save())
+                 throw new \Exception('事务中断26');
+ 
+             DB::commit();
+         } catch (\Exception $e) {
+             DB::rollback();
+             /**
+              * $errorMessage = $e->getMessage();
+              * $errorCode = $e->getCode();
+              * $stackTrace = $e->getTraceAsString();
+              */
+             $errorMessage = $e->getMessage();
+             return $errorMessage;
+             //return '删除错误，事务回滚';
+         }
+         return redirect()->route('customer.index');
+     }
 
 }
