@@ -540,7 +540,7 @@ class CustomerController extends Controller
     }
 
     //存儲財務餘額
-    public function financial_balance(Request $request)
+    public function charge_financial_balance(Request $request)
     {
         $request->validate([
             'financial_balance_amount' => ['required', 'numeric', 'gt:0']
@@ -589,7 +589,7 @@ class CustomerController extends Controller
     }
 
     //儲存金融資產
-    public function financial_asset(Request $request)
+    public function charge_financial_asset(Request $request)
     {
         $request->validate([
             'financial_asset_amount' => ['required', 'numeric', 'gt:0']
@@ -638,7 +638,7 @@ class CustomerController extends Controller
     }
 
     //門店財務整合
-    public function financial_integration(Request $request)
+    public function charge_financial_integration(Request $request)
     {
         $request->validate([
             'financial_integration_amount' => ['required', 'numeric', 'gt:0']
@@ -687,7 +687,7 @@ class CustomerController extends Controller
     }
 
     //存儲金融平台幣
-    public function financial_platform_coin(Request $request)
+    public function charge_financial_platform_coin(Request $request)
     {
         $request->validate([
             'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']

@@ -30,7 +30,7 @@
         </nav>
         <h3 class="text-center text-primary" style="margin-bottom: 0px;">上分</h3>
         <div class="card">
-            <form action="{{route('financial_balance')}}" method="POST">
+            <form action="{{route('charge.financial_balance')}}" method="POST">
                 @csrf
                 <input type="hidden" name="customer_id" value="{{$customer->id}}">
                 <div class="card-body">
@@ -47,7 +47,7 @@
             </form>
         </div>
         <div class="card my-3">
-            <form action="{{route('financial_asset')}}" method="POST">
+            <form action="{{route('charge.financial_asset')}}" method="POST">
                 @csrf
                 <input type="hidden" name="customer_id" value="{{$customer->id}}">
                 <div class="card-body">
@@ -64,7 +64,7 @@
             </form>
         </div>
         <div class="card">
-            <form action="{{route('financial_integration')}}" method="POST">
+            <form action="{{route('charge.financial_integration')}}" method="POST">
                 @csrf
                 <input type="hidden" name="customer_id" value="{{$customer->id}}">
                 <div class="card-body">
@@ -81,7 +81,7 @@
             </form>
         </div>
         <div class="card my-3">
-            <form action="{{route('financial_platform_coin')}}" method="POST">
+            <form action="{{route('charge.financial_platform_coin')}}" method="POST">
                 @csrf
                 <input type="hidden" name="customer_id" value="{{$customer->id}}">
                 <div class="card-body">
