@@ -1,79 +1,80 @@
-<?php
-    use App\models\Admin;
-?>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>日志列表</title>
+    <title>幻灯片</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
-    <link rel="stylesheet" href="/css/flatpickr.min.css">
-    <script src="/js/flatpickr"></script>
-    <script src="/js/zh.js"></script>
+    <style>
+        #app td {
+            height: 100px;
+            line-height: 100px;
+            padding: 0;
+        }
+        #app td img {
+            height: 100px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div id="app" class="container-fluid">
         <br />
-        <nav class="row">
-            <div class="col-3">
-                <label class="form-label">管理员：</label>
-                <select id="adminid" name="adminid" id="adminid" class="form-control">
-                    <option>--请选择--</option>
-                    @foreach ($managers as $oneadmin)
-                    <option value="{{ $oneadmin->id }}">{{ $oneadmin->username }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label class="form-label">操作：</label>
-                <input type="text" name="action" id="action" class="form-control" />
-            </div>
-
-            <div class="col-2">
-                <label class="form-label">时间：</label>
-                <input type="text" name="date" id="date" class="form-control" />
-            </div>
-
-            <div class="col-1">
-                <br />
-                <button class="btn btn-success" id="log_search">查询</button>
-            </div>
-        </nav>
-        <br />
+        <a href="{{ route('slide.create') }}" class="btn btn-primary">创建幻灯图片</a>
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">管理员</th>
-                    <th scope="col">操作</th>
-                    <th scope="col">IP</th>
-                    <th scope="col">路由</th>
-                    <th scope="col">时间</th>
-                    <th scope="col">查看</th>
+                    <th scope="col">排序</th>
+                    <th scope="col">标题</th>
+                    <th scope="col">图片</th>
+                    <th scope="col">链接</th>
+                    <th scope="col">类型</th>
+                    <th scope="col">状态</th>
+                    <th scope="col" style="width: 120px;">操作</th>
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($logs as $one)
+                @foreach ($records as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
-                    <td>{{ $one->oneadmin->username }}</td>
-                    <td>{{ $one->action }}</td>
-                    <td>{{ $one->ip }}</td>
-                    <td>{{ $one->route }}</td>
-                    <td>{{ $one->created_at }}</td>
+                    <td>{{ $one->sort }}</td>
+                    <td>{{ $one->title }}</td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('log.show', ['log'=>$one->id]) }}">查看请求数据</a>
+                        <img src="{{ $one->picture_path }}" />
+                    </td>
+                    <td>{{ $one->link }}</td>
+                    <td>
+                        @if($one->type==1)
+                            轮播
+                        @else
+                            库存
+                        @endif
+                    </td>
+                    <td>
+                        @if($one->status==1)
+                            <span style="color:green;">显示</span>
+                        @else
+                            <span style="color:red;">隐藏</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ route('slide.edit', ['slide'=>$one->id]) }}">编辑</a>
+                        <form action="{{ route('slide.destroy', ['slide'=>$one->id]) }}"
+                         method="post"
+                         style="float:right;" onsubmit="javascript:return del()">
+                            {{ csrf_field() }}
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">删除</button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
         <nav aria-label="page">
-              <strong>总数: {{ $logs->total() }}</strong>  <br /> {{ $logs->links() }}
+              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
         </nav>
     </div>
 
@@ -87,14 +88,6 @@
             }
         });
         $(document).ready(function(){
-            //datepicker
-            flatpickr("#date",
-            {
-                enableTime: true,  // 启用时间选择
-                dateFormat: "Y-m-d H:i", // 自定义日期格式
-                locale: "zh"       // 使用中文语言
-             });
-
             $("#log_search").click(function(){
             var adminid = $("#adminid").val();
             var action = $("#action").val();
@@ -117,9 +110,7 @@
                         console.log(v);
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.username}</td>
                                 <td>${v.action}</td>
-                                <td>${v.ip}</td>
                                 <td>${v.route}</td>
                                 <td>${v.created_at}</td>
                                 <td>
@@ -132,6 +123,16 @@
             });
         })
         })
+    </script>
+    <script>
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
     </script>
 </body>
 </html>

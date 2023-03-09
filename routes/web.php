@@ -57,7 +57,7 @@ Route::resource('sign', 'App\Http\Controllers\SignController');
 //文章列表
 Route::resource('article', 'App\Http\Controllers\ArticleController');
 //系统图片设置
-Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
+//Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
 Route::post('/save_image', 'App\Http\Controllers\HomeController@save_image')->name('save_image');
 Route::post('/delete_image', 'App\Http\Controllers\HomeController@delete_image')->name('delete_image');
 //生活缴费
@@ -109,6 +109,11 @@ Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_searc
 //用户列表
 Route::resource('customer', 'App\Http\Controllers\CustomerController');
 Route::post('customer_search','App\Http\Controllers\CustomerController@customer_search')->name('customer_search');
+Route::get('kickout/{id}', 'App\Http\Controllers\CustomerController@kickout')->name('customer.kickout'); //踢出会员界面
+Route::get('kick/{id}', 'App\Http\Controllers\CustomerController@kick')->name('customer.kick'); //踢出会员
+Route::get('customer_charge/{id}', 'App\Http\Controllers\CustomerController@charge')->name('customer.charge'); //上分
+Route::get('customer_withdrawal/{id}', 'App\Http\Controllers\CustomerController@withdrawal')->name('customer.withdrawal'); //下分
+Route::get('customer_password/{id}', 'App\Http\Controllers\CustomerController@modify_pass')->name('customer.modify_pass'); //下分
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
 Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');
@@ -117,3 +122,6 @@ Route::get("/check_count",  [App\Http\Controllers\HomeController::class, 'check_
 //用户登录日志
 Route::resource('loginlog', 'App\Http\Controllers\LoginLogController');
 Route::post('loginlog_search', 'App\Http\Controllers\LoginLogController@loginlog_search')->name('loginlog_search');
+
+//幻灯片管理
+Route::resource('slide', 'App\Http\Controllers\SlideController');
