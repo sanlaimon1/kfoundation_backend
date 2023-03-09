@@ -116,8 +116,10 @@ class WebsiteController extends Controller
         }else if($id == 9){
             if($request->hasFile('video_home')){
                 $get_video_home = time().'.'.$request->video_home->extension();
-                $request->video_home->move(public_path('/images/'),$get_video_home);
-                $config_value = '/images/'.$get_video_home;
+                $request->video_home->move(public_path('/mp4File/'),$get_video_home);
+                $config_value = '/mp4File/'.$get_video_home;
+
+                // $config_value = $this->convertMp4ToWebP($request->file('video_home'));
             }
         }else{
             //收到值
