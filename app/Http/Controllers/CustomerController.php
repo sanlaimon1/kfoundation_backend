@@ -67,7 +67,9 @@ class CustomerController extends Controller
         $levels = Level::all();
         $teamlevels = Teamlevel::all();
         $title = "会员列表";
-        return view( 'customer.create',compact('levels','teamlevels','title'));
+
+        $customer_identity = config('types.customer_identity');
+        return view( 'customer.create',compact('levels','teamlevels','title','customer_identity'));
     }
 
     /**
@@ -198,7 +200,8 @@ class CustomerController extends Controller
         $levels = Level::all();
         $teamlevels = Teamlevel::all();
         $customer = Customer::find($id);
-        return view('customer.edit', compact('levels','teamlevels','customer'));
+        $customer_identity = config('types.customer_identity');
+        return view('customer.edit', compact('levels','teamlevels','customer','customer_identity'));
     }
 
     /**

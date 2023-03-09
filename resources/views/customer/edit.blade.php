@@ -71,9 +71,9 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <select id="identity" name="identity"  class="form-select" >
-                            <option value="0" {{ $customer->identity == 0? 'selected' : ''}}>真实账号</option>
-                            <option value="1" {{ $customer->identity == 1? 'selected' : ''}}>一级内部账号</option>
-                            <option value="2" {{ $customer->identity == 2? 'selected' : ''}}>二级内部账号</option>
+                            @foreach ($customer_identity as $key => $identity)
+                                <option value="{{$key}}" {{ $customer->identity == $key? 'selected' : ''}}>{{$identity}}</option>                                
+                            @endforeach
                         </select>
                     </div>
                 </div>
