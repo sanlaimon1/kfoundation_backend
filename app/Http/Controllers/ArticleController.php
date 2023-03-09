@@ -14,14 +14,14 @@ use DB;
 class ArticleController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/article";
 
@@ -31,11 +31,11 @@ class ArticleController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -44,7 +44,8 @@ class ArticleController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('article.index', compact('articles'));
     }
@@ -54,7 +55,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -63,7 +64,7 @@ class ArticleController extends Controller
 
         $admins = Admin::select('id','username')->get();
         $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
-        
+
         return view('article.create', compact('admins' , 'categories'));
     }
 
@@ -72,7 +73,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -98,12 +99,13 @@ class ArticleController extends Controller
             $newarticle->categoryid = $categoryid;
             $newarticle->adminid = Auth::id();
 
-            $newarticle->save();
+            if(!$newarticle->save())
+                throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 添加站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.store';
             $input = $request->all();
@@ -130,7 +132,7 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){
@@ -147,7 +149,7 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -165,7 +167,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -189,13 +191,14 @@ class ArticleController extends Controller
             $newarticle->title = $title;
             $newarticle->content = $content;
             $newarticle->categoryid = $categoryid;
-            
-            $newarticle->save();
+
+            if(!$newarticle->save())
+                throw new \Exception('事务中断3');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 修改站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.update';
             $input = $request->all();
@@ -204,7 +207,7 @@ class ArticleController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断4');
 
             DB::commit();
 
@@ -223,7 +226,7 @@ class ArticleController extends Controller
     public function destroy(string $id, Request $request)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
@@ -234,12 +237,13 @@ class ArticleController extends Controller
         try {
             //code...
             $article = Article::find($id);
-            $article->delete();
+            if(!$article->delete())
+                throw new \Exception('事务中断5');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 删除站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.destroy';
             $input = $request->all();
@@ -248,7 +252,7 @@ class ArticleController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断6');
 
             DB::commit();
 

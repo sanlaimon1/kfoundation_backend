@@ -11,14 +11,14 @@ use App\Models\Permission;
 
 class CategoryController extends Controller
 {
-     /* 
+     /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/category";
 
@@ -28,11 +28,11 @@ class CategoryController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -41,7 +41,8 @@ class CategoryController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $categories = Category::where('enable', 1)->orderBy('sort', 'asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $categories = Category::where('enable', 1)->orderBy('sort', 'asc')->paginate($perPage);
         return view('category/index', compact('categories'));
     }
 
@@ -89,12 +90,14 @@ class CategoryController extends Controller
             $newcategory = new Category();
             $newcategory->cate_name = $category_name;
             $newcategory->sort = $sort;
-            $newcategory->save();
+
+            if(!$newcategory->save())
+                throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 添加站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'category.store';
             $input = $request->all();
@@ -168,12 +171,13 @@ class CategoryController extends Controller
             $newcategory = Category::find($id);
             $newcategory->cate_name = $category_name;
             $newcategory->sort = $sort;
-            $newcategory->save();
+            if(!$newcategory->save())
+                throw new \Exception('事务中断3');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 修改站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'category.update';
             $input = $request->all();
@@ -182,7 +186,7 @@ class CategoryController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断4');
 
             DB::commit();
 
@@ -212,12 +216,13 @@ class CategoryController extends Controller
             $id = (int)$id;
             $category = Category::find($id);
             $category->enable = 0;
-            $category->save();
+            if(!$category->save())
+                throw new \Exception('事务中断5');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 删除站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'category.destroy';
             $input = $request->all();
@@ -226,7 +231,7 @@ class CategoryController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断6');
 
             DB::commit();
 

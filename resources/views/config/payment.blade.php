@@ -23,6 +23,10 @@
             height: 30px;
             line-height: 30px;
         }
+        .box1, .box2
+        {
+            display: inline-block;
+        }
     </style>
     <script>
         $.ajaxSetup({
@@ -36,7 +40,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/website/' + dataid,
@@ -85,7 +89,7 @@
                 <li class="breadcrumb-item active" aria-current="page">支付设置</li>
             </ol>
         </nav>
-        
+
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
@@ -120,14 +124,31 @@
             </tbody>
         </table>
         <footer style="display:flex;">
-            <aside style="line-height: 37px; margin-right: 2rem;">
-                共计<strong>{{ $payments->count() }}</strong>条数据
-            </aside>
-            {{ $payments->links() }}
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <aside style="line-height: 37px; margin-right: 2rem;">
+                    共计<strong>{{ $payments->count() }}</strong>条数据
+                </aside>
+                {{ $payments->links() }}
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('payment.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="10" {{ $payments->perPage() == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ $payments->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $payments->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $payments->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $payments->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
+
         </footer>
-        
-        
+
+
     </div>
-    
+
 </body>
 </html>

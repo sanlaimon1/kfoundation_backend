@@ -7,17 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\Level;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class LevelController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/level";
 
@@ -31,16 +33,17 @@ class LevelController extends Controller
     /**
      * 会员等级
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $levels = Level::orderBy('level_id', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $levels = Level::orderBy('level_id', 'desc')->paginate($perPage);
 
         return view('level.index', compact('levels'));
     }
@@ -50,7 +53,7 @@ class LevelController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -65,7 +68,7 @@ class LevelController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -94,17 +97,43 @@ class LevelController extends Controller
         $min_coin = trim($request->min_coin);
         $max_coin = trim($request->max_coin);
 
-        $newlevel = new Level();
-        $newlevel->level_name = $level_name;
-        $newlevel->accumulative_amount = $accumulative_amount;
-        $newlevel->interest = $interest;
-        $newlevel->personal_charge = $personal_charge;
-        $newlevel->level1_award = $level1_award;
-        $newlevel->level2_award = $level2_award;
-        $newlevel->level3_award = $level3_award;
-        $newlevel->min_coin = $min_coin;
-        $newlevel->max_coin = $max_coin;
-        $newlevel->save();
+        DB::beginTransaction();
+        try {
+            $newlevel = new Level();
+            $newlevel->level_name = $level_name;
+            $newlevel->accumulative_amount = $accumulative_amount;
+            $newlevel->interest = $interest;
+            $newlevel->personal_charge = $personal_charge;
+            $newlevel->level1_award = $level1_award;
+            $newlevel->level2_award = $level2_award;
+            $newlevel->level3_award = $level3_award;
+            $newlevel->min_coin = $min_coin;
+            $newlevel->max_coin = $max_coin;
+
+            if(!$newlevel->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'level.store';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('level.index');
     }
@@ -122,7 +151,7 @@ class LevelController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -138,7 +167,7 @@ class LevelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -167,17 +196,45 @@ class LevelController extends Controller
         $min_coin = trim($request->min_coin);
         $max_coin = trim($request->max_coin);
 
-        $newlevel = Level::find($id);
-        $newlevel->level_name = $level_name;
-        $newlevel->accumulative_amount = $accumulative_amount;
-        $newlevel->interest = $interest;
-        $newlevel->personal_charge = $personal_charge;
-        $newlevel->level1_award = $level1_award;
-        $newlevel->level2_award = $level2_award;
-        $newlevel->level3_award = $level3_award;
-        $newlevel->min_coin = $min_coin;
-        $newlevel->max_coin = $max_coin;
-        $newlevel->save();
+        DB::beginTransaction();
+        try {
+            $newlevel = Level::find($id);
+            $newlevel->level_name = $level_name;
+            $newlevel->accumulative_amount = $accumulative_amount;
+            $newlevel->interest = $interest;
+            $newlevel->personal_charge = $personal_charge;
+            $newlevel->level1_award = $level1_award;
+            $newlevel->level2_award = $level2_award;
+            $newlevel->level3_award = $level3_award;
+            $newlevel->min_coin = $min_coin;
+            $newlevel->max_coin = $max_coin;
+
+            if(!$newlevel->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'level.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
+
+
 
         return redirect()->route('level.index');
     }
@@ -185,17 +242,42 @@ class LevelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
             return "您没有权限访问这个路径";
         }
+        DB::beginTransaction();
+        try {
+            //code...
+            $level = Level::find($id);
+            if(!$level->delete())
+                throw new \Exception('事务中断5');
 
-        $level = Level::find($id);
-        $level->delete();
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'level.destroy';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
         return redirect()->route('level.index');
     }
 }

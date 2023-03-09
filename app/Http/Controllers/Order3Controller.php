@@ -8,16 +8,17 @@ use App\Models\Order3;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class Order3Controller extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/order3";
 
@@ -31,16 +32,17 @@ class Order3Controller extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $order3 = Order3::orderBy('created_at','desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $order3 = Order3::orderBy('created_at','desc')->paginate($perPage);
         return view('order3.index',compact('order3'));
     }
 
@@ -65,7 +67,7 @@ class Order3Controller extends Controller
      */
     public function edit(Request $request,string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -77,7 +79,8 @@ class Order3Controller extends Controller
             //code...
             $order3 = Order3::find($id);
             $order3->status = 1;
-            $order3->save();
+            if(!$order3->save())
+                throw new \Exception('事务中断1');
 
             $myself = Auth::user();
             $log = new Log();
@@ -90,14 +93,15 @@ class Order3Controller extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
-            $log->save();
+            if(!$log->save())
+                throw new \Exception('事务中断2');
 
             DB::commit();
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
-            return 'error';
+            return '添加错误，事务回滚';
         }
 
         return redirect()->route('order3.index');
@@ -105,7 +109,7 @@ class Order3Controller extends Controller
 
     public function show(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){
@@ -117,7 +121,8 @@ class Order3Controller extends Controller
             //code...
             $order3 = Order3::find($id);
             $order3->status = 2;
-            $order3->save();
+            if(!$order3->save())
+                throw new \Exception('事务中断3');
 
             $myself = Auth::user();
             $log = new Log();
@@ -130,7 +135,8 @@ class Order3Controller extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
-            $log->save();
+            if(!$log->save())
+                throw new \Exception('事务中断4');
 
             DB::commit();
 

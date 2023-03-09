@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class SyslogController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/syslog";
 
@@ -30,16 +30,17 @@ class SyslogController extends Controller
     /**
      * 系统日志列表 list of system logs
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $logs = Syslog::orderBy('created_at','desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $logs = Syslog::orderBy('created_at','desc')->paginate($perPage);
 
         return view( 'syslog.index', compact('logs') );
     }
@@ -49,7 +50,7 @@ class SyslogController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){

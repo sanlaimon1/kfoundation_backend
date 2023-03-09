@@ -7,17 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Interest;
 use DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class InterestController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/interest";
 
@@ -31,23 +32,24 @@ class InterestController extends Controller
     /**
      * 返息明细列表
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
-        
-        $records = Interest::orderBy('refund_time', 'desc')->orderBy('created_at', 'desc')->paginate(20);
+
+        $perPage = $request->input('perPage', 20);
+        $records = Interest::orderBy('refund_time', 'desc')->orderBy('created_at', 'desc')->paginate($perPage);
 
         $title = "返息明细";
 
         return view( 'interest.index', compact('records', 'title') );
     }
 
-    
+
     /**
      * Display the specified resource.
      */
@@ -60,8 +62,8 @@ class InterestController extends Controller
     {
         $pid = $request->pid;
         $customer = $request->customer;
-        $created_at = $request->created_at;
-        $date = $request->date;
+        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
+        $date = Carbon::parse($request->date)->format('Y-m-d');
         $status = $request->status;
 
         if($pid != null && $customer != null && $created_at != null && $date != null && $status != null)

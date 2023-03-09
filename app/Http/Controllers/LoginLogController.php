@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LoginLog;
 use DB;
+use Carbon\Carbon;
 
 class LoginLogController extends Controller
 {
@@ -19,9 +20,10 @@ class LoginLogController extends Controller
     /**
      * 查询用户登录日志
      */
-    public function index()
+    public function index(Request $request)
     {
-        $logs = LoginLog::orderBy('created_at', 'desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $logs = LoginLog::orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('loginlog.index', compact('logs'));
     }
@@ -40,7 +42,7 @@ class LoginLogController extends Controller
 
     public function loginlog_search(Request $request)
     {
-        $date = $request->date;
+        $date = Carbon::parse($request->date)->format('Y-m-d');
         $user = $request->phone;
         $action = $request->action;
         if($date != null && $user != null && $action != null){
