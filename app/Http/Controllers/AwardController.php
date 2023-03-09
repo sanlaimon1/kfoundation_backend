@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Award;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class AwardController extends Controller
 {
@@ -116,11 +118,38 @@ class AwardController extends Controller
         $award_value = trim( htmlspecialchars( $request->get('award_value') ));
 
         $id = (int)$id;
-        //查询一条数据
-        $one = Award::find($id);
-        $one->award_value = $award_value;
-        $one->save();
 
+        DB::beginTransaction();
+        try {
+           //查询一条数据
+            $one = Award::find($id);
+            $one->award_value = $award_value;
+            $one->save();
+            
+            if(!$one->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'award.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );
     }
