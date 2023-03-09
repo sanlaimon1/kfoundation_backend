@@ -11,14 +11,14 @@ use App\Models\Permission;
 
 class CategoryController extends Controller
 {
-     /* 
+     /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/category";
 
@@ -28,11 +28,11 @@ class CategoryController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -41,7 +41,8 @@ class CategoryController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $categories = Category::where('enable', 1)->orderBy('sort', 'asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $categories = Category::where('enable', 1)->orderBy('sort', 'asc')->paginate($perPage);
         return view('category/index', compact('categories'));
     }
 

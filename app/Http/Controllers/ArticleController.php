@@ -14,14 +14,14 @@ use DB;
 class ArticleController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/article";
 
@@ -31,11 +31,11 @@ class ArticleController extends Controller
         $this->middleware('injection');
         //$this->middleware('injection')->only('login');
     }
-    
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -44,7 +44,8 @@ class ArticleController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('article.index', compact('articles'));
     }
@@ -54,7 +55,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -63,7 +64,7 @@ class ArticleController extends Controller
 
         $admins = Admin::select('id','username')->get();
         $categories = Category::select('id','cate_name')->where('enable', 1)->orderBy('sort', 'asc')->get();
-        
+
         return view('article.create', compact('admins' , 'categories'));
     }
 
@@ -72,7 +73,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -131,7 +132,7 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 8) ){
@@ -148,7 +149,7 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -166,7 +167,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -190,7 +191,7 @@ class ArticleController extends Controller
             $newarticle->title = $title;
             $newarticle->content = $content;
             $newarticle->categoryid = $categoryid;
-            
+
             if(!$newarticle->save())
                 throw new \Exception('事务中断3');
 
@@ -225,7 +226,7 @@ class ArticleController extends Controller
     public function destroy(string $id, Request $request)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){

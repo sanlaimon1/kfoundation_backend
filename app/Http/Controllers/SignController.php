@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\DB;
 
 class SignController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/sign";
 
@@ -33,16 +33,17 @@ class SignController extends Controller
     /**
      * 签到
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $signs = Sign::orderBy('signdate','desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $signs = Sign::orderBy('signdate','desc')->paginate($perPage);
 
         return view('sign.index', compact('signs'));
     }
@@ -61,31 +62,31 @@ class SignController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
             return "您没有权限访问这个路径";
         }
-        
+
         $rules = [
             'signdate' => ['required', 'date' ,'date_format:Y-m-d', 'after:today', 'unique:signs'],
         ];
-        
+
         $messages = [
             'signdate.date_format' => '必须是 年-月-日 格式',
             'signdate.after' => '必须大于今天',
         ];
-        
+
         $validator = Validator::make($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             return redirect()->back()->withErrors($errors);
         }
 
         $signdate = trim($request->get('signdate'));
-        
+
         // to do something
         DB::beginTransaction();
         try {
