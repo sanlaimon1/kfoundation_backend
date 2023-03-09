@@ -102,8 +102,8 @@
                     <option value="100" {{ $projectcates->perPage() == 100 ? 'selected' : '' }}>100</option>
                     <option value="200" {{ $projectcates->perPage() == 200 ? 'selected' : '' }}>200</option>
                 </select>
-            </div>
             </form>
+            </div>
         </div>
 
         </footer>

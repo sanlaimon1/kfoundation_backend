@@ -9,6 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <style>
+        .box1, .box2
+        {
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
@@ -62,9 +68,25 @@
                 @endforeach
             </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $order2->total() }}</strong>  <br /> {{ $order2->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $order2->total() }}</strong>  <br /> {{ $order2->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('order2.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $order2->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $order2->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $order2->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $order2->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
+
     </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>

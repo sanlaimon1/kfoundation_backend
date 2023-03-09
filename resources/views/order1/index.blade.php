@@ -68,8 +68,8 @@
                     <option value="100" {{ $order1->perPage() == 100 ? 'selected' : '' }}>100</option>
                     <option value="200" {{ $order1->perPage() == 200 ? 'selected' : '' }}>200</option>
                 </select>
-            </div>
             </form>
+            </div>
         </div>
 
     </div>
