@@ -30,14 +30,18 @@
         </nav>
         <h3 class="text-center text-primary" style="margin-bottom: 0px;">下分</h3>
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">给余额下分</h5>
-                <label>金额:</label>
-                <input type="text" name="amount" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
-            </div>
+            <form action="{{route('financial_balance')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">给余额下分</h5>
+                    <label>金额:</label>
+                    <input type="text" name="amount" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
+                </div>
+            </form>
         </div>
         <div class="card">
             <div class="card-body">

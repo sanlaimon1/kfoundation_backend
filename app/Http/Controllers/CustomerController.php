@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\FinancialAsset;
+use App\Models\FinancialBalance;
+use App\Models\FinancialIntegration;
+use App\Models\FinancialPlatformCoin;
 use App\Models\Level;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +16,7 @@ use Illuminate\Database\Query\Builder;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Teamlevel;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -215,8 +220,9 @@ class CustomerController extends Controller
         if( !(($permission->auth2 ?? 0) & 32) ){
             return "您没有权限访问这个路径";
         }
-
+        $customer = Customer::find($id);
         $request->validate([
+            "invited_code" => ['required','min:8','max:8',Rule::unique('customers')->ignore($customer->invited_code)],
             "is_allowed_code" => ['required', 'integer', 'in:0,1'],
             "identity" => ['required', 'integer', 'in:0,1,2'],
             "is_sure" => ['required', 'integer', 'in:0,1'],
@@ -242,7 +248,7 @@ class CustomerController extends Controller
 
         DB::beginTransaction();
         try {
-            $customer = Customer::find($id);
+           
             $customer->realname = $request->realname;
             $customer->is_allowed_code = $request->is_allowed_code;
             $customer->identity = $request->identity;
@@ -418,14 +424,6 @@ class CustomerController extends Controller
         return redirect()->route('customer.kickout', ['id'=>$id]);
     }
 
-    //上分
-    public function charge(string $id) {
-        $id = (int)$id;
-        $one = Customer::find($id);
-
-        return view('customer.charge', compact('id', 'one'));
-    }
-
     //下分
     public function withdrawal(string $id) {
         $id = (int)$id;
@@ -490,7 +488,8 @@ class CustomerController extends Controller
     public function customer_password2(Request $request)
     {
         $request->validate([
-            'password2' => 'required|confirmed'
+            'password2' => 'required|confirmed|min:6|max:6',
+            // 'password2' => ['regex:/^[0-9]{6}$/'],
         ]);
         
         $customer_id = $request->customer_id;
@@ -510,11 +509,216 @@ class CustomerController extends Controller
             $newlog->adminid = Auth::id();
             $newlog->action = '管理员' . $username . ' 存儲密碼2 ';
             $newlog->ip = $request->ip();
-            $newlog->route = 'customer.password1';
+            $newlog->route = 'customer.password2';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
                 throw new \Exception('事务中断10');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //上分
+    public function charge(string $id) 
+    {
+        $id = (int)$id;
+        $customer = Customer::find($id);
+
+        return view('customer.charge', compact('id', 'customer'));
+    }
+
+    //存儲財務餘額
+    public function charge_financial_balance(Request $request)
+    {
+        $request->validate([
+            'financial_balance_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->financial_balance_amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
+        DB::beginTransaction();
+        try{
+            $financial_balance = new FinancialBalance();
+            $financial_balance->userid = $customer->id;
+            $financial_balance->amount = $amount;
+            $financial_balance->balance = $customer->balance;
+            $financial_balance->direction = 1;
+            $financial_balance->financial_type = 5;
+            $financial_balance->details = $detail;
+            $financial_balance->after_balance = $customer->balance;
+            if(!$financial_balance->save())
+            throw new \Exception('事务中断11');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'financial_balance';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断12');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //儲存金融資產
+    public function charge_financial_asset(Request $request)
+    {
+        $request->validate([
+            'financial_asset_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->financial_asset_amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_asset = new FinancialAsset();
+            $financial_asset->userid = $customer->id;
+            $financial_asset->amount = $amount;
+            $financial_asset->balance = $customer->balance;
+            $financial_asset->direction = 1;
+            $financial_asset->financial_type = 5;
+            $financial_asset->details = $detail;
+            $financial_asset->after_balance = $customer->balance;
+            if(!$financial_asset->save())
+            throw new \Exception('事务中断13');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 儲存金融資產 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'financial_asset';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断14');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //門店財務整合
+    public function charge_financial_integration(Request $request)
+    {
+        $request->validate([
+            'financial_integration_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->financial_integration_amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_integration = new FinancialIntegration();
+            $financial_integration->userid = $customer->id;
+            $financial_integration->amount = $amount;
+            $financial_integration->balance = $customer->balance;
+            $financial_integration->direction = 1;
+            $financial_integration->financial_type = 5;
+            $financial_integration->details = $detail;
+            $financial_integration->after_balance = $customer->balance;
+            if(!$financial_integration->save())
+            throw new \Exception('事务中断15');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 門店財務整合 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'financial_integration';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断16');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //存儲金融平台幣
+    public function charge_financial_platform_coin(Request $request)
+    {
+        $request->validate([
+            'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->financial_platform_coin_amount;
+        $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_platform_coin = new FinancialPlatformCoin();
+            $financial_platform_coin->userid = $customer->id;
+            $financial_platform_coin->amount = $amount;
+            $financial_platform_coin->balance = $customer->balance;
+            $financial_platform_coin->direction = 1;
+            $financial_platform_coin->financial_type = 5;
+            $financial_platform_coin->details = $detail;
+            $financial_platform_coin->after_balance = $customer->balance;
+            if(!$financial_platform_coin->save())
+            throw new \Exception('事务中断17');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲金融平台幣 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'financial_platform_coin';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断18');
 
             DB::commit();
         } catch (\Exception $e) {
