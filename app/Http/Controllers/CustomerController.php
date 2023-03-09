@@ -253,7 +253,7 @@ class CustomerController extends Controller
             $customer->idcard_back = $idcard_back;
             $customer->updated_at = date('Y-m-d H:i:s');
             if(!$customer->save())
-            throw new \Exception('事务中断1');
+            throw new \Exception('事务中断3');
 
             $myself = Auth::user();
             $newlog = new Log;
@@ -264,7 +264,7 @@ class CustomerController extends Controller
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断4');
 
             DB::commit();
         } catch (\Exception $e) {
@@ -437,9 +437,98 @@ class CustomerController extends Controller
     //修改密码
     public function modify_pass(string $id) {
         $id = (int)$id;
-        $one = Customer::find($id);
+        $customer = Customer::find($id);
+        return view('customer.password', compact('id', 'customer'));
+    }
 
-        return view('customer.password', compact('id', 'one'));
+    //存儲密碼1
+    public function customer_password1(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|confirmed'
+        ]);
+       
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+         
+        $salt = $customer->salt;
+        $hash_password1 = sha1( $salt . md5($salt . $request->password) );
+
+        DB::beginTransaction();
+        try {
+            $customer->password = $hash_password1;
+            if(!$customer->save())
+            throw new \Exception('事务中断7');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲密碼1 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'customer.password1';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断8');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
+
+    //存儲密碼2
+    public function customer_password2(Request $request)
+    {
+        $request->validate([
+            'password2' => 'required|confirmed'
+        ]);
+        
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+
+        $salt = $customer->salt;
+        $hash_password2 = sha1( $salt . md5($salt . $request->password2) );
+
+        DB::beginTransaction();
+        try {
+            $customer->password2 = $hash_password2;
+            if(!$customer->save())
+            throw new \Exception('事务中断9');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 存儲密碼2 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'customer.password1';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断10');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
     }
 
 }

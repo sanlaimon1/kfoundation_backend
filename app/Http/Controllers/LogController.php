@@ -34,7 +34,7 @@ class LogController extends Controller
      * Display a listing of the logs.
      * 日志列表
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -43,7 +43,8 @@ class LogController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $logs = Log::orderBy('created_at','desc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $logs = Log::orderBy('created_at','desc')->paginate($perPage);
 
         $managers = Admin::all();
 

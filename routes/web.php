@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProjectController;
 use App\Models\AssetCheck;
 // use Illuminate\Support\Facades\Redis;
@@ -114,6 +115,9 @@ Route::get('kick/{id}', 'App\Http\Controllers\CustomerController@kick')->name('c
 Route::get('customer_charge/{id}', 'App\Http\Controllers\CustomerController@charge')->name('customer.charge'); //上分
 Route::get('customer_withdrawal/{id}', 'App\Http\Controllers\CustomerController@withdrawal')->name('customer.withdrawal'); //下分
 Route::get('customer_password/{id}', 'App\Http\Controllers\CustomerController@modify_pass')->name('customer.modify_pass'); //下分
+Route::post('customer_password1', [CustomerController::class, 'customer_password1'])->name('customer.password1'); //存儲密碼1
+Route::post('customer_password2', [CustomerController::class, 'customer_password2'])->name('customer.password2'); //存儲密碼2
+
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');
 Route::post('interest_search', 'App\Http\Controllers\InterestController@interest_search')->name('interest_search');
