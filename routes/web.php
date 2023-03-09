@@ -72,6 +72,7 @@ Route::resource('projectcate', 'App\Http\Controllers\ProjectCateController');
 Route::resource('goods', 'App\Http\Controllers\GoodsController');
 //站内信
 Route::resource('inbox', 'App\Http\Controllers\InboxController');
+Route::post('inbox_search', 'App\Http\Controllers\InboxController@inbox_search')->name('inbox_search');
 //项目管理
 Route::resource('project', 'App\Http\Controllers\ProjectController');
 //項目搜索
