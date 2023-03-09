@@ -276,4 +276,25 @@ class PaymentController extends Controller
     {
         //
     }
+
+    function convertMp4ToWebP($file)
+    {
+        $mp4File = $file;
+        $fileName = $mp4File->getClientOriginalName();
+        $filePath = Storage::putFile('public', $mp4File);
+
+        // Create an image from the first frame of the MP4 video
+        $image = Image::make($filePath)->encode('jpg')->pickColor(0, 0);
+
+        // Convert the image to WebP format
+        $webpImage = $image->encode('webp');
+
+        // Save the WebP image
+        Storage::put('public/' . $fileName . '.webp', $webpImage->__toString());
+
+        // Delete the original MP4 file
+        Storage::delete($filePath);
+
+        return response()->download(storage_path('app/public/' . $fileName . '.webp'));
+    }
 }

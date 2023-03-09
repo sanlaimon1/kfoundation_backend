@@ -30,7 +30,7 @@ class SlideController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -39,7 +39,9 @@ class SlideController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = Slide::orderBy('sort', 'asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+
+        $records = Slide::orderBy('sort', 'asc')->paginate($perPage);
 
         return view('slide.index', compact('records'));
     }
@@ -72,8 +74,12 @@ class SlideController extends Controller
         }
 
         $request->validate([
-            "title" => ['required', 'string', 'max:45'],
-            "picture_path.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'title' => ['required', 'string', 'max:45'],
+            'picture_path.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'link' => ['required', 'string'],
+            'type' => ['required', 'integer', 'in:0,1'],
+            'status' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
 
         if($request->hasFile('picture_path')){
@@ -82,7 +88,7 @@ class SlideController extends Controller
             $picture_path = '/images/webpimg/'.$picture_path;
         }
 
-        $webp_path = $this->img_to_webp($picture_path);
+        $webp_path = $this->convertImgToWebp($picture_path);
 
         DB::beginTransaction();
         try {
@@ -143,8 +149,12 @@ class SlideController extends Controller
         }
 
         $request->validate([
-            "title" => ['required', 'string', 'max:45'],
-            "picture_path.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'title' => ['required', 'string', 'max:45'],
+            'picture_path.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'link' => ['required', 'string'],
+            'type' => ['required', 'integer', 'in:0,1'],
+            'status' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
         
         if($request->hasFile('picture_path')){
@@ -152,7 +162,7 @@ class SlideController extends Controller
             $request->picture_path->move(public_path('/images/webpimg/'),$picture_path);
             $picture_path = '/images/webpimg/'.$picture_path;
 
-            $webp_path = $this->img_to_webp($picture_path);
+            $webp_path = $this->convertImgToWebp($picture_path);
 
         }else{
             $webp_path = $request->picture_path;
@@ -198,7 +208,7 @@ class SlideController extends Controller
         return redirect()->route('slide.index');
     }
 
-    function img_to_webp($file){
+    function convertImgToWebp($file){
         $ext = pathinfo($file, PATHINFO_EXTENSION);
 
         if ($ext == "jpg") {
