@@ -6,6 +6,8 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class PaymentController extends Controller
 {
@@ -151,32 +153,58 @@ class PaymentController extends Controller
 
             $crypto_link = trim( $request->get('crypto_link') );
 
-            $one = Payment::find($id);
-            $one->payment_name = $payment_name;
-            $one->sort = $sort;
-            $one->level = $level;
-            $one->ptype = $ptype;
-            if($request->hasFile('upload_logo')){
-                $upload_logo = time().'.'.$request->upload_logo->extension();
-                $request->upload_logo->move(public_path('/images/'),$upload_logo);
-                $logo_image = '/images/'.$upload_logo;
-            }else{
-                $logo_image =  $one->logo;
+            DB::beginTransaction();
+            try {
+                //code...
+                $one = Payment::find($id);
+                $one->payment_name = $payment_name;
+                $one->sort = $sort;
+                $one->level = $level;
+                $one->ptype = $ptype;
+                if($request->hasFile('upload_logo')){
+                    $upload_logo = time().'.'.$request->upload_logo->extension();
+                    $request->upload_logo->move(public_path('/images/'),$upload_logo);
+                    $logo_image = '/images/'.$upload_logo;
+                }else{
+                    $logo_image =  $one->logo;
+                }
+                $one->logo = $logo_image;
+                $one->give = $give;
+                $one->description = $description;
+                $extra_array = json_decode( $one->extra, true );
+                $extra_array['crypto_link'] = $crypto_link;
+                if($request->hasFile('upload_crypto_qrcode')){
+                    $crypto_qrcode = time().'QR.'.$request->upload_crypto_qrcode->extension();
+                    $request->upload_crypto_qrcode->move(public_path('/images/'),$crypto_qrcode);
+                    $extra_array['crypto_qrcode'] = '/images/'.$crypto_qrcode;
+                }else{
+                    $extra_array['crypto_qrcode'] = $extra_array['crypto_qrcode'];
+                }
+                $one->extra = json_encode($extra_array) ;
+                if(!$one->save())
+                    throw new \Exception('事务中断1');
+                
+                $username = Auth::user()->username;
+                $log = new Log();
+                $log->adminid = Auth::id();
+                $log->action = '管理员'. $username. ' 修改站内信';
+                $log->ip =  $request->ip();
+                $log->route = 'payment.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
+                
+                if(!$log->save())
+                    throw new \Exception('事务中断2');
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
             }
-            $one->logo = $logo_image;
-            $one->give = $give;
-            $one->description = $description;
-            $extra_array = json_decode( $one->extra, true );
-            $extra_array['crypto_link'] = $crypto_link;
-            if($request->hasFile('upload_crypto_qrcode')){
-                $crypto_qrcode = time().'QR.'.$request->upload_crypto_qrcode->extension();
-                $request->upload_crypto_qrcode->move(public_path('/images/'),$crypto_qrcode);
-                $extra_array['crypto_qrcode'] = '/images/'.$crypto_qrcode;
-            }else{
-                $extra_array['crypto_qrcode'] = $extra_array['crypto_qrcode'];
-            }
-            $one->extra = json_encode($extra_array) ;
-            $one->save();
             
         } else if($ptype == 4) {
             $request->validate([
@@ -189,25 +217,50 @@ class PaymentController extends Controller
             $bank_name = trim( $request->get('bank_name') );
             $bank_account = trim( $request->get('bank_account') );
 
-            $one = Payment::find($id);
-            $one->payment_name = $payment_name;
-            $one->sort = $sort;
-            $one->level = $level;
-            $one->ptype = $ptype;
-            if($request->hasFile('upload_logo')){
-                $upload_logo = time().'.'.$request->upload_logo->extension();
-                $request->upload_logo->move(public_path('/images/'),$upload_logo);
-                $logo_image = '/images/'.$upload_logo;
-            }else{
-                $logo_image =  $one->logo;
+            DB::beginTransaction();
+            try {
+                $one = Payment::find($id);
+                $one->payment_name = $payment_name;
+                $one->sort = $sort;
+                $one->level = $level;
+                $one->ptype = $ptype;
+                if($request->hasFile('upload_logo')){
+                    $upload_logo = time().'.'.$request->upload_logo->extension();
+                    $request->upload_logo->move(public_path('/images/'),$upload_logo);
+                    $logo_image = '/images/'.$upload_logo;
+                }else{
+                    $logo_image =  $one->logo;
+                }
+                $one->logo = $logo_image;
+                $one->give = $give;
+                $one->description = $description;
+                $extra_array = ['bank'=>$bank, 'bank_name'=>$bank_name, 'bank_account'=>$bank_account];
+                $one->extra = json_encode($extra_array) ;
+                
+                if(!$one->save())
+                    throw new \Exception('事务中断3');
+
+                $username = Auth::user()->username;
+                $log = new Log();
+                $log->adminid = Auth::id();
+                $log->action = '管理员'. $username. ' 修改站内信';
+                $log->ip =  $request->ip();
+                $log->route = 'payment.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
+
+                if(!$log->save())
+                    throw new \Exception('事务中断4');
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
             }
-            $one->logo = $logo_image;
-            $one->give = $give;
-            $one->description = $description;
-            $extra_array = ['bank'=>$bank, 'bank_name'=>$bank_name, 'bank_account'=>$bank_account];
-            $one->extra = json_encode($extra_array) ;
-            
-            $one->save();
 
         } else {
             return '未知类型';
