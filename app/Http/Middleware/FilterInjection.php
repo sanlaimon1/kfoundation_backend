@@ -20,7 +20,7 @@ class FilterInjection
         if(!empty($input))
         {
              foreach( $input as $key=>$value ) {
-                 if( $key==='_token' or $key==='_method')
+                 if( $key==='_token' or $key==='_method' or $key==='path_name')
                      continue;
                  else
                  {
