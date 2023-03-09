@@ -19,6 +19,10 @@
             height: 20px;
             line-height: 20px;
         }
+        .box1, .box2
+        {
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -51,11 +55,11 @@
                     <td>{{ $article->category->cate_name }}</td>
                     <td>{{ $article->admin->username }}</td>
                     <td>
-                        <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-primary">查看</a>
-                        |
+                        <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-primary mx-2">查看</a>
+
                         <a href="{{ route('article.edit', ['article'=>$article->id]) }}" class="btn btn-warning">编辑</a>
-                        |
-                        <form action="{{ route('article.destroy', ['article'=>$article->id]) }}" 
+
+                        <form action="{{ route('article.destroy', ['article'=>$article->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
@@ -68,21 +72,38 @@
             </tbody>
         </table>
         <footer style="display:flex;">
-            <aside style="line-height: 37px; margin-right: 2rem;">
-                共计<strong>{{ $articles->count() }}</strong>条数据
-            </aside>
-            {{ $articles->links() }}
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <aside style="line-height: 37px; margin-right: 2rem;">
+                    共计<strong>{{ $articles->count() }}</strong>条数据
+                </aside>
+                {{ $articles->links() }}
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('article.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="10" {{ $articles->perPage() == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ $articles->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $articles->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $articles->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $articles->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
+
         </footer>
-        
-        
+
+
     </div>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
         }
     }
     </script>

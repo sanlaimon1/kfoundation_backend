@@ -15,14 +15,14 @@ class RoleController extends Controller
 {
 
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/role";
 
@@ -34,22 +34,22 @@ class RoleController extends Controller
         //$this->middleware('injection')->only('login');
     }
 
-   
+
     /**
      * 列出所有角色 list all of roles
      */
-    public function index()
+    public function index(Request $request)
     {
         // $path_name = "/" . $request->path();
-        // $role_id = Auth::user()->rid;        
+        // $role_id = Auth::user()->rid;
         // $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         // if( !($permission->auth2 & 1) ){
         //     return "您没有权限访问这个路径";
         // }
 
-
-        $roles = Role::where('status', 1)->orderBy('sort', 'asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $roles = Role::where('status', 1)->orderBy('sort', 'asc')->paginate($perPage);
 
         return view('role.index', compact('roles'));
     }
@@ -59,8 +59,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        
-        $role_id = Auth::user()->rid;        
+
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -79,7 +79,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -164,7 +164,7 @@ class RoleController extends Controller
     public function edit(string $id)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -181,7 +181,7 @@ class RoleController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -244,7 +244,7 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
