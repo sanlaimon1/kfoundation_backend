@@ -16,9 +16,10 @@ class Order2Controller extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $order2 = Order2::orderBy('created_at','desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $order2 = Order2::orderBy('created_at','desc')->paginate($perPage);
         return view('order2.index',compact('order2'));
     }
 

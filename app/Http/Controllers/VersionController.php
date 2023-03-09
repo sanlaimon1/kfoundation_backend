@@ -6,6 +6,8 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Config;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class VersionController extends Controller
 {
@@ -116,10 +118,32 @@ class VersionController extends Controller
         $config_value = trim( htmlspecialchars( $request->get('config_value') ));
 
         $id = (int)$id;
-        //查询一条数据
-        $one_config = Config::find($id);
-        $one_config->config_value = $config_value;
-        $one_config->save();
+
+        DB::beginTransaction();
+        try {
+             //查询一条数据
+            $one_config = Config::find($id);
+            $one_config->config_value = $config_value;
+            $one_config->save();
+            if(!$one_config->delete())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'version.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }
 
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );

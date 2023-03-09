@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class SysUsersController extends Controller
 {
@@ -115,13 +117,35 @@ class SysUsersController extends Controller
         //构建密码
         $saltpassword = md5( md5( $salt . $password ) . $salt );
 
-        $newadmin = new Admin;
-        $newadmin->username = $username;
-        $newadmin->desc = $desc;
-        $newadmin->password = $saltpassword;
-        $newadmin->create_at = date('Y-m-d H:i:s');
-        $newadmin->salt = $salt;
-        $newadmin->save();
+        DB::beginTransaction();
+        try {
+            $newadmin = new Admin;
+            $newadmin->username = $username;
+            $newadmin->desc = $desc;
+            $newadmin->password = $saltpassword;
+            $newadmin->create_at = date('Y-m-d H:i:s');
+            $newadmin->salt = $salt;
+            $newadmin->save();
+
+            if(!$newadmin->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'sysusers.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }        
 
         return redirect()->route('sysusers.index');
     }
@@ -209,10 +233,31 @@ class SysUsersController extends Controller
         if(empty($one))
             return '用户不存在';
 
-        $one->desc = $desc;
-        $one->status = $status;
-        $one->rid = $rid;
-        $one->save();
+        DB::beginTransaction();
+        try {
+            $one->desc = $desc;
+            $one->status = $status;
+            $one->rid = $rid;
+
+            if(!$one->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'sysusers.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('sysusers.edit',['sysuser'=>$id])->with('message', '用户 ' . $one->username . ' 修改成功！');
     }
@@ -245,10 +290,32 @@ class SysUsersController extends Controller
         $one = Admin::find($id);
         if(!empty($one))
         {
-            $salt = $one->salt;
-            $saltpassword = md5( md5( $salt . $password ) . $salt );
-            $one->password = $saltpassword;
-            $one->save();
+            DB::beginTransaction();
+            try {
+                $salt = $one->salt;
+                $saltpassword = md5( md5( $salt . $password ) . $salt );
+                $one->password = $saltpassword;
+
+                if(!$one->save())
+                    throw new \Exception('事务中断5');
+
+                $username = Auth::user()->username;
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . ' 修改站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'sysusers.update_pass';
+                $newlog->parameters = json_encode( $request->all() );
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newlog->save())
+                    throw new \Exception('事务中断6');
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                return '添加错误，事务回滚';
+            }
+        
         } else {
             return '用户不存在';
         }
@@ -259,7 +326,7 @@ class SysUsersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -269,9 +336,30 @@ class SysUsersController extends Controller
         }
 
         $id = (int)$id;
-        $one = Admin::find($id);
-        $one->is_deleted = 1;
-        $one->save();
+
+        DB::beginTransaction();
+        try {
+            $one = Admin::find($id);
+            $one->is_deleted = 1;
+            if(!$one->save())
+                throw new \Exception('事务中断7');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'sysusers.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断8');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('sysusers.index');
     }

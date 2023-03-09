@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Config;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class WindowhomepageController extends Controller
 {
@@ -96,9 +98,35 @@ class WindowhomepageController extends Controller
 
         $id = (int)$id;
         //查询一条数据
-        $one_config = Config::find($id);
-        $one_config->config_value = $config_value;
-        $one_config->save();
+
+        DB::beginTransaction();
+        try {
+            $one_config = Config::find($id);
+            $one_config->config_value = $config_value;
+            $one_config->save();
+            if(!$one_config->delete())
+                throw new \Exception('事务中断1');
+
+            $myself = Auth::user();
+            $log = new Log();
+            $log->adminid = $myself->id;
+            $log->action = '管理员'. $myself->username. ' 修改站内信';
+            $log->ip = $request->ip();
+            $log->route = 'windowhomepage.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $log->parameters = $input_json;  // 请求参数
+            $log->created_at = date('Y-m-d H:i:s');
+
+            if(!$log->save())
+                throw new \Exception('事务中断2');
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return 'error';
+        }
 
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );
