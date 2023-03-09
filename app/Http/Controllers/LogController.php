@@ -42,9 +42,8 @@ class LogController extends Controller
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
-       // $data = DB::table('table_name')->paginate($request->input('perPage'));
+
         $perPage = $request->input('perPage', 10);
-       // $perPageOptions = [10, 20, 30, 50, 100];
         $logs = Log::orderBy('created_at','desc')->paginate($perPage);
 
         $managers = Admin::all();

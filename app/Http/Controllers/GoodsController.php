@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Goods;
 use App\Models\Level;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class GoodsController extends Controller
 {
@@ -114,18 +116,44 @@ class GoodsController extends Controller
             $res_litpic = '/images/'.$get_litpic;
         }
 
-        $newgood = new Goods;
-        $newgood->goods_name = $goods_name;
-        $newgood->litpic = $res_litpic;
-        $newgood->score = $score;
-        $newgood->level_id = $level_id;
-        $newgood->store_num = $store_num;
-        $newgood->count_exchange = $count_exchange;
-        $newgood->sort = $sort;
-        $newgood->enable = $enable;
-        $newgood->comment = $comment;
-        
-        $newgood->save();
+        DB::beginTransaction();
+        try {
+            //code...
+            $newgood = new Goods;
+            $newgood->goods_name = $goods_name;
+            $newgood->litpic = $res_litpic;
+            $newgood->score = $score;
+            $newgood->level_id = $level_id;
+            $newgood->store_num = $store_num;
+            $newgood->count_exchange = $count_exchange;
+            $newgood->sort = $sort;
+            $newgood->enable = $enable;
+            $newgood->comment = $comment;
+
+            if(!$newgood->save())
+                throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'goods.store';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('goods.index');
     }
@@ -212,17 +240,42 @@ class GoodsController extends Controller
         }else{
             $res_litpic = $newgood->litpic;
         }
-        
-        $newgood->litpic = $res_litpic;
-        $newgood->score = $score;
-        $newgood->level_id = $level_id;
-        $newgood->store_num = $store_num;
-        $newgood->count_exchange = $count_exchange;
-        $newgood->sort = $sort;
-        $newgood->enable = $enable;
-        $newgood->comment = $comment;
-        
-        $newgood->save();
+
+        DB::beginTransaction();
+        try {
+            $newgood->litpic = $res_litpic;
+            $newgood->score = $score;
+            $newgood->level_id = $level_id;
+            $newgood->store_num = $store_num;
+            $newgood->count_exchange = $count_exchange;
+            $newgood->sort = $sort;
+            $newgood->enable = $enable;
+            $newgood->comment = $comment;
+
+            if(!$newgood->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'goods.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('goods.index');
     }
@@ -230,9 +283,8 @@ class GoodsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -241,9 +293,36 @@ class GoodsController extends Controller
         }
 
         $id = (int)$id;
-        $one = Goods::find($id);
-        $one->enable = 0;
-        $one->save();
+
+        DB::beginTransaction();
+        try {
+            $one = Goods::find($id);
+            $one->enable = 0;
+
+            if(!$one->save())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'goods.destroy';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
         return redirect()->route('goods.index');
     }
 }

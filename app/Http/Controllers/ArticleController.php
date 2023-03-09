@@ -98,12 +98,13 @@ class ArticleController extends Controller
             $newarticle->categoryid = $categoryid;
             $newarticle->adminid = Auth::id();
 
-            $newarticle->save();
+            if(!$newarticle->save())
+                throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 添加站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.store';
             $input = $request->all();
@@ -190,12 +191,13 @@ class ArticleController extends Controller
             $newarticle->content = $content;
             $newarticle->categoryid = $categoryid;
             
-            $newarticle->save();
+            if(!$newarticle->save())
+                throw new \Exception('事务中断3');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 修改站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.update';
             $input = $request->all();
@@ -204,7 +206,7 @@ class ArticleController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断4');
 
             DB::commit();
 
@@ -234,12 +236,13 @@ class ArticleController extends Controller
         try {
             //code...
             $article = Article::find($id);
-            $article->delete();
+            if(!$article->delete())
+                throw new \Exception('事务中断5');
 
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除用户';
+            $newlog->action = '管理员'. $username. ' 删除站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'article.destroy';
             $input = $request->all();
@@ -248,7 +251,7 @@ class ArticleController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
 
             if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                throw new \Exception('事务中断6');
 
             DB::commit();
 

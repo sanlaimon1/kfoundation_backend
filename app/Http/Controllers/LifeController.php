@@ -6,6 +6,8 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Life;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use DB;
 
 class LifeController extends Controller
 {
@@ -88,14 +90,39 @@ class LifeController extends Controller
             $request->picture->move(public_path('/images/'),$picture);
             $image = '/images/'.$picture;
         }
+        DB::beginTransaction();
+        try {
+            //code...
+            $newlife = new Life();
+            $newlife->production_name = $production_name;
+            $newlife->picture = $image;
+            $newlife->sort = $sort;
+            $newlife->extra = $extra;
+            $newlife->inputs = $inputs;
+            if(!$newlife->save())
+                throw new \Exception('事务中断1');
 
-        $newlife = new Life();
-        $newlife->production_name = $production_name;
-        $newlife->picture = $image;
-        $newlife->sort = $sort;
-        $newlife->extra = $extra;
-        $newlife->inputs = $inputs;
-        $newlife->save();
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'life.store';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('life.index');
     }
@@ -157,13 +184,38 @@ class LifeController extends Controller
             $image = $request->old_picture;
         }
 
-        $newlife = Life::find($id);
-        $newlife->production_name = $production_name;
-        $newlife->picture = $image;
-        $newlife->sort = $sort;
-        $newlife->extra = $extra;
-        $newlife->inputs = $inputs;
-        $newlife->save();
+        DB::beginTransaction();
+        try {
+            $newlife = Life::find($id);
+            $newlife->production_name = $production_name;
+            $newlife->picture = $image;
+            $newlife->sort = $sort;
+            $newlife->extra = $extra;
+            $newlife->inputs = $inputs;
+            if(!$newlife->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'life.update';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('life.index');
     }
@@ -171,7 +223,7 @@ class LifeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -180,8 +232,34 @@ class LifeController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $life = Life::find($id);
-        $life->delete();
+        DB::beginTransaction();
+        try {
+            $life = Life::find($id);
+            if(!$life->delete())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log();
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员'. $username. ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'life.destroy';
+            $input = $request->all();
+            $input_json = json_encode( $input );
+            $newlog->parameters = $input_json;  // 请求参数
+            $newlog->created_at = date('Y-m-d H:i:s');
+
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            //echo $e->getMessage();
+            return '添加错误，事务回滚';
+        }
+
         return redirect()->route('life.index');
     }
 }

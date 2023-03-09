@@ -6,7 +6,9 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Config;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
+use App\Models\Log;
+ 
 class AgreementController extends Controller
 {
 
@@ -38,7 +40,6 @@ class AgreementController extends Controller
      */
     public function index()
     {
-
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -97,7 +98,6 @@ class AgreementController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -115,11 +115,33 @@ class AgreementController extends Controller
         $config_value = trim( htmlspecialchars( $request->get('config_value') ));
 
         $id = (int)$id;
-        //查询一条数据
-        $one_config = Config::find($id);
-        $one_config->config_value = $config_value;
-        $one_config->save();
 
+        DB::beginTransaction();
+        try {
+            //查询一条数据
+            $one_config = Config::find($id);
+            $one_config->config_value = $config_value;
+            if(!$one_config->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'agreement.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '修改错误，事务回滚';
+        }
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );
     }
