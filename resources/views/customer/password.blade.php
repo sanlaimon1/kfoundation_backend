@@ -29,29 +29,44 @@
             </ol>
         </nav>
         <h3 class="text-center text-primary" style="margin-bottom: 0px;">修改密码</h3>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">登录密码</h5>
-                <label>密码:</label>
-                <input type="password" name="password" class="form-control" />
-                <label>确认密码:</label>
-                <input type="password" name="confirm_password" class="form-control" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">修改</button>
-            </div>
+        <div class="card my-4">
+            <form action="{{route('customer.password1')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">登录密码</h5>
+                    <label for="password" class="form-label">密码:</label>
+                    @error('password')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                    <input type="password" name="password" id="password" class="form-control" />
+                    <label for="password_confirmation" class="form-label my-3">确认密码:</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">修改</button>
+                </div>
+            </form>
         </div>
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">取款密码</h5>
-                <label>密码:</label>
-                <input type="password" name="password2" class="form-control" />
-                <label>确认密码:</label>
-                <input type="password" name="confirm_password2" class="form-control" />
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-danger" style="float:right;">修改</button>
-            </div>
+            <form action="{{route('customer.password2')}}" method="POST">
+                @csrf
+                <input type="hidden" name="customer_id" value="{{$customer->id}}">
+                <div class="card-body">
+                    <h5 class="card-title">取款密码</h5>
+                    <label for="password2" class="from-label">密码:</label>
+                    @error('password2')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                    <input type="password" name="password2" id="password2" class="form-control" />
+
+                    <label for="password2_confirmation" class="from-label my-3">确认密码:</label>
+                    <input type="password" name="password2_confirmation" id="password2_confirmation" class="form-control" />
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger" style="float:right;">修改</button>
+                </div>
+            </form>
         </div>
         
     </div>
