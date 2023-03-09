@@ -142,8 +142,33 @@ class SignController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         // need to do
+        DB::beginTransaction();
+        try {
+            $sign = Sign::find($id);
+            if(!$sign->delete())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'sign.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            //$errorMessage = $e->getMessage();
+            //return $errorMessage;
+            return '修改错误，事务回滚';
+        }
+        return redirect()->route('sign.index');
     }
 }
