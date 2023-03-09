@@ -74,8 +74,12 @@ class SlideController extends Controller
         }
 
         $request->validate([
-            "title" => ['required', 'string', 'max:45'],
-            "picture_path.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'title' => ['required', 'string', 'max:45'],
+            'picture_path.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'link' => ['required', 'string'],
+            'type' => ['required', 'integer', 'in:0,1'],
+            'status' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
 
         if($request->hasFile('picture_path')){
@@ -145,8 +149,12 @@ class SlideController extends Controller
         }
 
         $request->validate([
-            "title" => ['required', 'string', 'max:45'],
-            "picture_path.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'title' => ['required', 'string', 'max:45'],
+            'picture_path.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'link' => ['required', 'string'],
+            'type' => ['required', 'integer', 'in:0,1'],
+            'status' => ['required', 'integer', 'in:0,1'],
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
         
         if($request->hasFile('picture_path')){
