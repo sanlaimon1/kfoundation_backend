@@ -57,16 +57,16 @@ class HomeController extends Controller
         $todayCustomer = Customer::whereDate('created_at', Carbon::now()->today())
                         ->where('identity', 0)
                         ->count();
+
         $todayOrder = Order1::groupby('cid')
                         ->whereDate('created_at', Carbon::now()->today())
                         ->count();
 
         $todayAssetCheck = AssetCheck::where('asset_check.status', 1)
-                        ->whereDate('asset_check.created_at',  Carbon::now()->today())
-                        ->where('customers.id', 'assetcheck.userid')
-                        ->where('customers.identity',  0)
                         ->join('customers','customers.id', 'asset_check.userid')
-                        ->sum('amount');
+                        ->whereDate('asset_check.created_at', Carbon::now()->today())
+                        ->where('customers.identity', 0)
+                        ->sum('asset_check.amount');
 
         $interest = Interest::where('status', 1)
                     ->whereDate('refund_time', Carbon::now()->today())
@@ -77,7 +77,7 @@ class HomeController extends Controller
                             ->count();
 
         $tomorrowInterest = Interest::where('status', 0)
-                            ->whereDate('refund_time',Carbon::now()->tomorrow())
+                            ->whereDate('refund_time', Carbon::now()->tomorrow())
                             ->sum('refund_amount');
 
         $tomorrowInterestFlag = Interest::where('status', 0)
@@ -104,7 +104,7 @@ class HomeController extends Controller
                          ->join('customers', 'customers.id', 'order1.cid')
                          ->count();
 
-        $monthOrder1 = Order1::whereBetween('order1.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        $monthOrder1 = Order1::whereBetween('order1.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
                          ->where('customers.identity', 0)
                          ->join('customers', 'customers.id', 'order1.cid')
                          ->count();
