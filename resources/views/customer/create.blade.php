@@ -169,17 +169,17 @@
                     <div class="col-md-6 mb-3">
                         <label for="password1" class="form-label">密码</label>
                         @error('password1')
-                            <div class="alert alert-danger">{{ $message }}</div>
+                            <div class="alert alert-danger">密码必须包含大小写字母和数字的组合</div>
                         @enderror
-                        <input type="text" class="form-control" id="password1" name="password1" >
+                        <input type="password" class="form-control" id="password1" name="password1" >
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="password1_confirmation" class="form-label">确认登录密码</label>
-                        @error('password1_confirmation')
+                        {{-- @error('password1_confirmation')
                             <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <input type="text" class="form-control" id="password1_confirmation" name="password1_confirmation" >
+                        @enderror --}}
+                        <input type="password" class="form-control" id="password1_confirmation" name="password1_confirmation" >
                     </div>
 
                    
@@ -196,17 +196,17 @@
                     <div class="col-md-6 mb-3">
                         <label for="password2" class="form-label">取款密码</label>
                         @error('password2')
-                            <div class="alert alert-danger">{{ $message }}</div>
+                            <div class="alert alert-danger">密码必须包含大小写字母和数字的组合</div>
                         @enderror
-                        <input type="text" class="form-control" id="password2" name="password2">
+                        <input type="password" class="form-control" id="password2" name="password2">
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="password2_confirmation" class="form-label">确认提现密码</label>
-                        @error('password2_confirmation')
+                        {{-- @error('password2_confirmation')
                             <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <input type="text" class="form-control" id="password2_confirmation" name="password2_confirmation" >
+                        @enderror --}}
+                        <input type="password" class="form-control" id="password2_confirmation" name="password2_confirmation" >
                     </div>
                 </div>
 
