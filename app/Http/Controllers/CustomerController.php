@@ -893,13 +893,15 @@ class CustomerController extends Controller
             'withdraw_integration_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_integration_amount;
-        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
-        $balance = $customer->balance - $amount;
+        
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
+            $balance = $customer->balance - $amount;
+
             $financial_integration = new FinancialIntegration();
             $financial_integration->userid = $customer->id;
             $financial_integration->amount = $amount;
@@ -996,6 +998,17 @@ class CustomerController extends Controller
             //return '删除错误，事务回滚';
         }
         return redirect()->route('customer.index');
+    }
+
+
+    public function team(string $id) {
+        $id = (int)$id;
+
+        $members = Customer::where('parent_id', $id)->orderBy('created_at', 'desc')->paginate(20);
+
+        $one_team = [];
+
+        return view('customer.team',  compact('members', 'one_team'));
     }
 
 }

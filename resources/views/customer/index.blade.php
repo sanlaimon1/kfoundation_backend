@@ -82,7 +82,7 @@
                         <a class="btn btn-success" href="{{ route('customer.charge', ['id'=>$one->id]) }}">上分</a>
                         <a class="btn btn-primary" href="{{ route('customer.withdrawal', ['id'=>$one->id]) }}">下分</a>
                         <a class="btn btn-danger" href="{{ route('customer.kickout', ['id'=>$one->id]) }}">踢出</a>
-                        <a class="btn btn-success" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
+                        <a class="btn btn-success" href="{{ route('customer.team', ['id'=>$one->id]) }}">查看团队</a>
                         <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                         <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
