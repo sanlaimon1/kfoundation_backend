@@ -549,13 +549,15 @@ class CustomerController extends Controller
             'financial_balance_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->financial_balance_amount;
-        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
-        $balance = $customer->balance + $amount;
+       
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
+            $balance = $customer->balance + $amount;
+
             $financial_balance = new FinancialBalance();
             $financial_balance->userid = $customer->id;
             $financial_balance->amount = $amount;
@@ -605,13 +607,14 @@ class CustomerController extends Controller
             'financial_asset_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->financial_asset_amount;
-        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
-        $balance = $customer->balance + $amount;
+       
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
+            $balance = $customer->balance + $amount;
             $financial_asset = new FinancialAsset();
             $financial_asset->userid = $customer->id;
             $financial_asset->amount = $amount;
@@ -661,13 +664,14 @@ class CustomerController extends Controller
             'financial_integration_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->financial_integration_amount;
-        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
-        $balance = $customer->balance + $amount;
+        
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+            $balance = $customer->balance + $amount;
             $financial_integration = new FinancialIntegration();
             $financial_integration->userid = $customer->id;
             $financial_integration->amount = $amount;
@@ -717,13 +721,14 @@ class CustomerController extends Controller
             'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->financial_platform_coin_amount;
-        $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
-        $balance = $customer->balance + $amount;
+        
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+            $balance = $customer->balance + $amount;
             $financial_platform_coin = new FinancialPlatformCoin();
             $financial_platform_coin->userid = $customer->id;
             $financial_platform_coin->amount = $amount;
@@ -781,13 +786,14 @@ class CustomerController extends Controller
             'withdraw_balance_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_balance_amount;
-        $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
-        $balance = $customer->balance - $amount;
+       
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
+            $balance = $customer->balance - $amount;
             $financial_balance = new FinancialBalance();
             $financial_balance->userid = $customer->id;
             $financial_balance->amount = $amount;
@@ -837,13 +843,14 @@ class CustomerController extends Controller
             'withdraw_asset_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_asset_amount;
-        $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
-        $balance = $customer->balance - $amount;
+        
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
+            $balance = $customer->balance - $amount;
             $financial_asset = new FinancialAsset();
             $financial_asset->userid = $customer->id;
             $financial_asset->amount = $amount;
@@ -951,13 +958,15 @@ class CustomerController extends Controller
             'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
         ]);
         $customer_id = $request->customer_id;
-        $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_platform_coin_amount;
-        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
-        $balance = $customer->balance - $amount;
+        
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            $customer = Customer::find($customer_id);
+            $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+            $balance = $customer->balance - $amount;
+            
             $financial_platform_coin = new FinancialPlatformCoin();
             $financial_platform_coin->userid = $customer->id;
             $financial_platform_coin->amount = $amount;
