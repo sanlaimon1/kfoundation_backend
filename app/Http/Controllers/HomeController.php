@@ -7,6 +7,14 @@ use App\Models\Config;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Order1;
+Use App\Models\Customer;
+use App\Models\AssetCheck;
+use App\Models\BalanceCheck;
+use App\Models\Interest;
+use App\Models\FinancialPlatformCoin;
+use Carbon\Carbon;
+use DB;
 
 class HomeController extends Controller
 {
@@ -35,8 +43,108 @@ class HomeController extends Controller
      */
     public function satistatics()
     {
+        $order1 = Order1::count();
+        $customer = Customer::where('status', '!=', 0)->where('identity',0)->count();
+        $assetCheck = AssetCheck::where('customers.identity', 0)
+                    ->where('asset_check.status', 1)
+                    ->join('customers', 'customers.id', 'asset_check.userid')
+                    ->sum('amount');
 
-        return view('satistatics');
+        $balanceCheck = BalanceCheck::where('customers.identity', 0)
+                        ->where('balance_check.status', 1)
+                        ->join('customers','customers.id', 'balance_check.userid')->sum('amount');
+        
+        $todayCustomer = Customer::whereDate('created_at', Carbon::now()->today())
+                        ->where('identity', 0)
+                        ->count();
+        $todayOrder = Order1::groupby('cid')
+                        ->whereDate('created_at', Carbon::now()->today())
+                        ->count();
+
+        $todayAssetCheck = AssetCheck::where('asset_check.status', 1)
+                        ->whereDate('asset_check.created_at',  Carbon::now()->today())
+                        ->where('customers.id', 'assetcheck.userid')
+                        ->where('customers.identity',  0)
+                        ->join('customers','customers.id', 'asset_check.userid')
+                        ->sum('amount');
+
+        $interest = Interest::where('status', 1)
+                    ->whereDate('refund_time', Carbon::now()->today())
+                    ->sum('real_refund_amount');
+
+        $yesterdayOrder1 = Order1::groupby('cid')
+                            ->whereDate('created_at',Carbon::now()->yesterday())
+                            ->count();
+
+        $tomorrowInterest = Interest::where('status', 0)
+                            ->whereDate('refund_time',Carbon::now()->tomorrow())
+                            ->sum('refund_amount');
+
+        $tomorrowInterestFlag = Interest::where('status', 0)
+                                ->whereDate('refund_time', Carbon::now()->tomorrow())
+                                ->where('flag', 1)
+                                ->sum('refund_amount');
+
+        $team = Customer::where('identity', 0)
+                ->where('team_id', '>', 1)
+                ->count();
+
+        $customerOrder1 = Order1::whereDate('order1.created_at', Carbon::now()->today())
+                         ->where('customers.identity', 0)
+                         ->join('customers', 'customers.id', 'order1.cid')
+                         ->count();
+        
+        $yesterdayCustomerOrder1 = Order1::whereDate('order1.created_at', Carbon::now()->yesterday())
+                         ->where('customers.identity', 0)
+                         ->join('customers','customers.id', 'order1.cid')
+                         ->count();
+        
+        $weekOrder1 = Order1::whereBetween('order1.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                         ->where('customers.identity', 0)
+                         ->join('customers', 'customers.id', 'order1.cid')
+                         ->count();
+
+        $monthOrder1 = Order1::whereBetween('order1.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                         ->where('customers.identity', 0)
+                         ->join('customers', 'customers.id', 'order1.cid')
+                         ->count();
+                         
+        $todayAssetCheckNotZero = AssetCheck::where('customers.identity', '!=', 0)
+                                ->where('asset_check.status', 1)
+                                ->whereDate('asset_check.created_at', Carbon::now()->today())
+                                ->join('customers', 'customers.id', 'asset_check.userid')
+                                ->sum('asset_check.amount');
+                        
+        $balanceCheckNotzero = BalanceCheck::where('customers.identity', '!=', 0)
+                                ->where('balance_check.status', 1)
+                                ->whereDate('balance_check.created_at', now()->today())
+                                ->join('customers', 'customers.id', 'balance_check.userid')
+                                ->sum('balance_check.amount');
+
+        $todayOrderCustomer = Order1::whereDate('order1.created_at', now()->today())
+                                ->where('customers.identity', 0)
+                                ->join('customers', 'customers.id', 'order1.cid')
+                                ->sum('order1.amount');
+
+        $customerAssetCheck = AssetCheck::where('customers.identity', '!=', 0)
+                                ->where('asset_check.status', 1)
+                                ->join('customers', 'customers.id', 'asset_check.userid')
+                                ->sum('asset_check.amount');
+
+        $customerBalanceCheck = BalanceCheck::where('customers.identity', '!=', 0)
+                                ->where('balance_check.status', 1)
+                                ->join('customers', 'customers.id', 'balance_check.userid')
+                                ->sum('balance_check.amount');
+
+        $customerByPlatformCoin = Customer::where('identity', 0)
+                                  ->sum('platform_coin');
+
+        $financialPlatformCoin = FinancialPlatformCoin::where('financial_platform_coin.financial_type',4)
+                                  ->where('customers.identity', 0)
+                                  ->join('customers', 'customers.id', 'financial_platform_coin.userid')
+                                  ->sum('financial_platform_coin.amount');
+
+        return view('satistatics', compact( 'order1', 'customer', 'assetCheck', 'balanceCheck', 'todayCustomer', 'todayOrder', 'todayAssetCheck', 'interest', 'yesterdayOrder1', 'tomorrowInterest','tomorrowInterestFlag', 'team', 'customerOrder1', 'yesterdayCustomerOrder1', 'weekOrder1', 'monthOrder1', 'todayAssetCheckNotZero', 'balanceCheckNotzero', 'todayOrderCustomer', 'customerAssetCheck', 'customerBalanceCheck', 'customerByPlatformCoin', 'financialPlatformCoin'));
     }
 
     /**
