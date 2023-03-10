@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\CustomerExtra;
 use App\Models\FinancialAsset;
 use App\Models\FinancialBalance;
 use App\Models\FinancialIntegration;
@@ -191,7 +192,8 @@ class CustomerController extends Controller
         $customer_identity = config('types.customer_identity');
 
         $customer = Customer::find($id);
-        return view('customer.show',compact('customer', 'customer_identity'));
+        $customer_extra = CustomerExtra::where('userid',$id)->first();
+        return view('customer.show',compact('customer','customer_extra', 'customer_identity'));
     }
 
     /**

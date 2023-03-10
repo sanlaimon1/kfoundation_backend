@@ -78,18 +78,19 @@
            
             <li class="list-group-item"><strong class="title">用户资金</strong></li>
             <ul class="row">
-                <li class="list-group-item col-3"><strong>余额:</strong> {{ $customer->asset }}</li>
-                <li class="list-group-item col-3"><strong>资产:</strong> {{ $customer->balance }}</li>
-                <li class="list-group-item col-3"><strong>积分:</strong> {{ $customer->integration }}</li>
+                <li class="list-group-item col-2"><strong>余额:</strong> {{ $customer->asset }}</li>
+                <li class="list-group-item col-2"><strong>资产:</strong> {{ $customer->balance }}</li>
+                <li class="list-group-item col-2"><strong>积分:</strong> {{ $customer->integration }}</li>
                 <li class="list-group-item col-3"><strong>平台币:</strong> {{ $customer->platform_coin }}</li>
+                <li class="list-group-item col-3"><strong>余额宝余额:</strong> {{ $customer->yuebao_balance }}</li>
             </ul>
             <ul class="row">
-                <li class="list-group-item col-2"><strong>余额宝余额:</strong> {{ $customer->yuebao_balance }}</li>
-                <li class="list-group-item col-2"><strong>提现总额:</strong> {{ $customer->asset }}</li>
-                <li class="list-group-item col-2"><strong>充值总额:</strong> {{ $customer->balance }}</li>
-                <li class="list-group-item col-2"><strong>待收利息:</strong> {{ $customer->integration }}</li>
-                <li class="list-group-item col-2"><strong>待收本金:</strong> {{ $customer->platform_coin }}</li>
-                <li class="list-group-item col-2"><strong>投资总额:</strong> {{ $customer->platform_coin }}</li>
+                <li class="list-group-item col-2"><strong>提现总额:</strong> {{ $customer_extra->withdrawal }}</li>
+                <li class="list-group-item col-2"><strong>充值总额:</strong> {{ $customer_extra->charge }}</li>
+                <li class="list-group-item col-2"><strong>待收利息:</strong> {{ $customer_extra->predict_interest }}</li>
+                <li class="list-group-item col-2"><strong>待收本金:</strong> {{ $customer_extra->predict_cost }}</li>
+                <li class="list-group-item col-2"><strong>投资总额:</strong> {{ $customer_extra->investion}}</li>
+                <li class="list-group-item col-2"><strong>余额转资产总额:</strong> {{ $customer_extra->transfer2asset}}</li>
             </ul>
 
             <li class="list-group-item"><strong class="title">其他详情</strong></li>
