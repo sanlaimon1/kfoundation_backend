@@ -17,6 +17,7 @@ use Illuminate\Database\Query\Builder;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Teamlevel;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
@@ -561,6 +562,7 @@ class CustomerController extends Controller
             $financial_balance->financial_type = 5;
             $financial_balance->details = $detail;
             $financial_balance->after_balance = $customer->balance;
+            $financial_balance->created_at = date('Y-m-d H:i:s');
             if(!$financial_balance->save())
             throw new \Exception('事务中断11');
 
@@ -610,6 +612,7 @@ class CustomerController extends Controller
             $financial_asset->financial_type = 5;
             $financial_asset->details = $detail;
             $financial_asset->after_balance = $customer->balance;
+            $financial_asset->created_at = date('Y-m-d H:i:s');
             if(!$financial_asset->save())
             throw new \Exception('事务中断13');
 
@@ -659,6 +662,7 @@ class CustomerController extends Controller
             $financial_integration->financial_type = 5;
             $financial_integration->details = $detail;
             $financial_integration->after_balance = $customer->balance;
+            $financial_integration->created_at = date('Y-m-d H:i:s');
             if(!$financial_integration->save())
             throw new \Exception('事务中断15');
 
@@ -708,6 +712,7 @@ class CustomerController extends Controller
             $financial_platform_coin->financial_type = 5;
             $financial_platform_coin->details = $detail;
             $financial_platform_coin->after_balance = $customer->balance;
+            $financial_platform_coin->created_at = date('Y-m-d H:i:s');
             if(!$financial_platform_coin->save())
             throw new \Exception('事务中断17');
 
@@ -765,6 +770,7 @@ class CustomerController extends Controller
             $financial_balance->financial_type = 6;
             $financial_balance->details = $detail;
             $financial_balance->after_balance = $customer->balance;
+            $financial_balance->created_at = date('Y-m-d H:i:s');
             if(!$financial_balance->save())
             throw new \Exception('事务中断19');
 
@@ -814,6 +820,7 @@ class CustomerController extends Controller
             $financial_asset->financial_type = 6;
             $financial_asset->details = $detail;
             $financial_asset->after_balance = $customer->balance;
+            $financial_asset->created_at = date('Y-m-d H:i:s');
             if(!$financial_asset->save())
             throw new \Exception('事务中断21');
 
@@ -863,6 +870,7 @@ class CustomerController extends Controller
             $financial_integration->financial_type = 6;
             $financial_integration->details = $detail;
             $financial_integration->after_balance = $customer->balance;
+            $financial_integration->created_at = date('Y-m-d H:i:s');
             if(!$financial_integration->save())
             throw new \Exception('事务中断23');
 
@@ -892,53 +900,54 @@ class CustomerController extends Controller
         return redirect()->route('customer.index');
     }
 
-     //商店取款金融平台幣
-     public function withdraw_financial_platform_coin(Request $request)
-     {
-         $request->validate([
-             'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
-         ]);
-         $customer_id = $request->customer_id;
-         $customer = Customer::find($customer_id);
-         $amount =  $request->withdraw_platform_coin_amount;
-         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
-         DB::beginTransaction();
-         try{
-             $financial_platform_coin = new FinancialPlatformCoin();
-             $financial_platform_coin->userid = $customer->id;
-             $financial_platform_coin->amount = $amount;
-             $financial_platform_coin->balance = $customer->balance;
-             $financial_platform_coin->direction = -1;
-             $financial_platform_coin->financial_type = 6;
-             $financial_platform_coin->details = $detail;
-             $financial_platform_coin->after_balance = $customer->balance;
-             if(!$financial_platform_coin->save())
-             throw new \Exception('事务中断25');
- 
-             $username = Auth::user()->username;
-             $newlog = new Log;
-             $newlog->adminid = Auth::id();
-             $newlog->action = '管理员' . $username . ' 商店取款金融平台幣 ';
-             $newlog->ip = $request->ip();
-             $newlog->route = 'withdraw.financial_platform_coin';
-             $newlog->parameters = json_encode( $request->all() );
-             $newlog->created_at = date('Y-m-d H:i:s');
-             if(!$newlog->save())
-                 throw new \Exception('事务中断26');
- 
-             DB::commit();
-         } catch (\Exception $e) {
-             DB::rollback();
-             /**
-              * $errorMessage = $e->getMessage();
-              * $errorCode = $e->getCode();
-              * $stackTrace = $e->getTraceAsString();
-              */
-             $errorMessage = $e->getMessage();
-             return $errorMessage;
-             //return '删除错误，事务回滚';
-         }
-         return redirect()->route('customer.index');
-     }
+    //商店取款金融平台幣
+    public function withdraw_financial_platform_coin(Request $request)
+    {
+        $request->validate([
+            'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
+        ]);
+        $customer_id = $request->customer_id;
+        $customer = Customer::find($customer_id);
+        $amount =  $request->withdraw_platform_coin_amount;
+        $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+        DB::beginTransaction();
+        try{
+            $financial_platform_coin = new FinancialPlatformCoin();
+            $financial_platform_coin->userid = $customer->id;
+            $financial_platform_coin->amount = $amount;
+            $financial_platform_coin->balance = $customer->balance;
+            $financial_platform_coin->direction = -1;
+            $financial_platform_coin->financial_type = 6;
+            $financial_platform_coin->details = $detail;
+            $financial_platform_coin->after_balance = $customer->balance;
+            $financial_platform_coin->created_at = date('Y-m-d H:i:s');
+            if(!$financial_platform_coin->save())
+            throw new \Exception('事务中断25');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 商店取款金融平台幣 ';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'withdraw.financial_platform_coin';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断26');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+            * $errorCode = $e->getCode();
+            * $stackTrace = $e->getTraceAsString();
+            */
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+            //return '删除错误，事务回滚';
+        }
+        return redirect()->route('customer.index');
+    }
 
 }
