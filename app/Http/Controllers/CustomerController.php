@@ -96,8 +96,11 @@ class CustomerController extends Controller
             "is_sure" => ['required', 'integer', 'in:0,1'],
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "team_id" => ['required', 'integer', 'exists:teamlevels,tid'],
-            "password1" => 'required|confirmed', 
-            "password2" => 'required|confirmed', 
+            'password1' => 'required|confirmed',
+            'password1' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
+
+            'password2' => 'required|confirmed',
+            'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
             "idcard_front.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             "idcard_back.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
         ]);
@@ -435,7 +438,9 @@ class CustomerController extends Controller
     public function customer_password1(Request $request)
     {
         $request->validate([
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'password_confirmation' => 'required|same:password',
+            'password' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ]);
        
         $customer_id = $request->customer_id;
@@ -480,8 +485,11 @@ class CustomerController extends Controller
     public function customer_password2(Request $request)
     {
         $request->validate([
-            'password2' => 'required|confirmed|min:6|max:6',
-            // 'password2' => ['regex:/^[0-9]{6}$/'],
+            'password2' => 'required|confirmed',
+            'password2_confirmation' => 'required|same:password2',
+            'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
+            // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/','regex:/^[0-9]{6}$/'],
+
         ]);
         
         $customer_id = $request->customer_id;
