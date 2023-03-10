@@ -257,7 +257,7 @@ class AssetCheckController extends Controller
 
     public function charge_search(Request $request)
     {
-        $types = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
+
         $fid = $request->fid;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
@@ -287,8 +287,8 @@ class AssetCheckController extends Controller
         }
 
         return response()->json([
-            'charge_search' => $charge_search,
-            'types' => $types,
+            'charge_search' => $charge_search
+
         ]);
 
     }

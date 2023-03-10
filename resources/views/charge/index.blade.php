@@ -184,7 +184,7 @@
                     if (v.status == 0){
                         html += `<td>
                                         <a href="{{ url('charge/${v.id}') }}" class="btn btn-success">通过</a>
-                                        <a href="{{ url('customer/${v.id}/edit') }}" class="btn btn-danger">拒绝</a>
+                                        <a href="{{ url('charge/${v.id}/edit') }}" class="btn btn-danger">拒绝</a>
                                 </td>`;
                     }
                     if (v.status == 2){

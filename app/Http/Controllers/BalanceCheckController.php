@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
 
 class BalanceCheckController extends Controller
 {
@@ -237,5 +238,41 @@ class BalanceCheckController extends Controller
         }
 
         return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
+    }
+    public function withdrawal_search(Request $request)
+    {
+        //dd($request);
+        $bid = $request->bid;
+        $customer = $request->customer;
+        $status = $request->status;
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        if($bid != null && $customer != null && $status != null && $date != null)
+        {
+            $withdrawal_search = DB::table('balance_check')
+                            ->join('customers', 'customers.id', 'balance_check.userid')
+                            ->where([['balance_check.id', '=', $bid], ['customers.phone', '=', $customer], ['balance_check.status', '=', $status]])
+                            ->whereDate('balance_check.created_at', '=', $date)
+                            ->orderBy('balance_check.created_at', 'desc')
+                            ->select('customers.phone', 'balance_check.*')
+                            ->get();
+
+
+        } else {
+            $withdrawal_search = DB::table('balance_check')
+                            ->join('customers', 'customers.id', 'balance_check.userid')
+                            ->whereDate('balance_check.created_at', '=', $date)
+                            ->orwhere('balance_check.id', '=', $bid)
+                            ->orwhere('customers.phone','=',$customer)
+                            ->orwhere('balance_check.status','=', $status)
+                            ->orderBy('balance_check.created_at', 'desc')
+                            ->select('customers.phone', 'balance_check.*')
+                            ->get();
+
+        }
+
+        return response()->json([
+            'withdrawal_search' => $withdrawal_search
+        ]);
+
     }
 }

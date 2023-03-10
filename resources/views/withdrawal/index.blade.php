@@ -36,17 +36,17 @@
         <nav class="row">
             <div class="col-3">
                 <label class="form-label">财务编号：</label>
-                <input type="text" name="id" id="action" class="form-control" />
+                <input type="text" name="id" id="bid" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">用户名：</label>
-                <input type="text" name="action" id="action" class="form-control" />
+                <input type="text" name="customer" id="customer" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">状态：</label>
-                <select name="financial_type" id="financial_type"  class="form-select">
+                <select name="status" id="status"  class="form-select">
                     <option value="">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
@@ -143,12 +143,14 @@
              });
 
             $("#withdrawal_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
+            var bid = $("#bid").val();
+            var customer = $("#customer").val();
+            var status = $("#status").val();
             var date = $("#date").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
+                "bid" : bid,
+                "customer" : customer,
+                "status" : status,
                 "date" : date,
             };
 
@@ -159,18 +161,39 @@
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
-                    html +=`<tr>
+
+                    $.each(response.withdrawal_search,function(i,v){
+                        html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
-                                <td>${v.created_at}</td>
-                                <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
-                                </td>
-                            </tr>`;
+                                <td>${v.phone}</td>
+                                <td>${v.amount}</td>
+                                <td>${v.created_at}</td>`;
+                if (v.status == 1){
+                        html += `<td>
+                                    <span style="color:green;">已通过</span>
+                                </td>`;
+                }else if (v.status == 2){
+                        html += `<td>
+                                    <span style="color:red;">已拒绝</span>
+                                </td>`;
+                }else{
+                        html +=`<td>
+                                    <span style="color:blue;">待审核</span>
+                                </td>`;
+                }
+                if (v.status == 0){
+                        html += `<td>
+                                        <a href="{{ url('withdrawal/${v.id}') }}" class="btn btn-success">通过</a>
+                                        <a href="{{ url('withdrawal/${v.id}/edit') }}" class="btn btn-danger">拒绝</a>
+                                </td>`;
+                }
+                if (v.status == 2){
+                        html += `<td>
+                                    拒绝理由: ${v.comment}
+                                </td>`;
+                }
+                        html += `</tr>`;
+
                     })
                     $("#search_data").html(html);
                 }
