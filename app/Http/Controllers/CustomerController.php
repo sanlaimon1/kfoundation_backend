@@ -552,8 +552,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->financial_balance_amount;
         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
+        $balance = $customer->balance + $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_balance = new FinancialBalance();
             $financial_balance->userid = $customer->id;
             $financial_balance->amount = $amount;
@@ -561,15 +563,19 @@ class CustomerController extends Controller
             $financial_balance->direction = 1;
             $financial_balance->financial_type = 5;
             $financial_balance->details = $detail;
-            $financial_balance->after_balance = $customer->balance;
+            $financial_balance->after_balance = $balance;
             $financial_balance->created_at = date('Y-m-d H:i:s');
             if(!$financial_balance->save())
+            throw new \Exception('事务中断11');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断11');
 
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+            $newlog->action = $detail;
             $newlog->ip = $request->ip();
             $newlog->route = 'charge.financial_balance';
             $newlog->parameters = json_encode( $request->all() );
@@ -602,8 +608,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->financial_asset_amount;
         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
+        $balance = $customer->balance + $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_asset = new FinancialAsset();
             $financial_asset->userid = $customer->id;
             $financial_asset->amount = $amount;
@@ -611,9 +619,13 @@ class CustomerController extends Controller
             $financial_asset->direction = 1;
             $financial_asset->financial_type = 5;
             $financial_asset->details = $detail;
-            $financial_asset->after_balance = $customer->balance;
+            $financial_asset->after_balance = $balance;
             $financial_asset->created_at = date('Y-m-d H:i:s');
             if(!$financial_asset->save())
+            throw new \Exception('事务中断13');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断13');
 
             $username = Auth::user()->username;
@@ -652,8 +664,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->financial_integration_amount;
         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+        $balance = $customer->balance + $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_integration = new FinancialIntegration();
             $financial_integration->userid = $customer->id;
             $financial_integration->amount = $amount;
@@ -661,9 +675,13 @@ class CustomerController extends Controller
             $financial_integration->direction = 1;
             $financial_integration->financial_type = 5;
             $financial_integration->details = $detail;
-            $financial_integration->after_balance = $customer->balance;
+            $financial_integration->after_balance = $balance;
             $financial_integration->created_at = date('Y-m-d H:i:s');
             if(!$financial_integration->save())
+            throw new \Exception('事务中断15');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断15');
 
             $username = Auth::user()->username;
@@ -702,8 +720,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->financial_platform_coin_amount;
         $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+        $balance = $customer->balance + $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_platform_coin = new FinancialPlatformCoin();
             $financial_platform_coin->userid = $customer->id;
             $financial_platform_coin->amount = $amount;
@@ -711,9 +731,13 @@ class CustomerController extends Controller
             $financial_platform_coin->direction = 1;
             $financial_platform_coin->financial_type = 5;
             $financial_platform_coin->details = $detail;
-            $financial_platform_coin->after_balance = $customer->balance;
+            $financial_platform_coin->after_balance = $balance;
             $financial_platform_coin->created_at = date('Y-m-d H:i:s');
             if(!$financial_platform_coin->save())
+            throw new \Exception('事务中断17');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断17');
 
             $username = Auth::user()->username;
@@ -760,8 +784,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_balance_amount;
         $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
+        $balance = $customer->balance - $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_balance = new FinancialBalance();
             $financial_balance->userid = $customer->id;
             $financial_balance->amount = $amount;
@@ -769,9 +795,13 @@ class CustomerController extends Controller
             $financial_balance->direction = -1;
             $financial_balance->financial_type = 6;
             $financial_balance->details = $detail;
-            $financial_balance->after_balance = $customer->balance;
+            $financial_balance->after_balance = $balance;
             $financial_balance->created_at = date('Y-m-d H:i:s');
             if(!$financial_balance->save())
+            throw new \Exception('事务中断19');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断19');
 
             $username = Auth::user()->username;
@@ -810,8 +840,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_asset_amount;
         $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
+        $balance = $customer->balance - $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_asset = new FinancialAsset();
             $financial_asset->userid = $customer->id;
             $financial_asset->amount = $amount;
@@ -819,9 +851,13 @@ class CustomerController extends Controller
             $financial_asset->direction = -1;
             $financial_asset->financial_type = 6;
             $financial_asset->details = $detail;
-            $financial_asset->after_balance = $customer->balance;
+            $financial_asset->after_balance = $balance;
             $financial_asset->created_at = date('Y-m-d H:i:s');
             if(!$financial_asset->save())
+            throw new \Exception('事务中断21');
+            
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断21');
 
             $username = Auth::user()->username;
@@ -860,8 +896,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_integration_amount;
         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
+        $balance = $customer->balance - $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_integration = new FinancialIntegration();
             $financial_integration->userid = $customer->id;
             $financial_integration->amount = $amount;
@@ -869,9 +907,13 @@ class CustomerController extends Controller
             $financial_integration->direction = -1;
             $financial_integration->financial_type = 6;
             $financial_integration->details = $detail;
-            $financial_integration->after_balance = $customer->balance;
+            $financial_integration->after_balance = $balance;
             $financial_integration->created_at = date('Y-m-d H:i:s');
             if(!$financial_integration->save())
+            throw new \Exception('事务中断23');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断23');
 
             $username = Auth::user()->username;
@@ -910,8 +952,10 @@ class CustomerController extends Controller
         $customer = Customer::find($customer_id);
         $amount =  $request->withdraw_platform_coin_amount;
         $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+        $balance = $customer->balance - $amount;
         DB::beginTransaction();
         try{
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $financial_platform_coin = new FinancialPlatformCoin();
             $financial_platform_coin->userid = $customer->id;
             $financial_platform_coin->amount = $amount;
@@ -919,9 +963,13 @@ class CustomerController extends Controller
             $financial_platform_coin->direction = -1;
             $financial_platform_coin->financial_type = 6;
             $financial_platform_coin->details = $detail;
-            $financial_platform_coin->after_balance = $customer->balance;
+            $financial_platform_coin->after_balance = $balance;
             $financial_platform_coin->created_at = date('Y-m-d H:i:s');
             if(!$financial_platform_coin->save())
+            throw new \Exception('事务中断25');
+
+            $customer->balance = $balance;
+            if(!$customer->save())
             throw new \Exception('事务中断25');
 
             $username = Auth::user()->username;
