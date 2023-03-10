@@ -18,6 +18,9 @@
             padding:0;
             font-size: 12px;
         }
+        .box1, .box2 {
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -118,9 +121,25 @@
                 </tr>
             </tfoot>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('asset.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
+
     </div>
 
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>

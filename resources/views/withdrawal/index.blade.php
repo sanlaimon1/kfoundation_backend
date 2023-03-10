@@ -9,10 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
     <style>
         #app td
         {
             padding: 0;
+        }
+        .box1, .box2 {
+            display: inline-block;
         }
     </style>
 </head>
@@ -41,7 +47,7 @@
             <div class="col-3">
                 <label class="form-label">状态：</label>
                 <select name="financial_type" id="financial_type"  class="form-select">
-                    <option>--请选择--</option>
+                    <option value="">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
                     @endforeach
@@ -50,12 +56,12 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="text" name="date" id="date" class="form-control" />
             </div>
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="withdrawal_search">查询</button>
             </div>
         </nav>
         <br />
@@ -97,11 +103,26 @@
                     </td>
                 </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('withdrawal.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
     </div>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -113,7 +134,15 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
+            //datepicker
+            flatpickr("#date",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
+            $("#withdrawal_search").click(function(){
             var adminid = $("#adminid").val();
             var action = $("#action").val();
             var date = $("#date").val();
@@ -124,7 +153,7 @@
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/withdrawal_search",
                 dataType : "json",
                 type: "POST",
                 data: data,

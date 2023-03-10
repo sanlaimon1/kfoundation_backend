@@ -9,11 +9,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
     <style>
         #app td,#app th
         {
             padding: 0;
             font-size: 12px;
+        }
+        .box1, .box2 {
+            display: inline-block;
         }
     </style>
 </head>
@@ -31,18 +37,18 @@
         <nav class="row">
             <div class="col-3">
                 <label class="form-label">财务编号：</label>
-                <input type="text" name="id" id="action" class="form-control" />
+                <input type="text" name="fid" id="fid" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">用户名：</label>
-                <input type="text" name="action" id="action" class="form-control" />
+                <input type="text" name="customer" id="customer" class="form-control" />
             </div>
 
             <div class="col-3">
                 <label class="form-label">状态：</label>
                 <select name="financial_type" id="financial_type"  class="form-select">
-                    <option>--请选择--</option>
+                    <option value="">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
                     @endforeach
@@ -51,12 +57,12 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="date" id="date" class="form-control" />
+                <input type="text" name="date" id="date" class="form-control" />
             </div>
 
             <div class="col-1">
                 <br />
-                <button class="btn btn-success" id="log_search">查询</button>
+                <button class="btn btn-success" id="charge_search">查询</button>
             </div>
         </nav>
         <br />
@@ -98,11 +104,26 @@
                     </td>
                 </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('charge.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
     </div>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -114,35 +135,64 @@
             }
         });
         $(document).ready(function(){
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
+            //datepicker
+            flatpickr("#date",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
+            $("#charge_search").click(function(){
+            var fid = $("#fid").val();
+            var customer = $("#customer").val();
+            var financial_type = $("#financial_type").val();
             var date = $("#date").val();
             var data = {
-                "adminid": adminid,
-                "action": action,
+                "fid": fid,
+                "customer": customer,
+                "financial_type": financial_type,
                 "date" : date,
             };
 
             $.ajax({
-                url : "/log_search",
+                url : "/charge_search",
                 dataType : "json",
                 type: "POST",
                 data: data,
                 success: function(response){
                     var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
+                    $.each(response.charge_search,function(i,v){
                     html +=`<tr>
                                 <td>${v.id}</td>
-                                <td>${v.action}</td>
-                                <td>${v.route}</td>
-                                <td>${v.created_at}</td>
-                                <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
-                                </td>
-                            </tr>`;
+                                <td>${v.phone}</td>
+                                <td>${v.created_at}</td>`;
+                    if (v.status == 1){
+                        html += `<td>
+                                    <span style="color:green;">已通过</span>
+                                </td>`;
+                    }else if (v.status == 2){
+                        html += `<td>
+                                    <span style="color:red;">已拒绝</span>
+                                </td>`;
+                    }else{
+                        html +=`<td>
+                                    <span style="color:blue;">待审核</span>
+                                </td>`;
+                    }
+                         html +=`<td>${v.amount}</td>`;
+                    if (v.status == 0){
+                        html += `<td>
+                                        <a href="{{ url('charge/${v.id}') }}" class="btn btn-success">通过</a>
+                                        <a href="{{ url('customer/${v.id}/edit') }}" class="btn btn-danger">拒绝</a>
+                                </td>`;
+                    }
+                    if (v.status == 2){
+                        html += `<td>
+                                    拒绝理由: ${v.comment}
+                                </td>`;
+                    }
+                    html += `</tr>`;
                     })
                     $("#search_data").html(html);
                 }

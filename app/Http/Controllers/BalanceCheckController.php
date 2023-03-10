@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Redis;
 class BalanceCheckController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/withdrawal";
 
@@ -36,7 +36,7 @@ class BalanceCheckController extends Controller
     /**
      * 余额提现审核
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -45,7 +45,8 @@ class BalanceCheckController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = BalanceCheck::orderBy('created_at', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $records = BalanceCheck::orderBy('created_at', 'desc')->paginate($perPage);
 
         $types = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
@@ -69,7 +70,7 @@ class BalanceCheckController extends Controller
         $id = (int)$id;
         $one = BalanceCheck::find($id);
 
-        //状态 0 待审核 1 通过 2 拒绝  
+        //状态 0 待审核 1 通过 2 拒绝
         $status = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         return view('withdrawal.show', compact('id', 'one', 'status'));
@@ -90,7 +91,7 @@ class BalanceCheckController extends Controller
         $id = (int)$id;
         $one = BalanceCheck::find($id);
 
-        //状态 0 待审核 1 通过 2 拒绝  
+        //状态 0 待审核 1 通过 2 拒绝
         $status = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         return view('withdrawal.edit', compact('id', 'one', 'status'));
