@@ -127,7 +127,7 @@ Route::post('withdraw_financial_balance', [CustomerController::class, 'withdraw_
 Route::post('withdraw_financial_asset', [CustomerController::class, 'withdraw_financial_asset'])->name('withdraw.financial_asset'); //存入和提取金融資產
 Route::post('withdraw_financial_integration', [CustomerController::class, 'withdraw_financial_integration'])->name('withdraw.financial_integration'); //商店撤回財務整合
 Route::post('withdraw_financial_platform_coin', [CustomerController::class, 'withdraw_financial_platform_coin'])->name('withdraw.financial_platform_coin'); //商店取款金融平台幣
-
+Route::get('team/{id}','App\Http\Controllers\CustomerController@team')->name('customer.team');
 
 
 
