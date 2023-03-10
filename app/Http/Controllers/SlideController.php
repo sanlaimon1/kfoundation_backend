@@ -89,13 +89,13 @@ class SlideController extends Controller
             $picture_path = '/images/webpimg/'.$picture_path;
         }
 
-        $webp_path = $this->convertImgToWebp($picture_path);
+        // $webp_path = $this->convertImgToWebp($picture_path);
 
         DB::beginTransaction();
         try {
             $slide = new Slide();
             $slide->title  = $request->title;
-            $slide->picture_path = $webp_path;
+            $slide->picture_path = $picture_path;
             $slide->link  = $request->link;
             $slide->type  = $request->type;
             $slide->status  = $request->status;
@@ -253,35 +253,35 @@ class SlideController extends Controller
         return redirect()->route('slide.index');
     }
 
-    function convertImgToWebp($file){
-        $ext = pathinfo($file, PATHINFO_EXTENSION);
+    // function convertImgToWebp($file){
+    //     $ext = pathinfo($file, PATHINFO_EXTENSION);
 
-        if ($ext == "jpg") {
-            $get_image = imagecreatefromjpeg(public_path($file));
-        } else if ($ext == "png") {
-            $get_image = imagecreatefrompng(public_path($file));
-        } else if ($ext == "jpeg") {
-            $get_image = imagecreatefromjpeg(public_path($file));
-        }
+    //     if ($ext == "jpg") {
+    //         $get_image = imagecreatefromjpeg(public_path($file));
+    //     } else if ($ext == "png") {
+    //         $get_image = imagecreatefrompng(public_path($file));
+    //     } else if ($ext == "jpeg") {
+    //         $get_image = imagecreatefromjpeg(public_path($file));
+    //     }
 
-        // Create a blank WebP image with the same dimensions
-        $webp_image = imagecreatetruecolor(imagesx($get_image), imagesy($get_image));
+    //     // Create a blank WebP image with the same dimensions
+    //     $webp_image = imagecreatetruecolor(imagesx($get_image), imagesy($get_image));
 
-        // Convert the PNG image to WebP
-        imagepalettetotruecolor($webp_image);
-        imagealphablending($webp_image, true);
-        imagesavealpha($webp_image, true);
-        $quality = 80; // Quality of the WebP image (0-100)
-        $get_webp_name = time() . '.webp';
-        $webp_path = 'images/webpimg/' . $get_webp_name;
-        imagewebp($get_image, $webp_path, $quality);
+    //     // Convert the PNG image to WebP
+    //     imagepalettetotruecolor($webp_image);
+    //     imagealphablending($webp_image, true);
+    //     imagesavealpha($webp_image, true);
+    //     $quality = 80; // Quality of the WebP image (0-100)
+    //     $get_webp_name = time() . '.webp';
+    //     $webp_path = 'images/webpimg/' . $get_webp_name;
+    //     imagewebp($get_image, $webp_path, $quality);
 
-        // Free up memory
-        imagedestroy($get_image);
-        imagedestroy($webp_image);
+    //     // Free up memory
+    //     imagedestroy($get_image);
+    //     imagedestroy($webp_image);
 
-        return '/'.$webp_path;
-        // $get_files = public_path('/images/webpimg/');
-        // $get_images = glob($get_files . "*.webp");
-    }
+    //     return '/'.$webp_path;
+    //     // $get_files = public_path('/images/webpimg/');
+    //     // $get_images = glob($get_files . "*.webp");
+    // }
 }
