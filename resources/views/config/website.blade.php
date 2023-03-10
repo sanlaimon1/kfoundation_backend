@@ -111,6 +111,7 @@
                     }
 
                     reader.readAsDataURL(input.files[0]);
+                    $('.submit_logo').attr('disabled' , false);
                 }
             }
 
@@ -123,6 +124,7 @@
                     let file = input.files[0];
                     let blobURL = URL.createObjectURL(file);
                     document.querySelector("video").src = blobURL;
+                    $('.submit_video_homepage').attr('disabled' , false);
                 }
             }
 
@@ -239,7 +241,7 @@
                             <input type="file" class="select_logo" id="item-{{ $logo->cid }}" name="logo" hidden/>
                             <label class="logo" for="item-{{ $logo->cid }}">选择</label>
                             <!-- <button class="btn btn-warning">选择</button> -->
-                            <button class="btn btn-primary" type="submit">保存</button>
+                            <button class="btn btn-primary submit_logo" disabled type="submit">保存</button>
                         </div>
                     </div>
                 </form>
@@ -262,7 +264,7 @@
                             <input type="file" accept="video/mp4*" class="select_video_home" id="item-{{ $video_homepage->cid }}" name="video_home" hidden/>
                             <label class="video_home" for="item-{{ $video_homepage->cid }}">选择</label>
                             <!-- <button class="btn btn-warning">选择</button> -->
-                            <button class="btn btn-primary" type="submit">保存</button>
+                            <button class="btn btn-primary submit_video_homepage" disabled type="submit">保存</button>
                         </div>
                     </div>
                 </form>
