@@ -36,15 +36,23 @@
             @method('put')
             <section class="row frame mt-5 mx-5 px-5">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="phone" class="form-label">用户手机号</label>
                         @error('phone')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="phone" name="phone" readonly value="{{$customer->phone}}">
+                        <p>{{$customer->phone}}</p>
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label for="invited_code" class="form-label">邀请码</label>
+                        @error('invited_code')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" id="invited_code" name="invited_code" value="{{$customer->invited_code}}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
                         <label for="realname" class="form-label">姓名</label>
                         @error('realname')
                             <div class="alert alert-danger">{{ $message }}</div>

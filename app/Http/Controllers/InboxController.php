@@ -279,11 +279,11 @@ class InboxController extends Controller
     public function inbox_search(Request $request)
     {
         $title  = $request->title;
-        $date = $request->date;
-
+       // $date = $request->date;
+         $date = Carbon::parse($request->date)->format('Y-m-d');
         if($title != null && $date != null)
         {
-            $inbox_search = DB::table('inboxs')
+            $inbox_search = DB::table('inboxes')
                             ->whereDate('created_at', '=', $date)
                             ->where('title', 'LIKE', '%' . $title . '%')
                             ->orderBy('is_top', 'desc')
@@ -291,7 +291,7 @@ class InboxController extends Controller
                             ->orderBy('created_at', 'desc')
                             ->get();
         } else {
-            $inbox_search = DB::table('inboxs')
+            $inbox_search = DB::table('inboxes')
                             ->whereDate('created_at', '=', $date)
                             ->orwhere('title', 'LIKE', '%' . $title . '%')
                             ->orderBy('is_top', 'desc')

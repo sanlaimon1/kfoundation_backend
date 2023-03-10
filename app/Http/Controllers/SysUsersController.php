@@ -13,14 +13,14 @@ use App\Models\Log;
 
 class SysUsersController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/sysusers";
 
@@ -34,20 +34,21 @@ class SysUsersController extends Controller
     /**
      * 系统管理员 System Users
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
+        $perPage = $request->input('perPage', 10);
         //列出管理员
         $sysusers = Admin::select('id','username','status','create_at','desc','rid','login_at')
             ->where('is_deleted', 0)
             ->orderBy('create_at', 'desc')
-            ->paginate(10);
+            ->paginate($perPage);
 
         return view('sysusers.index', compact('sysusers') );
     }
@@ -57,7 +58,7 @@ class SysUsersController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -79,7 +80,7 @@ class SysUsersController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -94,13 +95,13 @@ class SysUsersController extends Controller
             'status' => ['required', 'integer', 'in:0,1'],
             'rid' => ['required', 'integer', 'exists:roles,rid'],
         ];
-        
+
         $messages = [
             'password.regex' => '密码必须必须是字母和数字的组合。',
         ];
-        
+
         $validator = Validator::make($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             return redirect()->back()->withErrors($errors);
@@ -145,7 +146,7 @@ class SysUsersController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return '添加错误，事务回滚';
-        }        
+        }
 
         return redirect()->route('sysusers.index');
     }
@@ -164,7 +165,7 @@ class SysUsersController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -199,7 +200,7 @@ class SysUsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -211,13 +212,13 @@ class SysUsersController extends Controller
             'status' => ['required', 'integer', 'in:0,1'],
             'rid' => ['required', 'integer', 'exists:roles,rid'],
         ];
-        
+
         $messages = [
             'status.in' => '状态的数值错误',
         ];
-        
+
         $validator = Validator::make($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             return redirect()->back()->withErrors($errors);
@@ -228,7 +229,7 @@ class SysUsersController extends Controller
         $rid = trim( $request->get('rid') );
 
         $id = (int)$id;
-        
+
         $one = Admin::find($id);
         if(empty($one))
             return '用户不存在';
@@ -271,13 +272,13 @@ class SysUsersController extends Controller
             'password' => ['required', 'string', 'between:8,15', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'],
             'cpassword' => ['required', 'string', 'between:8,15', 'same:password'],
         ];
-        
+
         $messages = [
             'password.regex' => '密码必须必须是字母和数字的组合。',
         ];
-        
+
         $validator = Validator::make($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             return redirect()->back()->withErrors($errors);
@@ -315,11 +316,11 @@ class SysUsersController extends Controller
                 DB::rollback();
                 return '添加错误，事务回滚';
             }
-        
+
         } else {
             return '用户不存在';
         }
-        
+
         return redirect()->route('sysusers.modifypass',['id'=>$id])->with('message', '用户 ' . $one->username . ' 的密码修改成功！');
     }
 
@@ -328,7 +329,7 @@ class SysUsersController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){

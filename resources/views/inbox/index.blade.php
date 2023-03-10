@@ -26,7 +26,7 @@
         <br>
         <a href="{{ route('inbox.create') }}" class="btn btn-primary mb-5">发送站内信</a>
         <br />
-        <form action="{{route('inbox.index')}}" method="get">
+        <!-- <form method="get"> -->
             <nav class="row">
                 <div class="col-3">
                     <label class="form-label">收件人(不填则为所有人)：</label>
@@ -43,7 +43,7 @@
                     <button class="btn btn-success" id="inbox_search">查询</button>
                 </div>
             </nav>
-        </form>
+        <!-- </form> -->
         <br />
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>

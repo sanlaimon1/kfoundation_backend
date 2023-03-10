@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Slide;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class SlideController extends Controller
 {
@@ -92,7 +93,6 @@ class SlideController extends Controller
 
         DB::beginTransaction();
         try {
-
             $slide = new Slide();
             $slide->title  = $request->title;
             $slide->picture_path = $webp_path;
@@ -100,7 +100,19 @@ class SlideController extends Controller
             $slide->type  = $request->type;
             $slide->status  = $request->status;
             $slide->sort  = $request->sort;
-            $slide->save();
+            if(!$slide->save())
+            throw new \Exception('事务中断1');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'slide.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
 
             DB::commit();
         } catch (\Exception $e) {
@@ -170,7 +182,6 @@ class SlideController extends Controller
 
         DB::beginTransaction();
         try {
-
             $slide = Slide::find($id);
             $slide->title  = $request->title;
             $slide->picture_path  = $webp_path;
@@ -178,7 +189,19 @@ class SlideController extends Controller
             $slide->type  = $request->type;
             $slide->status  = $request->status;
             $slide->sort  = $request->sort;
-            $slide->save();
+            if(!$slide->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'inbox.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
 
             DB::commit();
         } catch (\Exception $e) {
@@ -192,7 +215,7 @@ class SlideController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -202,8 +225,30 @@ class SlideController extends Controller
         }
 
         $id = (int)$id;
-        $one = Slide::find($id);
-        $one->delete();
+
+        DB::beginTransaction();
+        try {
+            $one = Slide::find($id);
+            if(!$one->delete())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();;
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'inbox.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errorMessage = $e->getMessage();
+            return $errorMessage;
+        }
 
         return redirect()->route('slide.index');
     }
