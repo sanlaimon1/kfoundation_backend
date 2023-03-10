@@ -102,8 +102,10 @@ Route::resource('platformcoin', 'App\Http\Controllers\FinancialPlatformCoinContr
 Route::post('platformcoin_search', 'App\Http\Controllers\FinancialPlatformCoinController@platformcoin_search')->name('platformcoin_search');
 //资产充值审核
 Route::resource('charge', 'App\Http\Controllers\AssetCheckController');
+Route::post('charge_search','App\Http\Controllers\AssetCheckController@charge_search')->name('charge_search');
 //余额提现审核
 Route::resource('withdrawal', 'App\Http\Controllers\BalanceCheckController');
+Route::post('withdrawal_search','App\Http\Controllers\BalanceCheckController@withdrawal_search')->name('withdrawal_search');
 //用户钱包列表
 Route::resource('wallet', 'App\Http\Controllers\WalletController');
 Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_search')->name('wallet_search');

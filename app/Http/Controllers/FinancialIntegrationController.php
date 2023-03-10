@@ -32,7 +32,7 @@ class FinancialIntegrationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
 
         $role_id = Auth::user()->rid;
@@ -42,7 +42,8 @@ class FinancialIntegrationController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = FinancialIntegration::orderBy('created_at', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $records = FinancialIntegration::orderBy('created_at', 'desc')->paginate($perPage);
 
         $types = config('types.integration_financial_type');
 
