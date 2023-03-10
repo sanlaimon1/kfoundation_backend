@@ -22,14 +22,14 @@ use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/customer";
 
@@ -43,7 +43,7 @@ class CustomerController extends Controller
     /**
      * 客户列表
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -52,8 +52,9 @@ class CustomerController extends Controller
             return "您没有权限访问这个路径";
         }
 
+        $perPage = $request->input('perPage', 20);
         $records = Customer::where('status',1)
-                  ->orderBy('created_at', 'desc')->paginate(20);
+                  ->orderBy('created_at', 'desc')->paginate($perPage);
 
         $title = "会员列表";
 
@@ -65,7 +66,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -84,7 +85,7 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -127,7 +128,7 @@ class CustomerController extends Controller
 
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $salt = substr(str_shuffle($chars), 0, 6);      //6位随机盐
-       
+
 
         $hash_password1 = sha1( $salt . md5($salt . $request->password1) );
         $hash_password2 = sha1( $salt . md5($salt . $request->password2) );
@@ -254,7 +255,7 @@ class CustomerController extends Controller
 
         DB::beginTransaction();
         try {
-           
+
             $customer->realname = $request->realname;
             $customer->is_allowed_code = $request->is_allowed_code;
             $customer->identity = $request->identity;
@@ -343,7 +344,7 @@ class CustomerController extends Controller
     {
         $fid = $request->fid;
         $phone = $request->phone;
-        $created_at = $request->created_at;
+        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
         if($fid !=null && $phone != null && $created_at!=null)
         {
             $search_customer = DB::table('customers')
@@ -389,7 +390,7 @@ class CustomerController extends Controller
         $one = Customer::find($id);
 
         if($one->access_token==='null') {
-            
+
             return '无需操作';
         }
 
@@ -398,7 +399,7 @@ class CustomerController extends Controller
             $one->access_token = 'null';
             if (!$one->save())
                 throw new \Exception('事务中断7');
-            
+
             if( Redis::exists($one->access_token) )
             {
                 Redis::del($one->access_token);
@@ -445,10 +446,10 @@ class CustomerController extends Controller
             'password_confirmation' => 'required|same:password',
             'password' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ]);
-       
+
         $customer_id = $request->customer_id;
         $customer = Customer::find($customer_id);
-         
+
         $salt = $customer->salt;
         $hash_password1 = sha1( $salt . md5($salt . $request->password) );
 
@@ -494,7 +495,7 @@ class CustomerController extends Controller
             // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/','regex:/^[0-9]{6}$/'],
 
         ]);
-        
+
         $customer_id = $request->customer_id;
         $customer = Customer::find($customer_id);
 
@@ -534,7 +535,7 @@ class CustomerController extends Controller
     }
 
     //上分
-    public function charge(string $id) 
+    public function charge(string $id)
     {
         $id = (int)$id;
         $customer = Customer::find($id);
@@ -550,7 +551,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->financial_balance_amount;
-       
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -608,7 +609,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->financial_asset_amount;
-       
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -665,7 +666,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->financial_integration_amount;
-        
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -722,7 +723,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->financial_platform_coin_amount;
-        
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -787,7 +788,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->withdraw_balance_amount;
-       
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -844,7 +845,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->withdraw_asset_amount;
-        
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -862,7 +863,7 @@ class CustomerController extends Controller
             $financial_asset->created_at = date('Y-m-d H:i:s');
             if(!$financial_asset->save())
             throw new \Exception('事务中断21');
-            
+
             $customer->balance = $balance;
             if(!$customer->save())
             throw new \Exception('事务中断21');
@@ -901,7 +902,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->withdraw_integration_amount;
-        
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
@@ -959,14 +960,14 @@ class CustomerController extends Controller
         ]);
         $customer_id = $request->customer_id;
         $amount =  $request->withdraw_platform_coin_amount;
-        
+
         DB::beginTransaction();
         try{
             DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
             $customer = Customer::find($customer_id);
             $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
             $balance = $customer->balance - $amount;
-            
+
             $financial_platform_coin = new FinancialPlatformCoin();
             $financial_platform_coin->userid = $customer->id;
             $financial_platform_coin->amount = $amount;
