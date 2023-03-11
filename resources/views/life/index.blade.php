@@ -73,7 +73,6 @@
                     <td>
 
                         <a href="{{ route('life.edit', ['life'=>$one->id]) }}" class="btn btn-warning">编辑</a>
-                        |
                         <form action="{{ route('life.destroy', ['life'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">

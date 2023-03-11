@@ -64,9 +64,9 @@
                     <td>
                         @if($one->rid!=1)
                         <a href="{{ route('role.show', ['role'=>$one->rid]) }}" class="btn btn-primary">编辑权限</a>
-                        |
+                        
                         <a href="{{ route('role.edit', ['role'=>$one->rid]) }}" class="btn btn-warning">编辑</a>
-                        |
+                        
                         <form action="{{ route('role.destroy', ['role'=>$one->rid]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">

@@ -52,7 +52,7 @@
                     <td>
 
                         <a href="{{ route('permission.edit', $permission->id) }}" class="btn btn-warning">编辑</a>
-                        |
+                        
                         <form action="{{ route('permission.destroy', $permission->id) }}" method="post" style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('DELETE')
