@@ -71,9 +71,9 @@
                     </td>
                     <td>
                         <a href="{{ route('sysusers.edit', ['sysuser'=>$one->id]) }}" class="btn btn-warning">编辑</a>
-                        |
+                        
                         <a href="{{ route('sysusers.modifypass', ['id'=>$one->id]) }}" class="btn btn-success">修改密码</a>
-                        |
+                        
                         <form action="{{ route('sysusers.destroy', ['sysuser'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
