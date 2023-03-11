@@ -102,8 +102,10 @@ Route::resource('platformcoin', 'App\Http\Controllers\FinancialPlatformCoinContr
 Route::post('platformcoin_search', 'App\Http\Controllers\FinancialPlatformCoinController@platformcoin_search')->name('platformcoin_search');
 //资产充值审核
 Route::resource('charge', 'App\Http\Controllers\AssetCheckController');
+Route::post('charge_search','App\Http\Controllers\AssetCheckController@charge_search')->name('charge_search');
 //余额提现审核
 Route::resource('withdrawal', 'App\Http\Controllers\BalanceCheckController');
+Route::post('withdrawal_search','App\Http\Controllers\BalanceCheckController@withdrawal_search')->name('withdrawal_search');
 //用户钱包列表
 Route::resource('wallet', 'App\Http\Controllers\WalletController');
 Route::post('wallet_search', 'App\Http\Controllers\WalletController@wallet_search')->name('wallet_search');
@@ -117,6 +119,18 @@ Route::get('customer_withdrawal/{id}', 'App\Http\Controllers\CustomerController@
 Route::get('customer_password/{id}', 'App\Http\Controllers\CustomerController@modify_pass')->name('customer.modify_pass'); //下分
 Route::post('customer_password1', [CustomerController::class, 'customer_password1'])->name('customer.password1'); //存儲密碼1
 Route::post('customer_password2', [CustomerController::class, 'customer_password2'])->name('customer.password2'); //存儲密碼2
+Route::post('charge_financial_balance', [CustomerController::class, 'charge_financial_balance'])->name('charge.financial_balance'); //存儲財務餘額
+Route::post('charge_financial_asset', [CustomerController::class, 'charge_financial_asset'])->name('charge.financial_asset'); //儲存金融資產
+Route::post('charge_financial_integration', [CustomerController::class, 'charge_financial_integration'])->name('charge.financial_integration'); //門店財務整合
+Route::post('charge_financial_platform_coin', [CustomerController::class, 'charge_financial_platform_coin'])->name('charge.financial_platform_coin'); //存儲金融平台幣
+Route::post('withdraw_financial_balance', [CustomerController::class, 'withdraw_financial_balance'])->name('withdraw.financial_balance'); //門店提款餘額
+Route::post('withdraw_financial_asset', [CustomerController::class, 'withdraw_financial_asset'])->name('withdraw.financial_asset'); //存入和提取金融資產
+Route::post('withdraw_financial_integration', [CustomerController::class, 'withdraw_financial_integration'])->name('withdraw.financial_integration'); //商店撤回財務整合
+Route::post('withdraw_financial_platform_coin', [CustomerController::class, 'withdraw_financial_platform_coin'])->name('withdraw.financial_platform_coin'); //商店取款金融平台幣
+Route::get('team/{id}','App\Http\Controllers\CustomerController@team')->name('customer.team');
+
+
+
 
 //返息明细
 Route::resource('interest', 'App\Http\Controllers\InterestController');

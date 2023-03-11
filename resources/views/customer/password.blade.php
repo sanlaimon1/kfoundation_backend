@@ -37,7 +37,7 @@
                     <h5 class="card-title">登录密码</h5>
                     <label for="password" class="form-label">密码:</label>
                     @error('password')
-                        <div class="alert alert-danger">{{ $message }}</div>
+                        <div class="alert alert-danger">密码必须包含大小写字母和数字的组合</div>
                     @enderror
                     <input type="password" name="password" id="password" class="form-control" />
                     <label for="password_confirmation" class="form-label my-3">确认密码:</label>
@@ -56,7 +56,7 @@
                     <h5 class="card-title">取款密码</h5>
                     <label for="password2" class="from-label">密码:</label>
                     @error('password2')
-                        <div class="alert alert-danger">{{ $message }}</div>
+                        <div class="alert alert-danger">密码必须包含大小写字母和数字的组合</div>
                     @enderror
                     <input type="password" name="password2" id="password2" class="form-control" />
 

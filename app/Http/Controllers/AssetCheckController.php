@@ -12,18 +12,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
 
 class AssetCheckController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/charge";
 
@@ -37,7 +38,7 @@ class AssetCheckController extends Controller
     /**
      * 资产充值审核
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -46,7 +47,8 @@ class AssetCheckController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = AssetCheck::orderBy('created_at', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $records = AssetCheck::orderBy('created_at', 'desc')->paginate($perPage);
 
         $types = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
@@ -87,7 +89,7 @@ class AssetCheckController extends Controller
         $id = (int)$id;
         $one = AssetCheck::find($id);
 
-        //状态 0 待审核 1 通过 2 拒绝  
+        //状态 0 待审核 1 通过 2 拒绝
         //$status = [0=>'待审核', 1=>'通过', 2=>'拒绝'];
 
         return view('charge.show', compact('id', 'one'));
@@ -109,7 +111,7 @@ class AssetCheckController extends Controller
         $id = (int)$id;
         $one = AssetCheck::find($id);
 
-        //状态 0 待审核 1 通过 2 拒绝  
+        //状态 0 待审核 1 通过 2 拒绝
         $status = [0 => '待审核', 1 => '通过', 2 => '拒绝'];
 
         return view('charge.edit', compact('id', 'one', 'status'));
@@ -140,7 +142,7 @@ class AssetCheckController extends Controller
                 throw new \Exception('事务中断1');
 
             $asset_check = AssetCheck::where('status', "=", 0)->get();
-            Redis::set('asset_check_status', $asset_check->count());           
+            Redis::set('asset_check_status', $asset_check->count());
 
             //更改用户余额
             $userid = $one->userid;
@@ -254,5 +256,43 @@ class AssetCheckController extends Controller
         }
 
         return redirect()->route('charge.show', ['charge' => $id]);
+    }
+
+    public function charge_search(Request $request)
+    {
+
+        $fid = $request->fid;
+        $customer = $request->customer;
+        $financial_type = $request->financial_type;
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        if($fid != null && $customer != null && $financial_type != null && $date != null)
+        {
+            $charge_search = DB::table('asset_check')
+                            ->join('customers', 'customers.id', 'asset_check.userid')
+                            ->where([['asset_check.id', '=', $fid], ['customers.phone', '=', $customer], ['asset_check.status', '=', $financial_type]])
+                            ->whereDate('asset_check.created_at', '=', $date)
+                            ->orderBy('asset_check.created_at', 'desc')
+                            ->select('customers.phone', 'asset_check.*')
+                            ->get();
+
+        } else {
+            $charge_search = DB::table('asset_check')
+                            ->join('customers', 'customers.id', 'asset_check.userid')
+                            ->whereDate('asset_check.created_at', '=', $date)
+                            ->orwhere('asset_check.id', '=', $fid)
+                            ->orwhere('customers.phone','=',$customer)
+                            ->orwhere('asset_check.status','=', $financial_type)
+                            ->orderBy('asset_check.created_at', 'desc')
+                            ->select('customers.phone', 'asset_check.*')
+                            ->get();
+                            //dd($charge_search);
+
+        }
+
+        return response()->json([
+            'charge_search' => $charge_search
+
+        ]);
+
     }
 }

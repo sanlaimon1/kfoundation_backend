@@ -32,7 +32,7 @@ class FinancialPlatformCoinController extends Controller
     /**
      * 平台币流水记录
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -41,7 +41,8 @@ class FinancialPlatformCoinController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = FinancialPlatformCoin::orderBy('created_at', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $records = FinancialPlatformCoin::orderBy('created_at', 'desc')->paginate($perPage);
 
         $types = config('types.platform_financial_type');
 

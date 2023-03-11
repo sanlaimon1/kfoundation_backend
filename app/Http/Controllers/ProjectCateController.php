@@ -7,17 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\ProjectCate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Log;
 
 class ProjectCateController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/projectcate";
 
@@ -31,16 +33,16 @@ class ProjectCateController extends Controller
     /**
      * 项目分类
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
-
-        $projectcates = ProjectCate::orderBy('sort', 'asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $projectcates = ProjectCate::orderBy('sort', 'asc')->paginate($perPage);
 
         return view('projectcate.index', compact('projectcates'));
     }
@@ -50,7 +52,7 @@ class ProjectCateController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -66,12 +68,12 @@ class ProjectCateController extends Controller
     public function store(Request $request)
     {
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
             return "您没有权限访问这个路径";
-        } 
+        }
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
             'comment' => ['required','string','max:200'],
@@ -81,13 +83,33 @@ class ProjectCateController extends Controller
         $category_name = trim($request->cate_name);
         $comment = trim($request->comment);
         $sort = trim($request->sort);
+        DB::beginTransaction();
+        try {
+            $newprojectcates = new ProjectCate();
+            $newprojectcates->cate_name = $category_name;
+            $newprojectcates->comment = $comment;
+            $newprojectcates->created_at = date('Y-m-d H:i:s');
+            $newprojectcates->sort = $sort;
+            if(!$newprojectcates->save())
+                throw new \Exception('事务中断1');
 
-        $newprojectcates = new ProjectCate();
-        $newprojectcates->cate_name = $category_name;
-        $newprojectcates->comment = $comment;
-        $newprojectcates->created_at = date('Y-m-d H:i:s');
-        $newprojectcates->sort = $sort;
-        $newprojectcates->save();
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'projectcate.store';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断2');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('projectcate.index');
 
@@ -107,7 +129,7 @@ class ProjectCateController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -123,7 +145,7 @@ class ProjectCateController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -140,11 +162,32 @@ class ProjectCateController extends Controller
         $comment = trim($request->comment);
         $sort = trim($request->sort);
 
-        $oneprojectcate = ProjectCate::find($id);
-        $oneprojectcate->cate_name = $category_name;
-        $oneprojectcate->comment = $comment;
-        $oneprojectcate->sort = $sort;
-        $oneprojectcate->save();
+        DB::beginTransaction();
+        try {
+            $oneprojectcate = ProjectCate::find($id);
+            $oneprojectcate->cate_name = $category_name;
+            $oneprojectcate->comment = $comment;
+            $oneprojectcate->sort = $sort;
+            if(!$oneprojectcate->save())
+                throw new \Exception('事务中断3');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'projectcate.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断4');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return '添加错误，事务回滚';
+        }
 
         return redirect()->route('projectcate.index');
 
@@ -153,18 +196,40 @@ class ProjectCateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
             return "您没有权限访问这个路径";
         }
 
-        $one = ProjectCate::find($id);
-        $one->enable = 0;
-        $one->save();
+        DB::beginTransaction();
+        try {
+            $one = ProjectCate::find($id);
+            $one->enable = 0;
+    
+            if(!$one->save())
+                throw new \Exception('事务中断5');
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . ' 删除站内信';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'projectcate.destroy';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断6');
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return '添加错误，事务回滚';
+        }
         return redirect()->route('projectcate.index');
     }
 }

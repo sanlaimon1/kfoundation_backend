@@ -26,7 +26,7 @@ class WalletController extends Controller
     /**
      * 查询钱包列表
      */
-    public function index()
+    public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -35,7 +35,8 @@ class WalletController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        $records = Wallet::orderBy('created_at', 'desc')->paginate(20);
+        $perPage = $request->input('perPage', 20);
+        $records = Wallet::orderBy('created_at', 'desc')->paginate($perPage);
 
         $types = config('types.client_wallet_types');
 
@@ -63,7 +64,8 @@ class WalletController extends Controller
             $customer_name = DB::table('customers')
                             ->where('customers.id','=',$wallet->userid)
                             ->select('realname')->first();
-            $wallet->delete();
+            if(!$wallet->delete())
+                throw new \Exception('事务中断1');
 
             $myself = Auth::user();
             $log = new Log();
@@ -76,8 +78,8 @@ class WalletController extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
-            $log->save();
-
+            if(!$log->save())
+                throw new \Exception('事务中断2');
             DB::commit();
 
         } catch (\Exception $e) {

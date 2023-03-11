@@ -111,6 +111,7 @@
                     }
 
                     reader.readAsDataURL(input.files[0]);
+                    $('.submit_logo').attr('disabled' , false);
                 }
             }
 
@@ -120,13 +121,10 @@
 
             function readURLVideoHome(input) {
                 if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        $('#show-video-home').attr('src', e.target.result);
-                    }
-
-                    reader.readAsDataURL(input.files[0]);
+                    let file = input.files[0];
+                    let blobURL = URL.createObjectURL(file);
+                    document.querySelector("video").src = blobURL;
+                    $('.submit_video_homepage').attr('disabled' , false);
                 }
             }
 
@@ -243,7 +241,7 @@
                             <input type="file" class="select_logo" id="item-{{ $logo->cid }}" name="logo" hidden/>
                             <label class="logo" for="item-{{ $logo->cid }}">选择</label>
                             <!-- <button class="btn btn-warning">选择</button> -->
-                            <button class="btn btn-primary" type="submit">保存</button>
+                            <button class="btn btn-primary submit_logo" disabled type="submit">保存</button>
                         </div>
                     </div>
                 </form>
@@ -258,11 +256,15 @@
                     <input type="hidden" name="id" value="{{ $video_homepage->cid }}" />
                     <div class="card-body">
                         <div class="mb-3 col-6">
-                            <img id="show-video-home" src="{{ $video_homepage->config_value }}" width="120" height="120" />
-                            <input type="file" class="select_video_home" id="item-{{ $video_homepage->cid }}" name="video_home" hidden/>
+                            <video width="500" height="250" controls>
+                                <source id="show-video-home" src="{{ $video_homepage->config_value }}" type="video/mp4" >
+                                Your browser does not support the video tag.
+                            </video>
+                            <!-- <img id="show-video-home" src="{{ $video_homepage->config_value }}" width="120" height="120" /> -->
+                            <input type="file" accept="video/mp4*" class="select_video_home" id="item-{{ $video_homepage->cid }}" name="video_home" hidden/>
                             <label class="video_home" for="item-{{ $video_homepage->cid }}">选择</label>
                             <!-- <button class="btn btn-warning">选择</button> -->
-                            <button class="btn btn-primary" type="submit">保存</button>
+                            <button class="btn btn-primary submit_video_homepage" disabled type="submit">保存</button>
                         </div>
                     </div>
                 </form>

@@ -11,14 +11,14 @@ use DB;
 
 class PaymentController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/payment";
 
@@ -32,16 +32,17 @@ class PaymentController extends Controller
     /**
      * 支付方式列表
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $payments = Payment::select('pid', 'sort','show','payment_name','ptype', 'logo')->orderBy('sort','asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $payments = Payment::select('pid', 'sort','show','payment_name','ptype', 'logo')->orderBy('sort','asc')->paginate($perPage);
 
         return view('config.payment', compact('payments'));
     }
@@ -75,7 +76,7 @@ class PaymentController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -106,7 +107,7 @@ class PaymentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -183,7 +184,7 @@ class PaymentController extends Controller
                 $one->extra = json_encode($extra_array) ;
                 if(!$one->save())
                     throw new \Exception('事务中断1');
-                
+
                 $username = Auth::user()->username;
                 $log = new Log();
                 $log->adminid = Auth::id();
@@ -194,7 +195,7 @@ class PaymentController extends Controller
                 $input_json = json_encode( $input );
                 $log->parameters = $input_json;  // 请求参数
                 $log->created_at = date('Y-m-d H:i:s');
-                
+
                 if(!$log->save())
                     throw new \Exception('事务中断2');
 
@@ -205,7 +206,7 @@ class PaymentController extends Controller
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
-            
+
         } else if($ptype == 4) {
             $request->validate([
                 'bank' => ['required', 'string', 'max:30'],
@@ -236,7 +237,7 @@ class PaymentController extends Controller
                 $one->description = $description;
                 $extra_array = ['bank'=>$bank, 'bank_name'=>$bank_name, 'bank_account'=>$bank_account];
                 $one->extra = json_encode($extra_array) ;
-                
+
                 if(!$one->save())
                     throw new \Exception('事务中断3');
 

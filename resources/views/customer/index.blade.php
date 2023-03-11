@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <script src="/js/flatpickr"></script>
+    <script src="/js/zh.js"></script>
     <style>
         #app td
         {
@@ -17,6 +20,9 @@
         #app td img
         {
             width: 50px;
+        }
+        .box1, .box2 {
+            display: inline-block;
         }
     </style>
 </head>
@@ -44,7 +50,7 @@
 
             <div class="col-2">
                 <label class="form-label">时间：</label>
-                <input type="date" name="created_at" id="created_at" class="form-control" />
+                <input type="text" name="created_at" id="created_at" class="form-control" />
             </div>
 
             <div class="col-1">
@@ -66,7 +72,7 @@
                     <th scope="col">会员等级</th>
                     <th scope="col">推荐人</th>
                     <th scope="col" style="width: 620px;">操作</th>
-                    
+
                 </tr>
             </thead>
             <tbody id="search_data">
@@ -82,12 +88,11 @@
                         <a class="btn btn-success" href="{{ route('customer.charge', ['id'=>$one->id]) }}">上分</a>
                         <a class="btn btn-primary" href="{{ route('customer.withdrawal', ['id'=>$one->id]) }}">下分</a>
                         <a class="btn btn-danger" href="{{ route('customer.kickout', ['id'=>$one->id]) }}">踢出</a>
-                        <a class="btn btn-success" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看团队</a>
+                        <a class="btn btn-success" href="{{ route('customer.team', ['id'=>$one->id]) }}">查看团队</a>
                         <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                         <a class="btn btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
-                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}" 
-                         method="post"
-                         style="float:right;" onsubmit="javascript:return del()">
+                        <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
+                         method="post"  onsubmit="javascript:return del()" class="d-inline-block">
                             {{ csrf_field() }}
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">冻结</button>
@@ -97,9 +102,24 @@
                 @endforeach
             </tbody>
         </table>
-        <nav aria-label="page">
-              <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
-        </nav>
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <nav aria-label="page">
+                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                </nav>
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('customer.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
     </div>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
     <script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -111,6 +131,14 @@
             }
         });
         $(document).ready(function(){
+             //datepicker
+             flatpickr("#created_at",
+            {
+                enableTime: true,  // 启用时间选择
+                dateFormat: "Y-m-d H:i", // 自定义日期格式
+                locale: "zh"       // 使用中文语言
+             });
+
             $("#customer_search").click(function(){
                 var fid = $("#fid").val();
                 var phone = $("#phone").val();

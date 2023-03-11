@@ -112,8 +112,8 @@
                     <option value="100" {{ $projects->perPage() == 100 ? 'selected' : '' }}>100</option>
                     <option value="200" {{ $projects->perPage() == 200 ? 'selected' : '' }}>200</option>
                 </select>
-            </div>
             </form>
+            </div>
         </div>
 
     </div>

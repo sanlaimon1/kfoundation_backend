@@ -6,19 +6,17 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Life;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Log;
-use DB;
 
 class LifeController extends Controller
 {
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/life";
 
@@ -32,16 +30,17 @@ class LifeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
             return "您没有权限访问这个路径";
         }
 
-        $lifes = Life::orderBy('sort','asc')->paginate(10);
+        $perPage = $request->input('perPage', 10);
+        $lifes = Life::orderBy('sort','asc')->paginate($perPage);
         return view( 'life.index', compact('lifes') );
     }
 
@@ -50,7 +49,7 @@ class LifeController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -65,13 +64,13 @@ class LifeController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
             return "您没有权限访问这个路径";
         }
-        
+
         $request->validate([
             'production_name'=> ['required', 'string', 'between:1,40'],
             'sort'=> ['required', 'integer', 'gt:0'],
@@ -90,39 +89,14 @@ class LifeController extends Controller
             $request->picture->move(public_path('/images/'),$picture);
             $image = '/images/'.$picture;
         }
-        DB::beginTransaction();
-        try {
-            //code...
-            $newlife = new Life();
-            $newlife->production_name = $production_name;
-            $newlife->picture = $image;
-            $newlife->sort = $sort;
-            $newlife->extra = $extra;
-            $newlife->inputs = $inputs;
-            if(!$newlife->save())
-                throw new \Exception('事务中断1');
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 添加站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'life.store';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
-
-            if(!$newlog->save())
-                throw new \Exception('事务中断2');
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+        $newlife = new Life();
+        $newlife->production_name = $production_name;
+        $newlife->picture = $image;
+        $newlife->sort = $sort;
+        $newlife->extra = $extra;
+        $newlife->inputs = $inputs;
+        $newlife->save();
 
         return redirect()->route('life.index');
     }
@@ -140,7 +114,7 @@ class LifeController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
@@ -156,7 +130,7 @@ class LifeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -184,38 +158,13 @@ class LifeController extends Controller
             $image = $request->old_picture;
         }
 
-        DB::beginTransaction();
-        try {
-            $newlife = Life::find($id);
-            $newlife->production_name = $production_name;
-            $newlife->picture = $image;
-            $newlife->sort = $sort;
-            $newlife->extra = $extra;
-            $newlife->inputs = $inputs;
-            if(!$newlife->save())
-                throw new \Exception('事务中断3');
-
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 修改站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'life.update';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
-
-            if(!$newlog->save())
-                throw new \Exception('事务中断4');
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+        $newlife = Life::find($id);
+        $newlife->production_name = $production_name;
+        $newlife->picture = $image;
+        $newlife->sort = $sort;
+        $newlife->extra = $extra;
+        $newlife->inputs = $inputs;
+        $newlife->save();
 
         return redirect()->route('life.index');
     }
@@ -223,43 +172,17 @@ class LifeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id, Request $request)
+    public function destroy(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
             return "您没有权限访问这个路径";
         }
 
-        DB::beginTransaction();
-        try {
-            $life = Life::find($id);
-            if(!$life->delete())
-                throw new \Exception('事务中断5');
-
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 删除站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'life.destroy';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
-
-            if(!$newlog->save())
-                throw new \Exception('事务中断6');
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
-
+        $life = Life::find($id);
+        $life->delete();
         return redirect()->route('life.index');
     }
 }

@@ -19,6 +19,10 @@
             height: 20px;
             line-height: 20px;
         }
+        .box1, .box2
+        {
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -67,10 +71,10 @@
                     </td>
                     <td>
                         <a href="{{ route('sysusers.edit', ['sysuser'=>$one->id]) }}" class="btn btn-warning">编辑</a>
-                        |
+                        
                         <a href="{{ route('sysusers.modifypass', ['id'=>$one->id]) }}" class="btn btn-success">修改密码</a>
-                        |
-                        <form action="{{ route('sysusers.destroy', ['sysuser'=>$one->id]) }}" 
+                        
+                        <form action="{{ route('sysusers.destroy', ['sysuser'=>$one->id]) }}"
                          method="post"
                          style="float:right;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
@@ -83,21 +87,38 @@
             </tbody>
         </table>
         <footer style="display:flex;">
-            <aside style="line-height: 37px; margin-right: 2rem;">
-                共计<strong>{{ $sysusers->count() }}</strong>条数据
-            </aside>
-            {{ $sysusers->links() }}
+        <div class="container-fluid">
+            <div class="box1 p-2">
+                <aside style="line-height: 37px; margin-right: 2rem;">
+                    共计<strong>{{ $sysusers->count() }}</strong>条数据
+                </aside>
+                {{ $sysusers->links() }}
+            </div>
+            <div class="box2 p-2">
+            <form method="get" action="{{ route('sysusers.index') }}">
+                <label for="perPage">每页显示：</label>
+                <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
+                    <option value="10" {{ $sysusers->perPage() == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ $sysusers->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $sysusers->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $sysusers->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $sysusers->perPage() == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
+            </div>
+        </div>
+
         </footer>
-        
-        
+
+
     </div>
     <script>
-    function del() { 
-        var msg = "您真的确定要删除吗？\n\n请确认！"; 
-        if (confirm(msg)==true){ 
-            return true; 
-        }else{ 
-            return false; 
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
         }
     }
     </script>
