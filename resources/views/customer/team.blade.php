@@ -10,6 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
     <link rel="stylesheet" href="/css/flatpickr.min.css">
+    <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/flatpickr"></script>
     <script src="/js/zh.js"></script>
     <style>
@@ -68,41 +69,7 @@
             </div>
 
         </nav>
-        <!--<br />
-        <nav class="row">
-            <ul>
-                <li>
-                    <a href="" class="btn btn-primary">1级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">2级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">3级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">4级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">5级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">6级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">7级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">8级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">9级会员</a>
-                </li>
-                <li>
-                    <a href="" class="btn btn-primary">10级会员</a>
-                </li>
-            </ul>
-        </nav>-->
+        
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
@@ -224,10 +191,14 @@
         $(document).on('click', 'button.children', function(){
             var url = $(this).attr('href');
             var btn_obj = $(this);
+            $('.loading').show();
             $.get(url, function(html_text){
-                btn_obj.parent().parent().after('<tr>'+html_text+'</tr>');
+                btn_obj.parent().parent().next('tr.child').remove();
+                btn_obj.parent().parent().after('<tr class="child">'+html_text+'</tr>');
+                $('.loading').hide();
             }, 'html');
         });
     </script>
+    @include('loading')
 </body>
 </html>
