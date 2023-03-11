@@ -186,6 +186,9 @@ class BalanceCheckController extends Controller
             if (!$one->save())
                 throw new \Exception('事务中断1');
 
+            $balance_check = BalanceCheck::where('status', "=", 0)->get();
+            Redis::set('balance_check_status', $balance_check->count());
+
             //更改用户余额
             $userid = $one->userid;
             $one_user = Customer::find($userid);

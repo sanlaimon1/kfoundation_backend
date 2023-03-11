@@ -225,6 +225,9 @@ class AssetCheckController extends Controller
             if (!$one->save())
                 throw new \Exception('事务中断5');
 
+            $asset_check = AssetCheck::where('status', "=", 0)->get();
+            Redis::set('asset_check_status', $asset_check->count());
+
             $username = Auth::user()->username;
             //添加管理员日志
             $newlog = new Log;
