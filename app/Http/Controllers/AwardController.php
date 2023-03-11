@@ -57,10 +57,11 @@ class AwardController extends Controller
         $first_invest = $item_cate['first_invest'];  
         $balance_benefit = $item_cate['balance_benefit'];  
         $balance_min = $item_cate['balance_min'];  
-        $balance_max = $item_cate['balance_max'];  
+        $balance_max = $item_cate['balance_max'];
+        $reinvest = $item_cate['reinvest'];
 
         return view('award.index', compact('registration_award', 'realname_award', 'everyday_award', 'first_invest',
-                                            'balance_benefit','balance_min','balance_max'    ) );
+                                            'balance_benefit','balance_min','balance_max','reinvest'    ) );
     }
 
     /**

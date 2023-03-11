@@ -17,6 +17,7 @@ use Illuminate\Database\Query\Builder;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Teamlevel;
+use App\Models\TeamExtra;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
@@ -1014,11 +1015,39 @@ class CustomerController extends Controller
     public function team(string $id) {
         $id = (int)$id;
 
+        //查询一个用户
+        $one_user = Customer::find( $id );
+        if(empty($one_user)) {
+            return '用户不存在';
+        }
+
         $members = Customer::where('parent_id', $id)->orderBy('created_at', 'desc')->paginate(20);
 
-        $one_team = [];
+        $one_team = Teamlevel::find( $one_user->team_id );   //团队等级
+        $one_team_extra = TeamExtra::where( 'userid', $id )->first();    //团队的额外信息
+        $customer_extra = CustomerExtra::where('userid',  $id )->first();       //用户额外信息
+        if(empty($customer_extra)) {
+            return '无记录数据异常,  请管理员检查';
+        }
 
-        return view('customer.team',  compact('members', 'one_team'));
+        $children = explode(',', $customer_extra->all_children_ids );
+        //团队总人数
+        $count_children = count($children);
+
+        return view('customer.team',  compact('members', 'one_team', 'one_team_extra', 'count_children'));
+    }
+
+
+    public function list_children(string $id) {
+        $id = (int)$id;
+
+        $customer_extra = CustomerExtra::where( 'userid',  $id )->first();       //用户额外信息
+        $level = $customer_extra->level;
+        $all_children_ids = $customer_extra->all_children_ids;
+
+        $members = Customer::where('parent_id', $id)->orderBy('created_at', 'desc')->get();
+
+        return view('customer.children', compact( 'level', 'all_children_ids', 'members' ));
     }
 
 }

@@ -145,6 +145,17 @@
                     <button class="btn btn-danger" data="{{ $first_invest->id }}">保存</button>
                 </div>
             </div>
+
+            <div class="card">
+                <label class="card-title bg-success text-white">
+                    {{ $reinvest->comment }}
+                </label>
+                <div class="card-body">
+                    <input class="form-control" id="item-{{ $reinvest->id }}" type="text" name="{{ $reinvest->award_name }}" value="{{ $reinvest->award_value }}" />
+                    <button class="btn btn-danger" data="{{ $reinvest->id }}">保存</button>
+                </div>
+            </div>
+
             <div class="card">
                 <label class="card-title bg-success text-white">
                     {{ $balance_benefit->comment }}

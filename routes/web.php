@@ -76,7 +76,7 @@ Route::resource('inbox', 'App\Http\Controllers\InboxController');
 Route::post('inbox_search', 'App\Http\Controllers\InboxController@inbox_search')->name('inbox_search');
 //项目管理
 Route::resource('project', 'App\Http\Controllers\ProjectController');
-//項目搜索
+//项目搜索
 Route::post('project_search', [ProjectController::class, 'project_search'])->name('project_search');
 //角色管理列出URI
 Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
@@ -128,7 +128,7 @@ Route::post('withdraw_financial_asset', [CustomerController::class, 'withdraw_fi
 Route::post('withdraw_financial_integration', [CustomerController::class, 'withdraw_financial_integration'])->name('withdraw.financial_integration'); //商店撤回財務整合
 Route::post('withdraw_financial_platform_coin', [CustomerController::class, 'withdraw_financial_platform_coin'])->name('withdraw.financial_platform_coin'); //商店取款金融平台幣
 Route::get('team/{id}','App\Http\Controllers\CustomerController@team')->name('customer.team');
-
+Route::get('list_children/{id}','App\Http\Controllers\CustomerController@list_children')->name('customer.list_children');
 
 
 

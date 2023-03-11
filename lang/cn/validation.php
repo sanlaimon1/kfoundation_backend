@@ -196,6 +196,7 @@ return [
         'extra'=>'其他选项',
         'inputs'=>'输入选项',
         'categoryid'=>'分类',
+        'invited_code'=>'邀请码',
     ],
 
 ];

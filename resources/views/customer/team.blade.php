@@ -17,12 +17,20 @@
                 display: inline-block;
             }
             ul {
+                margin:0;
                 padding:0;
                 display:flex;
+                height: 40px;
             }
             li {
                 list-style-type: none;
                 margin-left: .5rem;
+                height: 40px;
+                line-height: 40px;
+            }
+            .value
+            {
+                color:red;
             }
     </style>
 </head>
@@ -37,28 +45,30 @@
                 <li class="breadcrumb-item active" aria-current="page">查看团队</li>
             </ol>
         </nav>
-        <br />
+        
         <nav class="row">
             <div class="col-3">
-                <label class="form-label">手机号：</label>
-                <input type="text" name="phone" id="phone" class="form-control" />
+                <div class="row">
+                    <label class="form-label col-4">手机号：</label>
+                    <input type="text" name="phone" id="phone" class="form-control col-8" style="width: 66%;" />
+                </div>
             </div>
 
             <div class="col-1">
-                <br />
                 <button class="btn btn-success" id="log_search">搜索</button>
             </div>
 
-            <div class="col-9">
+            <div class="col-8">
                 <ul>
-                    <li>团队等级: </li>
-                    <li>团队人数: </li>
-                    <li>团队总充值: </li>
-                    <li>团队总提现: </li>
+                    <li>团队等级: <strong class="value">{{ $one_team->level_name }}</strong></li>
+                    <li>团队人数: <strong class="value">{{ $count_children }}</strong></li>
+                    <li>团队总充值: <strong class="value">{{ $one_team_extra->charge_total }}</strong></li>
+                    <li>团队总提现: <strong class="value">{{ $one_team_extra->withdrawal_total }}</strong></li>
                 </ul>
             </div>
 
         </nav>
+        <!--<br />
         <nav class="row">
             <ul>
                 <li>
@@ -92,7 +102,7 @@
                     <a href="" class="btn btn-primary">10级会员</a>
                 </li>
             </ul>
-        </nav>
+        </nav>-->
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
@@ -101,6 +111,7 @@
                     <th scope="col">姓名</th>
                     <th scope="col">总收益</th>
                     <th scope="col">余额</th>
+                    <th scope="col">创建时间</th>
                     <th scope="col">是否认证</th>
                     <th scope="col">查看</th>
                 </tr>
@@ -111,14 +122,20 @@
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
                     <td>{{ $one->realname }}</td>
-                    <td></td>
+                    <td>{{ $one->customerExtra()->got_interest }}</td>
                     <td>{{ $one->balance }}</td>
                     <td>{{ $one->created_at }}</td>
                     <td><?= $one->is_sure==1 ? '<span style="color:green;">已认证</span>' : '<span style="color:red;">未认证</span>' ?></td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('log.show', ['log'=>$one->id]) }}">查看请求数据</a>
+                        @if($one->customerExtra()->all_children_ids!=null or $one->customerExtra()->all_children_ids!='')
+                        <button class="btn btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
+                        @endif
+                        <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                     </td>
                 </tr>
+                <!-- 查询下级动态数据 query child customers with dynamic datas //start -->
+                
+                <!-- 查询下级动态数据 query child customers with dynamic datas //end -->
                 @endforeach
             </tbody>
         </table>
@@ -154,52 +171,63 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $(document).ready(function(){
-            //datepicker
-            flatpickr("#date",
-            {
-                enableTime: true,  // 启用时间选择
-                dateFormat: "Y-m-d H:i", // 自定义日期格式
-                locale: "zh"       // 使用中文语言
-             });
 
-            $("#log_search").click(function(){
-            var adminid = $("#adminid").val();
-            var action = $("#action").val();
-            var date = $("#date").val();
-            var data = {
-                "adminid": adminid,
-                "action": action,
-                "date" : date,
-            };
+            $(document).ready(function(){
+                //datepicker
+                flatpickr("#date",
+                {
+                    enableTime: true,  // 启用时间选择
+                    dateFormat: "Y-m-d H:i", // 自定义日期格式
+                    locale: "zh"       // 使用中文语言
+                });
 
-            $.ajax({
-                url : "/log_search",
-                dataType : "json",
-                type: "POST",
-                data: data,
-                success: function(response){
-                    var html = "";
-                    console.log(response);
-                    $.each(response.search_logs,function(i,v){
-                        console.log(v);
-                    html +=`<tr>
-                                <td>${v.id}</td>
-                                <td>${v.username}</td>
-                                <td>${v.action}</td>
-                                <td>${v.ip}</td>
-                                <td>${v.route}</td>
-                                <td>${v.created_at}</td>
-                                <td>
-                                    <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
-                                </td>
-                            </tr>`;
-                    })
-                    $("#search_data").html(html);
-                }
-            });
-        })
-        })
+                $("#log_search").click(function(){
+                    var adminid = $("#adminid").val();
+                    var action = $("#action").val();
+                    var date = $("#date").val();
+                    var data = {
+                        "adminid": adminid,
+                        "action": action,
+                        "date" : date,
+                    };
+
+                    $.ajax({
+                        url : "/log_search",
+                        dataType : "json",
+                        type: "POST",
+                        data: data,
+                        success: function(response){
+                            var html = "";
+                            console.log(response);
+                            $.each(response.search_logs,function(i,v){
+                                console.log(v);
+                            html +=`<tr>
+                                        <td>${v.id}</td>
+                                        <td>${v.username}</td>
+                                        <td>${v.action}</td>
+                                        <td>${v.ip}</td>
+                                        <td>${v.route}</td>
+                                        <td>${v.created_at}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="log/${v.id}">查看请求数据</a>
+                                        </td>
+                                    </tr>`;
+                            })
+                            $("#search_data").html(html);
+                        }
+                    });
+                });
+
+        });
+
+        //查询下级
+        $(document).on('click', 'button.children', function(){
+            var url = $(this).attr('href');
+            var btn_obj = $(this);
+            $.get(url, function(html_text){
+                btn_obj.parent().parent().after('<tr>'+html_text+'</tr>');
+            }, 'html');
+        });
     </script>
 </body>
 </html>
