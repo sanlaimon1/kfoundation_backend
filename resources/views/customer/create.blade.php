@@ -85,8 +85,8 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <select id="is_allowed_code" name="is_allowed_code"  class="form-select" >
-                            <option value="0">不允许</option>
                             <option value="1">允许</option>
+                            <option value="0">不允许</option>
                         </select>
                     </div>
 
