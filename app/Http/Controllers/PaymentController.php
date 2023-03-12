@@ -129,6 +129,7 @@ class PaymentController extends Controller
             'level' => ['required', 'integer', 'gte:0'],
             'ptype' => ['required', 'integer', 'in:' . $ptypes_string],
             'give' => ['required', 'numeric', 'gte:0'],
+            'rate' => ['required', 'numeric', 'gte:0'],
             'description' => ['required', 'string', 'max:200'],
             "upload_logo.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             "crypto_qrcode.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
@@ -140,6 +141,7 @@ class PaymentController extends Controller
         $ptype = trim( $request->get('ptype') );
         $give = trim( $request->get('give') );
         $description = trim( $request->get('description') );
+        $rate = trim($request->get('rate'));
 
         $sort = (int)$sort;
         $level = (int)$level;
@@ -182,6 +184,7 @@ class PaymentController extends Controller
                     $extra_array['crypto_qrcode'] = $extra_array['crypto_qrcode'];
                 }
                 $one->extra = json_encode($extra_array) ;
+                $one->rate = $rate;
                 if(!$one->save())
                     throw new \Exception('事务中断1');
 
@@ -237,7 +240,7 @@ class PaymentController extends Controller
                 $one->description = $description;
                 $extra_array = ['bank'=>$bank, 'bank_name'=>$bank_name, 'bank_account'=>$bank_account];
                 $one->extra = json_encode($extra_array) ;
-
+                $one->rate = $rate;
                 if(!$one->save())
                     throw new \Exception('事务中断3');
 
