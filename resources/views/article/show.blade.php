@@ -45,6 +45,8 @@
                 $content = html_entity_decode($article->content)
             @endphp
             <li class="list-group-item"><strong>内容:</strong> <br>{!! $content !!}</li>
+            <li class="list-group-item"><strong>排序:</strong> {{$article->sort}} </li>
+            <li class="list-group-item"><strong>缩略图:</strong> <img src="{{ $article->litpic }}" width="120" height="120" /> </li>
         </ul>
 
     </div>

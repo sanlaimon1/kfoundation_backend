@@ -45,7 +45,11 @@
                     <td>{{ $one->sort }}</td>
                     <td>{{ $one->title }}</td>
                     <td>
-                        <img src="{{ $one->picture_path }}" />
+                        @if($one->picture_path)
+                            <img src="{{ $one->picture_path }}" width="120" height="120" />
+                        @else
+                            <img src="#"/>
+                        @endif
                     </td>
                     <td>{{ $one->link }}</td>
                     <td>
