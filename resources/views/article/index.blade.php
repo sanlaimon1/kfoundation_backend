@@ -44,6 +44,8 @@
                     <th>内容</th>
                     <!-- <th>分类</th> -->
                     <th>管理员id</th>
+                    <th>缩略图</th>
+                    <th>排序</th>
                     <th style="width:260px;">操作</th>
                 </tr>
             </thead>
@@ -54,6 +56,14 @@
                     <td>{{ $article->title }}</td>
                     <td>{{ $article->category->cate_name }}</td>
                     <td>{{ $article->admin->username }}</td>
+                    <td>
+                        @if($article->litpic)
+                            <img src="{{ $article->litpic }}" width="120" height="120" />
+                        @else
+                            <img src="#"/>
+                        @endif
+                    </td>
+                    <td>{{ $article->sort }}</td>
                     <td>
                         <a href="{{ route('article.show', ['article'=>$article->id]) }}" class="btn btn-primary mx-2">查看</a>
 

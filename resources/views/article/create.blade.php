@@ -29,6 +29,16 @@
             border-radius:5px;
             margin-top: .5rem;
         }
+        .choose_litpic{
+            display: inline-block;
+            background-color: #ffc107;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: #000
+        }
     </style>
     <script>
         $.ajaxSetup({
@@ -74,6 +84,23 @@
                 $('#myModal').hide();
                 location.reload();
             });
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show_litpic').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#litpic").change(function(){
+                readURL(this);
+            });
+
         });
     </script>
 
@@ -97,7 +124,7 @@
             </ol>
         </nav>
         
-        <form action="{{ route('article.store') }}" method="post">
+        <form action="{{ route('article.store') }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
             <section class="row frame">
                 <div class="row">
@@ -119,7 +146,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="categoryid" class="form-label">分类</label>
                         @error('categoryid')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -130,7 +157,30 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="sort" class="form-label">排序</label>
+                        @error('sort')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" name="sort" id="sort" placeholder="排序" value="">
+                    </div>
+
                 </div>
+
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="litpic" class="form-label">缩略图</label>
+                        @error('litpic')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <img id="show_litpic" src="#" width="120" height="120" />
+                        
+                        <input type="file" id="litpic" name="litpic" hidden/>
+                        <label class="choose_litpic" for="litpic">选择</label>
+                    </div>
+                </div>
+
             </section>
 
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
