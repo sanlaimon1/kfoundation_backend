@@ -346,11 +346,15 @@ class CustomerController extends Controller
     {
         $fid = $request->fid;
         $phone = $request->phone;
-        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
-        if($fid !=null && $phone != null && $created_at!=null)
+        
+        $date_string = $request->created_at;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+        if($fid !=null && $phone != null && $date_string!=null)
         {
             $search_customer = DB::table('customers')
-                            ->whereDate('customers.created_at','=',$created_at)
+                            ->whereBetween('customers.created_at', [$start_date, $end_date])
                             ->where([['customers.id','=',$fid],['customers.phone','=',$phone],['customers.status','=',1]])
                             ->orderBy('customers.created_at','desc')
                             ->select('customers.*')
@@ -359,7 +363,7 @@ class CustomerController extends Controller
         }else{
             $search_customer = DB::table('customers')
                                 ->where('customers.status',1)
-                                ->whereDate('customers.created_at','=',$created_at)
+                                ->whereBetween('customers.created_at', [$start_date, $end_date])
                                 ->orwhere([['customers.id','=',$fid],['customers.status',1]])
                                 ->orwhere([['customers.phone','=',$phone],['customers.status',1]])
                                 ->orderBy('customers.created_at','desc')
