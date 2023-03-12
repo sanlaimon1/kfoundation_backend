@@ -51,8 +51,8 @@
            
             <li class="list-group-item"><strong class="title">用户资金</strong></li>
             <ul class="row">
-                <li class="list-group-item col-2"><strong>余额:</strong> {{ $customer->asset }}</li>
-                <li class="list-group-item col-2"><strong>资产:</strong> {{ $customer->balance }}</li>
+                <li class="list-group-item col-2"><strong>余额:</strong> {{ $customer->balance }}</li>
+                <li class="list-group-item col-2"><strong>资产:</strong> {{ $customer->asset }}</li>
                 <li class="list-group-item col-2"><strong>积分:</strong> {{ $customer->integration }}</li>
                 <li class="list-group-item col-3"><strong>平台币:</strong> {{ $customer->platform_coin }}</li>
                 <li class="list-group-item col-3"><strong>余额宝余额:</strong> {{ $customer->yuebao_balance }}</li>
