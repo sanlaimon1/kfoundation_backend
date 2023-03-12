@@ -1026,7 +1026,7 @@ class CustomerController extends Controller
             return '用户不存在';
         }
 
-        $members = Customer::where('parent_id', $id)->orderBy('created_at', 'desc')->paginate(20);
+        $members = Customer::where('parent_id', $id)->orderBy('created_at', 'desc')->paginate(100);
 
         $one_team = Teamlevel::find( $one_user->team_id );   //团队等级
         $one_team_extra = TeamExtra::where( 'userid', $id )->first();    //团队的额外信息
@@ -1055,4 +1055,25 @@ class CustomerController extends Controller
         return view('customer.children', compact( 'level', 'all_children_ids', 'members' ));
     }
 
+    public function team_search(Request $request){
+        $phone = $request->phone;
+        //查询一个用户
+        $one_user = Customer::where('phone',$phone)->first();
+        if(empty($one_user)) {
+            return '用户不存在';
+        }
+        $members = Customer::where('phone',$phone)->orderBy('created_at', 'desc')->get();
+        $one_team = Teamlevel::find( $one_user->team_id );   //团队等级
+        $one_team_extra = TeamExtra::where( 'userid', $one_user->id )->first();    //团队的额外信息
+        $customer_extra = CustomerExtra::where('userid',  $one_user->id )->first();       //用户额外信息
+        if(empty($customer_extra)) {
+            return '无记录数据异常,  请管理员检查';
+        }
+
+        $children = explode(',', $customer_extra->all_children_ids );
+        //团队总人数
+        $count_children = count($children);
+
+        return view('customer.team_search',  compact('members', 'one_team', 'one_team_extra', 'count_children'));
+    }
 }
