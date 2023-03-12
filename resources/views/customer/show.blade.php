@@ -28,37 +28,10 @@
                 <li class="breadcrumb-item active" aria-current="page">查看详情</li>
             </ol>
         </nav>
-        <h3 class="text-center text-primary" style="margin-bottom: 0px;">客户详情</h3>
-        <!--
-            用户名：15191062026
-            实名：已认证
-            邀请码：BUjhqcy1
-            
-            会员等级：普通会员
-            真实姓名：赵敏
-            推荐人：18800660181
-            身份：真实客户
-            IP：223.104.190.176
-
-            账户余额：0.00
-            提现总额：0
-            充值总额：0
-            投资总额：0
-            DB余额：2.00
-
-            待收利息：0
-            待收本金：0
-            余额宝：0.00
-            资产：8.00
-
-            积分：0
-            用户状态：正常
-            最近操作：2023年02月28日 14:35:42
-            注册时间：2023-02-28 14:23:02
-            ISP：中国山东省济南市移动
-            最近登录IP：--
-            最近登录时间：--
-        -->
+        <h3 class="text-center text-primary" style="margin-bottom: 0px;">
+            <button class="btn btn-primary" onclick="javascript:history.go(-1)">返回</button> 客户详情
+        </h3>
+        
         <ul class="list-group list-group-flush">
             
             <li class="list-group-item"><strong class="title">用户信息</strong></li>

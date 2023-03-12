@@ -175,19 +175,26 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-6 mb-3">
+                    <div class="col-4 mb-3">
                         <label for="give" class="form-label">充值赠送比例</label>
                         @error('give')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="give" name="give" placeholder="充值赠送比例" value="{{ $one->give }}">
                     </div>
-                    <div class="col-6 mb-3">
+                    <div class="col-5 mb-3">
                         <label for="description" class="form-label">描述</label>
                         @error('description')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="description" name="description" placeholder="描述" value="{{ $one->description }}">
+                    </div>
+                    <div class="col-3 mb-3">
+                        <label for="rate" class="form-label">汇率(货币->美USDT)</label>
+                        @error('rate')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" id="rate" name="rate" placeholder="汇率(货币->美USDT)" value="{{ $one->rate }}">
                     </div>
                 </div>
 
@@ -259,6 +266,7 @@
                 <p><strong style="color:red;">未定义类型</strong></p>
             </div>
             @endif
+            
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">编辑</button>
             <button class="btn btn-secondary" action="action"  onclick="window.history.go(-1); return false;" style="margin-top:1rem; margin-right:1rem;float:right;">返回</button>
             <!-- <a class="btn btn-secondary" href="{{ route('payment.index') }}" style="margin-top:1rem; margin-right:1rem;float:right;">返回</a> -->

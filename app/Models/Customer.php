@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\LoginLog;
+use App\Models\CustomerExtra;
 
 class Customer extends Model
 {
@@ -14,6 +15,12 @@ class Customer extends Model
     public function level() {
         
         return $this->hasOne('App\Models\Level', 'level_id', 'level_id');
+    }
+
+    //关联额外信息
+    public function customerExtra() {
+        $one_extra = CustomerExtra::where( 'userid', $this->id )->first();
+        return $one_extra;
     }
 
     //获得最后一条登录日志, 返回ip, state, province, city, isp
