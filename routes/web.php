@@ -129,6 +129,7 @@ Route::post('withdraw_financial_integration', [CustomerController::class, 'withd
 Route::post('withdraw_financial_platform_coin', [CustomerController::class, 'withdraw_financial_platform_coin'])->name('withdraw.financial_platform_coin'); //商店取款金融平台幣
 Route::get('team/{id}','App\Http\Controllers\CustomerController@team')->name('customer.team');
 Route::get('list_children/{id}','App\Http\Controllers\CustomerController@list_children')->name('customer.list_children');
+Route::post('team_search', [CustomerController::class,'team_search'])->name('team_search');
 
 
 

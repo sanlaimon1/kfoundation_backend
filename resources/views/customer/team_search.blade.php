@@ -48,20 +48,18 @@
         </nav>
         
         <nav class="row">
-           
-            <div class="col-6">
-                <form action="{{route('team_search')}}" method="POST" >
-                    @csrf
-                        <div class="form-group row">
-                            <label class="form-label col-2">手机号：</label>
-                            <input type="text" name="phone" id="phone" class="form-control col-6" style="width: 66%;" />
-                            <button type="submit" class="btn btn-success col-1 mx-3">搜索</button>
-                        </div>
-                </form>
-
+            <div class="col-3">
+                <div class="row">
+                    <label class="form-label col-4">手机号：</label>
+                    <input type="text" name="phone" id="phone" class="form-control col-8" style="width: 66%;" />
+                </div>
             </div>
 
-            <div class="col-6">
+            <div class="col-1">
+                <button class="btn btn-success" id="team_search">搜索</button>
+            </div>
+
+            <div class="col-8">
                 <ul>
                     <li>团队等级: <strong class="value">{{ $one_team->level_name }}</strong></li>
                     <li>团队人数: <strong class="value">{{ $count_children }}</strong></li>
@@ -108,7 +106,7 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="container-fluid">
+        {{-- <div class="container-fluid">
             <div class="box1 p-2">
                 <nav aria-label="page">
                     <strong>总数: {{ $members->total() }}</strong>  <br /> {{ $members->links() }}
@@ -124,7 +122,7 @@
                 </select>
             </div>
             </form>
-        </div>
+        </div> --}}
 
 
     </div>
