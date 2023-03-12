@@ -20,6 +20,7 @@ use App\Models\Teamlevel;
 use App\Models\TeamExtra;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use App\Rules\InvitedCodeRule;
 
 class CustomerController extends Controller
 {
@@ -230,9 +231,8 @@ class CustomerController extends Controller
         }
         $customer = Customer::find($id);
         $request->validate([
-            "invited_code" => ['required','min:8','max:8',Rule::unique('customers')->ignore($customer->invited_code)],
+            "invited_code" => ['required','min:8','max:8', new InvitedCodeRule($id) ],
             "is_allowed_code" => ['required', 'integer', 'in:0,1'],
-            "identity" => ['required', 'integer', 'in:0,1,2'],
             "is_sure" => ['required', 'integer', 'in:0,1'],
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "team_id" => ['required', 'integer', 'exists:teamlevels,tid'],
@@ -260,7 +260,6 @@ class CustomerController extends Controller
             $customer->realname = $request->realname;
             $customer->invited_code = $request->invited_code;
             $customer->is_allowed_code = $request->is_allowed_code;
-            $customer->identity = $request->identity;
             $customer->is_sure = $request->is_sure;
             $customer->level_id = $request->level_id;
             $customer->team_id = $request->team_id;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>参数设置</title>
+    <title>编辑客户</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -72,22 +72,7 @@
                             <option value="1"{{ $customer->is_allowed_code == 1? 'selected' : ''}}>允许</option>
                         </select>
                     </div>
-
                     <div class="col-md-6 mb-3">
-                        <label for="identity" class="form-label">身份</label>
-                        @error('identity')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                        <select id="identity" name="identity"  class="form-select" >
-                            @foreach ($customer_identity as $key => $identity)
-                                <option value="{{$key}}" {{ $customer->identity == $key? 'selected' : ''}}>{{$identity}}</option>                                
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">                    
-                    <div class="col-md-4 mb-3">
                         <label for="is_sure" class="form-label">认证</label>
                         @error('is_sure')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -97,8 +82,11 @@
                             <option value="1" {{ $customer->is_sure == 1? 'selected' : ''}}>已认证</option>
                         </select>
                     </div>
+                </div>
 
-                    <div class="col-md-4 mb-3">
+                <div class="row">                    
+
+                    <div class="col-md-6 mb-3">
                         <label for="level_id" class="form-label">会员等级</label>
                         @error('level_id')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -110,7 +98,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="team_id" class="form-label">团队等级</label>
                         @error('team_id')
                             <div class="alert alert-danger">{{ $message }}</div>
