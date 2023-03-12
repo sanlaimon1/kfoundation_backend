@@ -134,6 +134,7 @@
              //datepicker
              flatpickr("#created_at",
             {
+                mode: "range",
                 enableTime: true,  // 启用时间选择
                 dateFormat: "Y-m-d H:i", // 自定义日期格式
                 locale: "zh"       // 使用中文语言
