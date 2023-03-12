@@ -40,8 +40,6 @@
                         <div class="alert alert-danger">{{$message}}</div>
                     @enderror
                     <input type="text" name="withdraw_balance_amount" id="withdraw_balance_amount" />
-                </div>
-                <div class="card-footer">
                     <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
                 </div>
             </form>
@@ -57,8 +55,6 @@
                         <div class="alert alert-danger">{{$message}}</div>
                     @enderror
                     <input type="text" name="withdraw_asset_amount" id="withdraw_asset_amount" />
-                </div>
-                <div class="card-footer">
                     <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
                 </div>
             </form>
@@ -74,8 +70,6 @@
                         <div class="alert alert-danger">{{$message}}</div>
                     @enderror
                     <input type="text" name="withdraw_integration_amount" id="withdraw_integration_amount" />
-                </div>
-                <div class="card-footer">
                     <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
                 </div>
             </form>
@@ -91,8 +85,6 @@
                         <div class="alert alert-danger">{{$message}}</div>                        
                     @enderror
                     <input type="text" name="withdraw_platform_coin_amount" id="withdraw_platform_coin_amount" />
-                </div>
-                <div class="card-footer">
                     <button type="submit" class="btn btn-danger" style="float:right;">下分</button>
                 </div>
             </form>
