@@ -258,6 +258,7 @@ class CustomerController extends Controller
         try {
 
             $customer->realname = $request->realname;
+            $customer->invited_code = $request->invited_code;
             $customer->is_allowed_code = $request->is_allowed_code;
             $customer->identity = $request->identity;
             $customer->is_sure = $request->is_sure;
