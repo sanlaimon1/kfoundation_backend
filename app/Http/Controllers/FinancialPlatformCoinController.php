@@ -57,20 +57,25 @@ class FinancialPlatformCoinController extends Controller
         $platformcoin_id = $request->platformcoin_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
-        if($platformcoin_id != null && $customer != null && $financial_type != 0 && $date != null)
+
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($platformcoin_id != null && $customer != null && $financial_type != 0 && $date_string != null)
         {
             $platformcoin_search = DB::table('financial_platform_coin')
                             ->join('customers', 'customers.id', 'financial_platform_coin.userid')
                             ->where([['financial_platform_coin.id', '=', $platformcoin_id], ['customers.phone', '=', $customer], ['financial_platform_coin.financial_type', '=', $financial_type]])
-                            ->whereDate('financial_platform_coin.created_at', '=', $date)
+                            ->whereBetween('financial_platform_coin.created_at', [$start_date, $end_date])
                             ->orderBy('financial_platform_coin.created_at', 'desc')
                             ->select('customers.phone', 'financial_platform_coin.*')
                             ->get();
         } else {
             $platformcoin_search = DB::table('financial_platform_coin')
                             ->join('customers', 'customers.id', 'financial_platform_coin.userid')
-                            ->whereDate('financial_platform_coin.created_at', '=', $date)
+                            ->whereBetween('financial_platform_coin.created_at', [$start_date, $end_date])
                             ->orwhere('financial_platform_coin.financial_type', '=', $financial_type)
                             ->orwhere('financial_platform_coin.id', '=', $platformcoin_id)
                             ->orwhere('customers.phone', '=', $customer)

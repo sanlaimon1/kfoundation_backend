@@ -44,7 +44,7 @@
 
             <div class="col-2">
                 <label class="form-label">返款时间</label>
-                <input type="text" name="date" id="date" class="form-control" />
+                <input type="text" name="refund_time" id="refund_time" class="form-control" />
             </div>
 
             <div class="col-2">
@@ -134,14 +134,16 @@
              //datepicker
              flatpickr("#created_at",
             {
+                mode : "range",
                 enableTime: true,  // 启用时间选择
                 dateFormat: "Y-m-d H:i", // 自定义日期格式
                 locale: "zh"       // 使用中文语言
              });
 
               //datepicker
-            flatpickr("#date",
+            flatpickr("#refund_time",
             {
+                mode : "range",
                 enableTime: true,  // 启用时间选择
                 dateFormat: "Y-m-d H:i", // 自定义日期格式
                 locale: "zh"       // 使用中文语言
@@ -152,13 +154,13 @@
             var pid = $("#pid").val();
             var customer = $("#customer").val();
             var created_at = $("#created_at").val();
-            var date = $("#date").val();
+            var refund_time = $("#refund_time").val();
             var status = $('#status').val();
             var data = {
                 "pid": pid,
                 "customer": customer,
                 "created_at" : created_at,
-                "date": date,
+                "refund_time": refund_time,
                 "status": status,
             };
 

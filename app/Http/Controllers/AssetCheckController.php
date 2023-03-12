@@ -264,13 +264,18 @@ class AssetCheckController extends Controller
         $fid = $request->fid;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
-        if($fid != null && $customer != null && $financial_type != null && $date != null)
+
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($fid != null && $customer != null && $financial_type != null && $date_string != null)
         {
             $charge_search = DB::table('asset_check')
                             ->join('customers', 'customers.id', 'asset_check.userid')
                             ->where([['asset_check.id', '=', $fid], ['customers.phone', '=', $customer], ['asset_check.status', '=', $financial_type]])
-                            ->whereDate('asset_check.created_at', '=', $date)
+                            ->whereBetween('asset_check.created_at', [$start_date, $end_date])
                             ->orderBy('asset_check.created_at', 'desc')
                             ->select('customers.phone', 'asset_check.*')
                             ->get();
@@ -278,7 +283,7 @@ class AssetCheckController extends Controller
         } else {
             $charge_search = DB::table('asset_check')
                             ->join('customers', 'customers.id', 'asset_check.userid')
-                            ->whereDate('asset_check.created_at', '=', $date)
+                            ->whereBetween('asset_check.created_at', [$start_date, $end_date])
                             ->orwhere('asset_check.id', '=', $fid)
                             ->orwhere('customers.phone','=',$customer)
                             ->orwhere('asset_check.status','=', $financial_type)

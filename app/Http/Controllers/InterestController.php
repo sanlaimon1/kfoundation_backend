@@ -60,19 +60,29 @@ class InterestController extends Controller
 
     public function interest_search(Request $request)
     {
+
         $pid = $request->pid;
         $customer = $request->customer;
-        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
-        $date = Carbon::parse($request->date)->format('Y-m-d');
+
+        $created_at = $request->created_at;
+        $date_parts = explode('至', $created_at);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        $refund_time = $request->refund_time;
+        $date_parts2 = explode('至', $refund_time);
+        $start_date2 = trim($date_parts2[0]);
+        $end_date2 = trim($date_parts2[1]);
+
         $status = $request->status;
 
-        if($pid != null && $customer != null && $created_at != null && $date != null && $status != null)
+        if($pid != null && $customer != null && $created_at != null && $refund_time != null && $status != null)
         {
             $interest_search = DB::table('interest')
                             ->join('customers', 'customers.id', 'interest.cid')
                             ->join('projects', 'projects.id', 'interest.pid')
-                            ->whereDate('interest.refund_time', '=', $date)
-                            ->whereDate('interest.created_at', '=', $created_at)
+                            ->whereBetween('interest.created_at', [$start_date, $end_date])
+                            ->whereBetween('interest.refund_time', [$start_date2, $end_date2])
                             ->where([['customers.phone', '=', $customer], ['projects.project_name', '=', $pid], ['interest.status', '=', $status]])
                             ->orderBy('interest.refund_time', 'desc')
                             ->select('customers.id as cid', 'customers.phone as cphone', 'interest.*', 'projects.id as pid', 'projects.project_name as pname')
@@ -81,8 +91,8 @@ class InterestController extends Controller
             $interest_search = DB::table('interest')
                             ->join('customers', 'customers.id', 'interest.cid')
                             ->join('projects', 'projects.id', 'interest.pid')
-                            ->whereDate('interest.refund_time', '=', $date)
-                            ->orwhereDate('interest.created_at', '=', $created_at)
+                            ->whereBetween('interest.created_at', [$start_date, $end_date])
+                            ->orWhereBetween('interest.refund_time', [$start_date2, $end_date2])
                             ->orwhere('customers.phone', '=', $customer)
                             ->orwhere('projects.project_name', '=', $pid)
                             ->orwhere('interest.status', '=', $status)
