@@ -74,10 +74,13 @@ class LogController extends Controller
 
     public function log_search(Request $request)
     {
-        $date = Carbon::parse($request->date)->format('Y-m-d');
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
         $search_logs = DB::table('logs')
                             ->join('admins','admins.id','=','logs.adminid')
-                            ->whereDate('logs.created_at','=',$date)
+                            ->whereBetween('logs.created_at', [$start_date, $end_date])
                             ->orwhere('logs.adminid',$request->adminid)
                             ->orwhere('logs.action','=',$request->action)
                             ->select('logs.*','admins.username')

@@ -98,13 +98,17 @@ class WalletController extends Controller
         $fid = $request->fid;
         $phone = $request->phone;
         $payid = $request->payid;
-        $created_at = Carbon::parse($request->created_at)->format('Y-m-d');
+        $date_string = $request->created_at;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
 
-        if($fid !=null && $phone != null &&  $payid !=null && $created_at!=null)
+
+        if($fid !=null && $phone != null &&  $payid !=null && $date_string!=null)
         {
             $search_wallet = DB::table('wallets')
                             ->join('customers','customers.id','=','wallets.userid')
-                            ->whereDate('wallets.created_at','=',$created_at)
+                            ->whereBetween('wallets.created_at', [$start_date, $end_date])
                             ->where([['wallets.id','=',$fid],['customers.phone','=',$phone],['wallets.payid','=',$payid]])
                             ->orderBy('wallets.created_at','desc')
                             ->select('wallets.*','customers.id as customerid','customers.phone as phone')
@@ -113,7 +117,7 @@ class WalletController extends Controller
         }else{
             $search_wallet = DB::table('wallets')
                             ->join('customers','customers.id','=','wallets.userid')
-                            ->whereDate('wallets.created_at','=',$created_at)
+                            ->whereBetween('wallets.created_at', [$start_date, $end_date])
                             ->orwhere('wallets.id','=',$fid)
                             ->orwhere('customers.phone','=',$phone)
                             ->orwhere('wallets.payid','=',$payid)

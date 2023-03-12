@@ -42,20 +42,25 @@ class LoginLogController extends Controller
 
     public function loginlog_search(Request $request)
     {
-        $date = Carbon::parse($request->date)->format('Y-m-d');
+
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
         $user = $request->phone;
         $action = $request->action;
-        if($date != null && $user != null && $action != null){
+        if($date_string != null && $user != null && $action != null){
             $loginlog_search = DB::table('login_logs')
                             ->join('customers', 'customers.id', 'login_logs.userid')
-                            ->whereDate('login_logs.created_at', $date)
+                            ->whereBetween('login_logs.created_at', [$start_date, $end_date])
                             ->where([['login_logs.action', $action], ['customers.phone', $user]])
                             ->select('login_logs.*', 'customers.phone as phone')
                             ->get();
         } else {
             $loginlog_search = DB::table('login_logs')
                             ->join('customers', 'customers.id', 'login_logs.userid')
-                            ->whereDate('login_logs.created_at', $date)
+                            ->whereBetween('login_logs.created_at', [$start_date, $end_date])
                             ->orWhere('login_logs.action', $action)
                             ->orWhere('customers.phone', $user)
                             ->select('login_logs.*', 'customers.phone as phone')

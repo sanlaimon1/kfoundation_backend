@@ -279,25 +279,30 @@ class InboxController extends Controller
     public function inbox_search(Request $request)
     {
         $title  = $request->title;
-       // $date = $request->date;
-         $date = Carbon::parse($request->date)->format('Y-m-d');
-        if($title != null && $date != null)
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($title != null && $date_string != null)
         {
             $inbox_search = DB::table('inboxes')
-                            ->whereDate('created_at', '=', $date)
+                            ->whereBetween('created_at', [$start_date, $end_date])
                             ->where('title', '=', $title)
                             ->orderBy('is_top', 'desc')
                             ->orderBy('sort', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->get();
+
         } else {
             $inbox_search = DB::table('inboxes')
-                            ->whereDate('created_at', '=', $date)
+                            ->whereBetween('created_at', [$start_date, $end_date])
                             ->orwhere('title', '=', $title)
                             ->orderBy('is_top', 'desc')
                             ->orderBy('sort', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->get();
+
         };
 
         return response()->json([

@@ -245,13 +245,18 @@ class BalanceCheckController extends Controller
         $bid = $request->bid;
         $customer = $request->customer;
         $status = $request->status;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
-        if($bid != null && $customer != null && $status != null && $date != null)
+
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($bid != null && $customer != null && $status != null && $date_string != null)
         {
             $withdrawal_search = DB::table('balance_check')
                             ->join('customers', 'customers.id', 'balance_check.userid')
                             ->where([['balance_check.id', '=', $bid], ['customers.phone', '=', $customer], ['balance_check.status', '=', $status]])
-                            ->whereDate('balance_check.created_at', '=', $date)
+                            ->whereBetween('balance_check.created_at', [$start_date, $end_date])
                             ->orderBy('balance_check.created_at', 'desc')
                             ->select('customers.phone', 'balance_check.*')
                             ->get();
@@ -260,7 +265,7 @@ class BalanceCheckController extends Controller
         } else {
             $withdrawal_search = DB::table('balance_check')
                             ->join('customers', 'customers.id', 'balance_check.userid')
-                            ->whereDate('balance_check.created_at', '=', $date)
+                            ->whereBetween('balance_check.created_at', [$start_date, $end_date])
                             ->orwhere('balance_check.id', '=', $bid)
                             ->orwhere('customers.phone','=',$customer)
                             ->orwhere('balance_check.status','=', $status)
