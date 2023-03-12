@@ -59,21 +59,25 @@ class FinancialAssetController extends Controller
         $financialasset_id = $request->financialasset_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
 
-        if($financialasset_id != null && $customer != null && $financial_type != 0 && $date != null)
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($financialasset_id != null && $customer != null && $financial_type != 0 && $date_string != null)
         {
             $asset_search = DB::table('financial_asset')
                             ->join('customers', 'customers.id', 'financial_asset.userid')
                             ->where([['financial_asset.id', '=', $financialasset_id], ['customers.phone', '=', $customer], ['financial_asset.financial_type', '=', $financial_type]])
-                            ->whereDate('financial_asset.created_at', '=', $date)
+                            ->whereBetween('financial_asset.created_at', [$start_date, $end_date])
                             ->orderBy('financial_asset.created_at', 'desc')
                             ->select('customers.phone', 'financial_asset.*')
                             ->get();
         } else {
             $asset_search = DB::table('financial_asset')
                             ->join('customers', 'customers.id', 'financial_asset.userid')
-                            ->whereDate('financial_asset.created_at', '=', $date)
+                            ->whereBetween('financial_asset.created_at', [$start_date, $end_date])
                             ->orwhere('financial_asset.financial_type', '=', $financial_type)
                             ->orwhere('financial_asset.id', '=', $financialasset_id)
                             ->orwhere('customers.phone', '=', $customer)

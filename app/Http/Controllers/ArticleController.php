@@ -45,7 +45,7 @@ class ArticleController extends Controller
         }
 
         $perPage = $request->input('perPage', 10);
-        $articles = Article::select('id', 'title','content','categoryid','adminid')->orderBy('created_at', 'desc')->paginate($perPage);
+        $articles = Article::select('id', 'title','content','categoryid','adminid','litpic','sort')->orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('article.index', compact('articles'));
     }
@@ -84,11 +84,20 @@ class ArticleController extends Controller
             'title' => ['required', 'string'],
             'content' => ['required'],
             'categoryid' => ['required', 'integer', 'exists:categories,id'],
+            'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
+
+        if($request->hasFile('litpic')){
+            $litpic = time().'.'.$request->litpic->extension();
+            $request->litpic->move(public_path('/images/articleImg/'),$litpic);
+            $litpic = '/images/articleImg/'.$litpic;
+        }
 
         $title = trim($request->get('title'));
         $content = trim( htmlspecialchars( $request->get('content') ));
         $categoryid = trim($request->get('categoryid'));
+        $sort = trim($request->sort);
 
         DB::beginTransaction();
         try {
@@ -97,6 +106,8 @@ class ArticleController extends Controller
             $newarticle->title = $title;
             $newarticle->content = $content;
             $newarticle->categoryid = $categoryid;
+            $newarticle->sort  = $sort;
+            $newarticle->litpic  = $litpic;
             $newarticle->adminid = Auth::id();
 
             if(!$newarticle->save())
@@ -178,11 +189,23 @@ class ArticleController extends Controller
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
             'categoryid' => ['required', 'integer', 'exists:categories,id'],
+            'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+            'sort' => ['required', 'integer', 'gt:0'],
         ]);
+
+        if($request->hasFile('litpic')){
+            $litpic = time().'.'.$request->litpic->extension();
+            $request->litpic->move(public_path('/images/articleImg/'),$litpic);
+            $litpic = '/images/articleImg/'.$litpic;
+
+        }else{
+            $litpic = $request->litpic;
+        }
 
         $title = trim($request->get('title'));
         $content = trim( htmlspecialchars( $request->get('content') ));
         $categoryid = trim($request->get('categoryid'));
+        $sort = trim($request->sort);
 
         DB::beginTransaction();
         try {
@@ -190,6 +213,8 @@ class ArticleController extends Controller
             $newarticle = Article::find($id);
             $newarticle->title = $title;
             $newarticle->content = $content;
+            $newarticle->sort  = $sort;
+            $newarticle->litpic  = $litpic;
             $newarticle->categoryid = $categoryid;
 
             if(!$newarticle->save())

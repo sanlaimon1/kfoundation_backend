@@ -174,17 +174,17 @@ class SlideController extends Controller
             $request->picture_path->move(public_path('/images/webpimg/'),$picture_path);
             $picture_path = '/images/webpimg/'.$picture_path;
 
-            $webp_path = $this->convertImgToWebp($picture_path);
+            // $webp_path = $this->convertImgToWebp($picture_path);
 
         }else{
-            $webp_path = $request->picture_path;
+            $picture_path = $request->picture_path;
         }
 
         DB::beginTransaction();
         try {
             $slide = Slide::find($id);
             $slide->title  = $request->title;
-            $slide->picture_path  = $webp_path;
+            $slide->picture_path  = $picture_path;
             $slide->link  = $request->link;
             $slide->type  = $request->type;
             $slide->status  = $request->status;

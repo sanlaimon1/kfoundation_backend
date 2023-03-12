@@ -118,6 +118,7 @@
             //datepicker
             flatpickr("#date",
             {
+                mode: "range",
                 enableTime: true,  // 启用时间选择
                 dateFormat: "Y-m-d H:i", // 自定义日期格式
                 locale: "zh"       // 使用中文语言
@@ -138,7 +139,7 @@
                 data: data,
                 success: function(response){
                     var html = "";
-                    $.each(response.search_logs,function(i,v){
+                    $.each(response.inbox_search,function(i,v){
                         if(v.is_top == 1){
                             var is_top = `<span style="color:red;">已置顶</span>`;
                         } else {
@@ -159,7 +160,6 @@
                                 <td>${user_phone}</td>
                                 <td>${v.created_at}</td>
                                 <td>
-                                <td>
                                     <a class="btn btn-primary" href="/inbox/${v.id}">查看</a>
                                     <a class="btn btn-warning" href="/inbox/${v.id}/edit">编辑</a>
                                     <form action="{{url('/inbox/${v.id}')}}"
@@ -169,7 +169,6 @@
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger">删除</button>
                                     </form>
-                                </td>
                                 </td>
                             </tr>`;
                     })

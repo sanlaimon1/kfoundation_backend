@@ -58,20 +58,25 @@ class FinancialIntegrationController extends Controller
         $financialintegration_id = $request->financialintegration_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
-        if($financialintegration_id != null && $customer != null && $financial_type != 0 && $date != null)
+
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($financialintegration_id != null && $customer != null && $financial_type != 0 && $date_string != null)
         {
             $integration_search = DB::table('financial_integration')
                             ->join('customers', 'customers.id', 'financial_integration.userid')
                             ->where([['financial_integration.id', '=', $financialintegration_id], ['customers.phone', '=', $customer], ['financial_integration.financial_type', '=', $financial_type]])
-                            ->whereDate('financial_integration.created_at', '=', $date)
+                            ->whereBetween('financial_integration.created_at', [$start_date, $end_date])
                             ->orderBy('financial_integration.created_at', 'desc')
                             ->select('customers.phone', 'financial_integration.*')
                             ->get();
         } else {
             $integration_search = DB::table('financial_integration')
                             ->join('customers', 'customers.id', 'financial_integration.userid')
-                            ->whereDate('financial_integration.created_at', '=', $date)
+                            ->whereBetween('financial_integration.created_at', [$start_date, $end_date])
                             ->orwhere('financial_integration.financial_type', '=', $financial_type)
                             ->orwhere('financial_integration.id', '=', $financialintegration_id)
                             ->orwhere('customers.phone', '=', $customer)

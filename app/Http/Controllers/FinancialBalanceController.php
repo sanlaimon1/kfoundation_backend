@@ -57,21 +57,25 @@ class FinancialBalanceController extends Controller
         $financial_id = $request->financial_id;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
 
-        if($financial_id != null && $customer != null && $financial_type != 0 && $date != null)
+        $date_string = $request->date;
+        $date_parts = explode('至', $date_string);
+        $start_date = trim($date_parts[0]);
+        $end_date = trim($date_parts[1]);
+
+        if($financial_id != null && $customer != null && $financial_type != 0 && $date_string != null)
         {
             $balance_search = DB::table('financial_balance')
                             ->join('customers', 'customers.id', 'financial_balance.userid')
                             ->where([['financial_balance.id', '=', $financial_id], ['customers.phone', '=', $customer], ['financial_balance.financial_type', '=', $financial_type]])
-                            ->whereDate('financial_balance.created_at', '=', $date)
+                            ->whereBetween('financial_balance.created_at', [$start_date, $end_date])
                             ->orderBy('financial_balance.created_at', 'desc')
                             ->select('customers.phone', 'financial_balance.*')
                             ->get();
         } else {
             $balance_search = DB::table('financial_balance')
                             ->join('customers', 'customers.id', 'financial_balance.userid')
-                            ->whereDate('financial_balance.created_at', '=', $date)
+                            ->whereBetween('financial_balance.created_at', [$start_date, $end_date])
                             ->orwhere('financial_balance.financial_type', '=', $financial_type)
                             ->orwhere('financial_balance.id', '=', $financial_id)
                             ->orwhere('customers.phone', '=', $customer)
