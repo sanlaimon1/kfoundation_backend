@@ -94,8 +94,12 @@
     </script>
 
     <!-- include summernote css/js -->
-    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
-    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
+    <link href="/css/bootstrap-v3.4.1.min.css" rel="stylesheet">
+    <script src="/js/jquery-v3.5.1.min.js"></script>
+    <script src="/js/bootstrap-v3.4.1.min.js"></script>
+    <link href="/css/summernote.min.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+    <script src="/js/summernote-zh-CN.js"></script>
 </head>
 
 <body>
@@ -128,7 +132,9 @@
 
     <script>
         $(document).ready(function() {
-            $('#item-{{ $agreement->cid }}').summernote();
+            $('#item-{{ $agreement->cid }}').summernote({
+                lang: 'zh-CN'
+            });
         });
     </script>
 </body>
