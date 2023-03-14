@@ -85,7 +85,7 @@ class SysUsersController extends Controller
             return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
-        Redis::expire("permission:".Auth::id(), 10);
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -211,7 +211,7 @@ class SysUsersController extends Controller
             return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
-        Redis::expire("permission:".Auth::id(), 10);
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -285,7 +285,7 @@ class SysUsersController extends Controller
             return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
-        Redis::expire("permission:".Auth::id(), 10);
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
         $rules = [
             'password' => ['required', 'string', 'between:8,15', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'],
@@ -352,7 +352,7 @@ class SysUsersController extends Controller
             return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
-        Redis::expire("permission:".Auth::id(), 10);
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();

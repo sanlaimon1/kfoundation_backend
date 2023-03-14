@@ -91,7 +91,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -233,7 +233,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(),config('app.redis_second'));
             
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -317,7 +317,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(),config('app.redis_second'));
             
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -413,7 +413,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(),config('app.redis_second'));
             
             $id = (int)$id;
             $one = Customer::find($id);
@@ -474,7 +474,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'password' => 'required|confirmed',
@@ -527,7 +527,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'password2' => 'required|confirmed',
@@ -591,7 +591,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'financial_balance_amount' => ['required', 'numeric', 'gt:0']
@@ -655,7 +655,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             $request->validate([
                 'financial_asset_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -717,7 +717,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'financial_integration_amount' => ['required', 'numeric', 'gt:0']
@@ -780,7 +780,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']
@@ -851,7 +851,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'withdraw_balance_amount' => ['required', 'numeric', 'gt:0']
@@ -914,7 +914,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'withdraw_asset_amount' => ['required', 'numeric', 'gt:0']
@@ -977,7 +977,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'withdraw_integration_amount' => ['required', 'numeric', 'gt:0']
@@ -1041,7 +1041,7 @@ class CustomerController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $request->validate([
                 'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
