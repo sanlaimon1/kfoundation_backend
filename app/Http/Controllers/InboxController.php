@@ -9,6 +9,7 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class InboxController extends Controller
@@ -90,59 +91,65 @@ class InboxController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 4) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
 
-        $request->validate([
-            'title' => ['required', 'string', 'max:45'],
-            'content' => ['required', 'string'],
-            'is_top' => ['required', 'integer', 'in:0,1'],
-            'sort' => ['required', 'integer','gte:0'],
-            // 'user_phone' => ['required', 'string'],
-        ]);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        DB::beginTransaction();
-        try {
-            $mail = new Inbox();
-            $mail->title = $request->title;
-            $mail->content = htmlspecialchars( $request->content );
-            //$mail->read = $request->read;
-            $mail->sort = $request->sort;
-            $mail->user_phone = $request->user_phone;
-            $mail->created_at = date('Y-m-d H:i:s');
+            if( !(($permission->auth2 ?? 0) & 4) ){
+                return "您没有权限访问这个路径";
+            }
 
-            if(!$mail->save())
-                throw new \Exception('事务中断1');
+            $request->validate([
+                'title' => ['required', 'string', 'max:45'],
+                'content' => ['required', 'string'],
+                'is_top' => ['required', 'integer', 'in:0,1'],
+                'sort' => ['required', 'integer','gte:0'],
+                // 'user_phone' => ['required', 'string'],
+            ]);
 
-            $username = Auth::user()->username;
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 添加站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'inbox.store';
-            $newlog->parameters = json_encode( $request->all() );
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if(!$newlog->save())
-                throw new \Exception('事务中断2');
+            DB::beginTransaction();
+            try {
+                $mail = new Inbox();
+                $mail->title = $request->title;
+                $mail->content = htmlspecialchars( $request->content );
+                //$mail->read = $request->read;
+                $mail->sort = $request->sort;
+                $mail->user_phone = $request->user_phone;
+                $mail->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            //$errorMessage = $e->getMessage();
-            //return $errorMessage;
-            return '添加错误，事务回滚';
-        }
+                if(!$mail->save())
+                    throw new \Exception('事务中断1');
 
-        return redirect()->route('inbox.index');
+                $username = Auth::user()->username;
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . ' 添加站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'inbox.store';
+                $newlog->parameters = json_encode( $request->all() );
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newlog->save())
+                    throw new \Exception('事务中断2');
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return '添加错误，事务回滚';
+            }
+
+            return redirect()->route('inbox.index');
     }
 
     /**
@@ -182,58 +189,64 @@ class InboxController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 32) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'title' => ['required', 'string', 'max:45'],
-            'content' => ['required', 'string'],
-            'is_top' => ['required', 'integer', 'in:0,1'],
-            'sort' => ['required', 'integer','gte:0'],
-            // 'user_phone' => ['required', 'string'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 32) ){
+                return "您没有权限访问这个路径";
+            }
 
-        DB::beginTransaction();
-        try {
-            $mail = Inbox::find($id);
-            $mail->title = $request->title;
-            $mail->content = htmlspecialchars( $request->content );
-            $mail->is_top = $request->is_top;
-            $mail->sort = $request->sort;
-            $mail->user_phone = $request->user_phone;
+            $request->validate([
+                'title' => ['required', 'string', 'max:45'],
+                'content' => ['required', 'string'],
+                'is_top' => ['required', 'integer', 'in:0,1'],
+                'sort' => ['required', 'integer','gte:0'],
+                // 'user_phone' => ['required', 'string'],
+            ]);
 
-            if(!$mail->save())
-                throw new \Exception('事务中断3');
+            DB::beginTransaction();
+            try {
+                $mail = Inbox::find($id);
+                $mail->title = $request->title;
+                $mail->content = htmlspecialchars( $request->content );
+                $mail->is_top = $request->is_top;
+                $mail->sort = $request->sort;
+                $mail->user_phone = $request->user_phone;
 
-            $username = Auth::user()->username;
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 修改站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'inbox.update';
-            $newlog->parameters = json_encode( $request->all() );
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if(!$newlog->save())
-                throw new \Exception('事务中断4');
+                if(!$mail->save())
+                    throw new \Exception('事务中断3');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            //$errorMessage = $e->getMessage();
-            //return $errorMessage;
-            return '修改错误，事务回滚';
-        }
+                $username = Auth::user()->username;
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();;
+                $newlog->action = '管理员' . $username . ' 修改站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'inbox.update';
+                $newlog->parameters = json_encode( $request->all() );
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newlog->save())
+                    throw new \Exception('事务中断4');
 
-        return redirect()->route('inbox.index');
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return '修改错误，事务回滚';
+            }
+
+            return redirect()->route('inbox.index');
     }
 
     /**
@@ -241,39 +254,45 @@ class InboxController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $id = (int)$id;
-        DB::beginTransaction();
-        try {
-            $one = Inbox::find($id);
-            if(!$one->delete())
-                throw new \Exception('事务中断5');
+            if( !(($permission->auth2 ?? 0) & 64) ){
+                return "您没有权限访问这个路径";
+            }
 
-            $username = Auth::user()->username;
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 删除站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'inbox.destroy';
-            $newlog->parameters = json_encode( $request->all() );
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if(!$newlog->save())
-                throw new \Exception('事务中断6');
+            $id = (int)$id;
+            DB::beginTransaction();
+            try {
+                $one = Inbox::find($id);
+                if(!$one->delete())
+                    throw new \Exception('事务中断5');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            //$errorMessage = $e->getMessage();
-            //return $errorMessage;
-            return '修改错误，事务回滚';
-        }
-        return redirect()->route('inbox.index');
+                $username = Auth::user()->username;
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();;
+                $newlog->action = '管理员' . $username . ' 删除站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'inbox.destroy';
+                $newlog->parameters = json_encode( $request->all() );
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newlog->save())
+                    throw new \Exception('事务中断6');
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                //$errorMessage = $e->getMessage();
+                //return $errorMessage;
+                return '修改错误，事务回滚';
+            }
+            return redirect()->route('inbox.index');
     }
 
     public function inbox_search(Request $request)

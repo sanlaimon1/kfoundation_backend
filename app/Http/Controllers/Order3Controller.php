@@ -8,6 +8,7 @@ use App\Models\Order3;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class Order3Controller extends Controller
 {
@@ -67,86 +68,98 @@ class Order3Controller extends Controller
      */
     public function edit(Request $request,string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 16) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $order3 = Order3::find($id);
-            $order3->status = 1;
-            if(!$order3->save())
-                throw new \Exception('事务中断1');
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-            $myself = Auth::user();
-            $log = new Log();
-            $log->adminid = $myself->id;
-            $log->action = '管理员'. $myself->username. '通过生活缴费的订单' .$order3->id;
-            $log->ip = $this->getUserIP();
-            $log->route = 'order3.edit';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $log->parameters = $input_json;  // 请求参数
-            $log->created_at = date('Y-m-d H:i:s');
+            if( !(($permission->auth2 ?? 0) & 16) ){
+                return "您没有权限访问这个路径";
+            }
 
-            if(!$log->save())
-                throw new \Exception('事务中断2');
+            DB::beginTransaction();
+            try {
+                //code...
+                $order3 = Order3::find($id);
+                $order3->status = 1;
+                if(!$order3->save())
+                    throw new \Exception('事务中断1');
 
-            DB::commit();
+                $myself = Auth::user();
+                $log = new Log();
+                $log->adminid = $myself->id;
+                $log->action = '管理员'. $myself->username. '通过生活缴费的订单' .$order3->id;
+                $log->ip = $this->getUserIP();
+                $log->route = 'order3.edit';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+                if(!$log->save())
+                    throw new \Exception('事务中断2');
 
-        return redirect()->route('order3.index');
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+
+            return redirect()->route('order3.index');
     }
 
     public function show(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 8) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $order3 = Order3::find($id);
-            $order3->status = 2;
-            if(!$order3->save())
-                throw new \Exception('事务中断3');
+            if( !(($permission->auth2 ?? 0) & 8) ){
+                return "您没有权限访问这个路径";
+            }
 
-            $myself = Auth::user();
-            $log = new Log();
-            $log->adminid = $myself->id;
-            $log->action = '管理员'. $myself->username. '拒绝生活缴费的订单' .$order3->id;
-            $log->ip = $this->getUserIP();
-            $log->route = 'order3.show';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $log->parameters = $input_json;  // 请求参数
-            $log->created_at = date('Y-m-d H:i:s');
+            DB::beginTransaction();
+            try {
+                //code...
+                $order3 = Order3::find($id);
+                $order3->status = 2;
+                if(!$order3->save())
+                    throw new \Exception('事务中断3');
 
-            if(!$log->save())
-                throw new \Exception('事务中断4');
+                $myself = Auth::user();
+                $log = new Log();
+                $log->adminid = $myself->id;
+                $log->action = '管理员'. $myself->username. '拒绝生活缴费的订单' .$order3->id;
+                $log->ip = $this->getUserIP();
+                $log->route = 'order3.show';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
+                if(!$log->save())
+                    throw new \Exception('事务中断4');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return 'error';
-        }
+                DB::commit();
 
-        return redirect()->route('order3.index');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return 'error';
+            }
+
+            return redirect()->route('order3.index');
     }
 
     public function getUserIP()

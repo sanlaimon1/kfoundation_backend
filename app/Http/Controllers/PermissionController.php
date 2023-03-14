@@ -8,6 +8,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class PermissionController extends Controller
 {
@@ -39,7 +40,12 @@ class PermissionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {  
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
 
         $request->validate([
             'path_name' => ['required', 'string'],
@@ -141,7 +147,7 @@ class PermissionController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Permission $permission)
-    {
+    { 
         $first_menus = config('data.main_menu');
         $roles = Role::all();
         return view('permission.edit', [
@@ -156,6 +162,12 @@ class PermissionController extends Controller
      */
     public function update(Request $request, Permission $permission)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         $request->validate([
             'path_name' => ['required', 'string'],
             'role_id' => ['required', 'integer'],
@@ -174,6 +186,12 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         DB::beginTransaction();
         try {
             $permission->delete();
@@ -201,8 +219,6 @@ class PermissionController extends Controller
             //return $errorMessage;
             return '添加错误，事务回滚';
         }
-
-
 
         return redirect(route("permission.index"));
     }
