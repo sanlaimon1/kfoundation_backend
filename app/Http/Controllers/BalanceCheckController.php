@@ -106,53 +106,58 @@ class BalanceCheckController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if (!(($permission->auth2 ?? 0) & 32)) {
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $id = (int)$id;
-        //事务开启
-        DB::beginTransaction();
-        try {
-            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-            //更改订单状态
-            $one = BalanceCheck::find($id);
-            $one->status = 1;
-            $one->adminid = Auth::id();
-            if (!$one->save())
-                throw new \Exception('事务中断1');
-            $balance_check = BalanceCheck::where('status', 0);
-            Redis::set('balance_check_status', $balance_check->count());
+            if (!(($permission->auth2 ?? 0) & 32)) {
+                return "您没有权限访问这个路径";
+            }
 
-            $username = Auth::user()->username;
-            //添加管理员日志
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'withdrawal.update';
-            $newlog->parameters = json_encode($request->all());
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if (!$newlog->save())
-                throw new \Exception('事务中断2');
+            $id = (int)$id;
+            //事务开启
+            DB::beginTransaction();
+            try {
+                DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+                //更改订单状态
+                $one = BalanceCheck::find($id);
+                $one->status = 1;
+                $one->adminid = Auth::id();
+                if (!$one->save())
+                    throw new \Exception('事务中断1');
+                $balance_check = BalanceCheck::where('status', 0);
+                Redis::set('balance_check_status', $balance_check->count());
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            $errorMessage = $e->getMessage();
-            return $errorMessage;
-            //return '审核通过错误，事务回滚';
-        }
+                $username = Auth::user()->username;
+                //添加管理员日志
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'withdrawal.update';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断2');
 
-        return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                $errorMessage = $e->getMessage();
+                return $errorMessage;
+                //return '审核通过错误，事务回滚';
+            }
+
+            return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
 
     /**
@@ -163,82 +168,89 @@ class BalanceCheckController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if (!(($permission->auth2 ?? 0) & 64)) {
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'comment' => ['required', 'string', 'max:200'],
-        ]);
+            if (!(($permission->auth2 ?? 0) & 64)) {
+                return "您没有权限访问这个路径";
+            }
 
-        $comment = trim($request->comment);
-        $id = (int)$id;
-        //事务开启
-        DB::beginTransaction();
-        try {
-            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-            //更改订单状态
-            $one = BalanceCheck::find($id);
-            $one->status = 2;
-            $one->adminid = Auth::id();
-            $one->comment = $comment;
-            if (!$one->save())
-                throw new \Exception('事务中断1');
+            $request->validate([
+                'comment' => ['required', 'string', 'max:200'],
+            ]);
 
-            //更改用户余额
-            $userid = $one->userid;
-            $one_user = Customer::find($userid);
-            $balance = $one_user->balance; //更改前的余额
-            $one_user->balance = $balance + $one->amount;
-            if (!$one_user->save())
-                throw new \Exception('事务中断2');
+            $comment = trim($request->comment);
+            $id = (int)$id;
+            //事务开启
+            DB::beginTransaction();
+            try {
+                DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+                //更改订单状态
+                $one = BalanceCheck::find($id);
+                $one->status = 2;
+                $one->adminid = Auth::id();
+                $one->comment = $comment;
+                if (!$one->save())
+                    throw new \Exception('事务中断1');
 
-            //添加财务记录
-            $username = Auth::user()->username;
-            $newfinance = new FinancialBalance;
-            $newfinance->userid = $userid;
-            $newfinance->amount = $one->amount;
-            $newfinance->balance = $balance;
-            $newfinance->direction = 1;    //加余额
-            $newfinance->financial_type = 2;  //提现
-            $newfinance->created_at = date('Y-m-d H:i:s');
-            $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
-            $order_arr = ['withdrawal_id' => $id];
-            $newfinance->extra = json_encode($order_arr);  //{"withdrawal_id": 1}
-            $newfinance->after_balance = $one_user->balance;
+                //更改用户余额
+                $userid = $one->userid;
+                $one_user = Customer::find($userid);
+                $balance = $one_user->balance; //更改前的余额
+                $one_user->balance = $balance + $one->amount;
+                if (!$one_user->save())
+                    throw new \Exception('事务中断2');
 
-            if (!$newfinance->save())
-                throw new \Exception('事务中断3');
+                //添加财务记录
+                $username = Auth::user()->username;
+                $newfinance = new FinancialBalance;
+                $newfinance->userid = $userid;
+                $newfinance->amount = $one->amount;
+                $newfinance->balance = $balance;
+                $newfinance->direction = 1;    //加余额
+                $newfinance->financial_type = 2;  //提现
+                $newfinance->created_at = date('Y-m-d H:i:s');
+                $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
+                $order_arr = ['withdrawal_id' => $id];
+                $newfinance->extra = json_encode($order_arr);  //{"withdrawal_id": 1}
+                $newfinance->after_balance = $one_user->balance;
 
-            //添加管理员日志
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'withdrawal.destroy';
-            $newlog->parameters = json_encode($request->all());
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if (!$newlog->save())
-                throw new \Exception('事务中断4');
+                if (!$newfinance->save())
+                    throw new \Exception('事务中断3');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            $errorMessage = $e->getMessage();
-            return $errorMessage;
-            //return '审核通过错误，事务回滚';
-        }
+                //添加管理员日志
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'withdrawal.destroy';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断4');
 
-        return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                $errorMessage = $e->getMessage();
+                return $errorMessage;
+                //return '审核通过错误，事务回滚';
+            }
+
+            return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
+    
     public function withdrawal_search(Request $request)
     {
         //dd($request);

@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use DB;
+use Illuminate\Support\Facades\Redis;
 
 class ArticleController extends Controller
 {
@@ -73,68 +74,73 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 4) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'title' => ['required', 'string'],
-            'content' => ['required'],
-            'categoryid' => ['required', 'integer', 'exists:categories,id'],
-            'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
-            'sort' => ['required', 'integer', 'gt:0'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 4) ){
+                return "您没有权限访问这个路径";
+            }
 
-        $litpic = '/images/default.png';
-        if($request->hasFile('litpic')){
-            $litpic = time().'.'.$request->litpic->extension();
-            $request->litpic->move(public_path('/images/articleImg/'),$litpic);
-            $litpic = '/images/articleImg/'.$litpic;
-        }
+            $request->validate([
+                'title' => ['required', 'string'],
+                'content' => ['required'],
+                'categoryid' => ['required', 'integer', 'exists:categories,id'],
+                'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+                'sort' => ['required', 'integer', 'gt:0'],
+            ]);
 
-        $title = trim($request->get('title'));
-        $content = trim( htmlspecialchars( $request->get('content') ));
-        $categoryid = trim($request->get('categoryid'));
-        $sort = trim($request->sort);
+            $litpic = '/images/default.png';
+            if($request->hasFile('litpic')){
+                $litpic = time().'.'.$request->litpic->extension();
+                $request->litpic->move(public_path('/images/articleImg/'),$litpic);
+                $litpic = '/images/articleImg/'.$litpic;
+            }
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $newarticle = new Article;
-            $newarticle->title = $title;
-            $newarticle->content = $content;
-            $newarticle->categoryid = $categoryid;
-            $newarticle->sort  = $sort;
-            $newarticle->litpic  = $litpic;
-            $newarticle->adminid = Auth::id();
+            $title = trim($request->get('title'));
+            $content = trim( htmlspecialchars( $request->get('content') ));
+            $categoryid = trim($request->get('categoryid'));
+            $sort = trim($request->sort);
 
-            if(!$newarticle->save())
-                throw new \Exception('事务中断1');
+            DB::beginTransaction();
+            try {
+                //code...
+                $newarticle = new Article;
+                $newarticle->title = $title;
+                $newarticle->content = $content;
+                $newarticle->categoryid = $categoryid;
+                $newarticle->sort  = $sort;
+                $newarticle->litpic  = $litpic;
+                $newarticle->adminid = Auth::id();
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 添加站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'article.store';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newarticle->save())
+                    throw new \Exception('事务中断1');
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 添加站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'article.store';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
+                if(!$newlog->save())
+                    throw new \Exception('事务中断2');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚' . $e->getMessage();
-        }
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚' . $e->getMessage();
+            }
 
         return redirect()->route('article.index');
     }
@@ -179,71 +185,76 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 32) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'title' => ['required', 'string'],
-            'content' => ['required', 'string'],
-            'categoryid' => ['required', 'integer', 'exists:categories,id'],
-            'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
-            'sort' => ['required', 'integer', 'gt:0'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 32) ){
+                return "您没有权限访问这个路径";
+            }
 
-        if($request->hasFile('litpic')){
-            $litpic = time().'.'.$request->litpic->extension();
-            $request->litpic->move(public_path('/images/articleImg/'),$litpic);
-            $litpic = '/images/articleImg/'.$litpic;
+            $request->validate([
+                'title' => ['required', 'string'],
+                'content' => ['required', 'string'],
+                'categoryid' => ['required', 'integer', 'exists:categories,id'],
+                'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+                'sort' => ['required', 'integer', 'gt:0'],
+            ]);
 
-        }else{
-            $litpic = $request->litpic;
-        }
+            if($request->hasFile('litpic')){
+                $litpic = time().'.'.$request->litpic->extension();
+                $request->litpic->move(public_path('/images/articleImg/'),$litpic);
+                $litpic = '/images/articleImg/'.$litpic;
 
-        $title = trim($request->get('title'));
-        $content = trim( htmlspecialchars( $request->get('content') ));
-        $categoryid = trim($request->get('categoryid'));
-        $sort = trim($request->sort);
+            }else{
+                $litpic = $request->litpic;
+            }
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $newarticle = Article::find($id);
-            $newarticle->title = $title;
-            $newarticle->content = $content;
-            $newarticle->sort  = $sort;
-            $newarticle->litpic  = $litpic;
-            $newarticle->categoryid = $categoryid;
+            $title = trim($request->get('title'));
+            $content = trim( htmlspecialchars( $request->get('content') ));
+            $categoryid = trim($request->get('categoryid'));
+            $sort = trim($request->sort);
 
-            if(!$newarticle->save())
-                throw new \Exception('事务中断3');
+            DB::beginTransaction();
+            try {
+                //code...
+                $newarticle = Article::find($id);
+                $newarticle->title = $title;
+                $newarticle->content = $content;
+                $newarticle->sort  = $sort;
+                $newarticle->litpic  = $litpic;
+                $newarticle->categoryid = $categoryid;
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 修改站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'article.update';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newarticle->save())
+                    throw new \Exception('事务中断3');
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断4');
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 修改站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'article.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
+                if(!$newlog->save())
+                    throw new \Exception('事务中断4');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+                DB::commit();
 
-        return redirect()->route('article.index');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+
+            return redirect()->route('article.index');
     }
 
     /**
@@ -251,42 +262,46 @@ class ArticleController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
-            return "您没有权限访问这个路径";
-        }
+            if( !(($permission->auth2 ?? 0) & 64) ){
+                return "您没有权限访问这个路径";
+            }
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $article = Article::find($id);
-            if(!$article->delete())
-                throw new \Exception('事务中断5');
+            DB::beginTransaction();
+            try {
+                //code...
+                $article = Article::find($id);
+                if(!$article->delete())
+                    throw new \Exception('事务中断5');
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 删除站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'article.destroy';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 删除站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'article.destroy';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断6');
+                if(!$newlog->save())
+                    throw new \Exception('事务中断6');
 
-            DB::commit();
+                DB::commit();
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
-        return redirect()->route('article.index');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+            return redirect()->route('article.index');
     }
 }
