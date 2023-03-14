@@ -88,6 +88,7 @@ class ArticleController extends Controller
             'sort' => ['required', 'integer', 'gt:0'],
         ]);
 
+        $litpic = '/images/default.png';
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/articleImg/'),$litpic);
@@ -132,7 +133,7 @@ class ArticleController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
-            return '添加错误，事务回滚';
+            return '添加错误，事务回滚' . $e->getMessage();
         }
 
         return redirect()->route('article.index');
