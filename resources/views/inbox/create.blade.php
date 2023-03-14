@@ -8,8 +8,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/loading.css">
-    <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/css/bootstrap-v3.4.1.min.css" rel="stylesheet">
+    <script src="/js/jquery-v3.5.1.min.js"></script>
+    <script src="/js/bootstrap-v3.4.1.min.js"></script>
+    <link href="/css/summernote.min.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+    <script src="/js/summernote-zh-CN.js"></script>
     <style>
         #app {
             padding-top: 1rem;
@@ -71,7 +78,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                
+
                 <div class="form-group mt-4">
                     <label for="user_phone">用户手机号 若为空则是全部</label>
                     <input type="text" name="user_phone" class="form-control" id="user_phone" placeholder="用户手机号 若为空则是全部" >
@@ -89,7 +96,9 @@
     </div>
     <script>
         $(document).ready(function() {
-            $('#content').summernote();
+            $('#content').summernote({
+                lang: 'zh-CN'
+            });
         });
     </script>
 </body>
