@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/css/bootstrap-v3.4.1.min.css" rel="stylesheet">
+    <script src="/js/jquery-v3.5.1.min.js"></script>
+    <script src="/js/bootstrap-v3.4.1.min.js"></script>
+    <link href="/css/summernote.min.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+    <script src="/js/summernote-zh-CN.js"></script>
     <style>
         #app
         {
@@ -52,7 +59,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/website/' + dataid,
@@ -121,7 +128,7 @@
                 <li class="breadcrumb-item active" aria-current="page">编辑文章列表</li>
             </ol>
         </nav>
-        
+
         <form action="{{ route('article.update',['article'=>$article->id]) }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
             @method('PATCH')
@@ -174,7 +181,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <img id="show_litpic" src="{{ $article->litpic }}" width="120" height="120" />
-                        
+
                         <input type="file" id="litpic" name="litpic" hidden/>
                         <label class="choose_litpic" for="litpic">选择</label>
                     </div>
@@ -186,14 +193,16 @@
             <button class="btn btn-secondary" action="action" onclick="window.history.go(-1); return false;" style="margin-top:1rem; margin-right:1rem; float:right;">返回</button>
             <!-- <a class="btn btn-secondary" href="{{ route('article.index') }}" style="margin-top:1rem; margin-right:1rem; float:right;">返回</a> -->
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')
 
     <script>
         $(document).ready(function() {
-            $('#summernote').summernote();
+            $('#summernote').summernote({
+                lang: 'zh-CN'
+            });
         });
     </script>
 
