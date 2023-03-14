@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/css/bootstrap-v3.4.1.min.css" rel="stylesheet">
+    <script src="/js/jquery-v3.5.1.min.js"></script>
+    <script src="/js/bootstrap-v3.4.1.min.js"></script>
+    <link href="/css/summernote.min.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+    <script src="/js/summernote-zh-CN.js"></script>
+
     <style>
         #app
         {
@@ -58,7 +66,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/windowhomepage/' + dataid,
@@ -127,7 +135,7 @@
                 <label class="card-title bg-success text-white">
                     {{ $is_shown->comment }}
                 </label>
-                <div class="card-body">                    
+                <div class="card-body">
                     <select class="form-select" id="item-{{ $is_shown->cid }}" name="{{ $is_shown->config_name }}" aria-label="{{ $is_shown->comment }}">
                         <option value="1" <?= ($is_shown->config_value==1) ? 'selected' : "" ?>>是</option>
                         <option value="0" <?= ($is_shown->config_value==0) ? 'selected' : "" ?>>否</option>
@@ -143,7 +151,9 @@
 
     <script>
         $(document).ready(function() {
-            $('#item-{{ $window_details->cid }}').summernote();
+            $('#item-{{ $window_details->cid }}').summernote({
+                lang: 'zh-CN'
+            });
         });
     </script>
 </body>
