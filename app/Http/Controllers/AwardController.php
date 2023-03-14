@@ -8,6 +8,7 @@ use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use DB;
+use Illuminate\Support\Facades\Redis;
 
 class AwardController extends Controller
 {
@@ -106,58 +107,63 @@ class AwardController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
-
-        if( !(($permission->auth2 ?? 0) & 32) ){
-            return "您没有权限访问这个路径";
-        }
-
-        //修改数据
-        if(!is_numeric($id)) {
-            $arr = ['code'=>-1, 'message'=>'id必须是整数'];
-            return json_encode( $arr );
-        }
-
-        //收到值
-        $award_value = trim( htmlspecialchars( $request->get('award_value') ));
-
-        $id = (int)$id;
-
-        DB::beginTransaction();
-        try {
-           //查询一条数据
-            $one = Award::find($id);
-            $one->award_value = $award_value;
-            $one->save();
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
             
-            if(!$one->save())
-                throw new \Exception('事务中断1');
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 修改站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'award.update';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+            if( !(($permission->auth2 ?? 0) & 32) ){
+                return "您没有权限访问这个路径";
+            }
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断2');
+            //修改数据
+            if(!is_numeric($id)) {
+                $arr = ['code'=>-1, 'message'=>'id必须是整数'];
+                return json_encode( $arr );
+            }
 
-            DB::commit();
+            //收到值
+            $award_value = trim( htmlspecialchars( $request->get('award_value') ));
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
-        $arr = ['code'=>1, 'message'=>'保存成功'];
-        return response()->json( $arr );
+            $id = (int)$id;
+
+            DB::beginTransaction();
+            try {
+            //查询一条数据
+                $one = Award::find($id);
+                $one->award_value = $award_value;
+                $one->save();
+                
+                if(!$one->save())
+                    throw new \Exception('事务中断1');
+
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 修改站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'award.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
+
+                if(!$newlog->save())
+                    throw new \Exception('事务中断2');
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+            $arr = ['code'=>1, 'message'=>'保存成功'];
+            return response()->json( $arr );
     }
 
     /**
