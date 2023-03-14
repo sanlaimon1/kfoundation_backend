@@ -10,6 +10,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Redis;
 
 class RoleController extends Controller
 {
@@ -78,6 +79,11 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -141,8 +147,6 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-
-
         $first_menus = config('data.main_menu');    //一级菜单
         $id = (int)$id;
         $all_datas = config('data');
@@ -163,7 +167,6 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -180,6 +183,11 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -243,6 +251,11 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
 
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
