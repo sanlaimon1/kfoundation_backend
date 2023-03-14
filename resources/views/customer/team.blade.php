@@ -65,7 +65,7 @@
                 <ul>
                     <li>团队等级: <strong class="value">{{ $one_team->level_name }}</strong></li>
                     <li>团队人数: <strong class="value">{{ $count_children }}</strong></li>
-                    <li>团队总充值: <strong class="value">{{ $one_team_extra->charge_total }}</strong></li>
+                    <li>团队总充值(包含资产转余额): <strong class="value">{{ $one_team_extra->charge_total }}</strong></li>
                     <li>团队总提现: <strong class="value">{{ $one_team_extra->withdrawal_total }}</strong></li>
                 </ul>
             </div>
