@@ -122,78 +122,83 @@ class AssetCheckController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if (!(($permission->auth2 ?? 0) & 32)) {
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $id = (int)$id;
-        //事务开启
-        DB::beginTransaction();
-        try {
-            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-            //更改订单状态
-            $one = AssetCheck::find($id);
-            $one->status = 1;
-            $one->adminid = Auth::id();
-            if (!$one->save())
-                throw new \Exception('事务中断1');
+            if (!(($permission->auth2 ?? 0) & 32)) {
+                return "您没有权限访问这个路径";
+            }
 
-            $asset_check = AssetCheck::where('status', "=", 0)->get();
-            Redis::set('asset_check_status', $asset_check->count());
+            $id = (int)$id;
+            //事务开启
+            DB::beginTransaction();
+            try {
+                DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+                //更改订单状态
+                $one = AssetCheck::find($id);
+                $one->status = 1;
+                $one->adminid = Auth::id();
+                if (!$one->save())
+                    throw new \Exception('事务中断1');
 
-            //更改用户余额
-            $userid = $one->userid;
-            $one_user = Customer::find($userid);
-            $asset = $one_user->asset; //更改前的余额
-            $one_user->asset = $asset + $one->amount;
-            if (!$one_user->save())
-                throw new \Exception('事务中断2');
+                $asset_check = AssetCheck::where('status', "=", 0)->get();
+                Redis::set('asset_check_status', $asset_check->count());
 
-            //添加财务记录
-            $username = Auth::user()->username;
-            $newfinance = new FinancialAsset;
-            $newfinance->userid = $userid;
-            $newfinance->amount = $one->amount;
-            $newfinance->balance = $asset;
-            $newfinance->direction = 1;    //加资产
-            $newfinance->financial_type = 3;  //通过用户申请获得
-            $newfinance->created_at = date('Y-m-d H:i:s');
-            $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
-            $order_arr = ['charge_id' => $id];
-            $newfinance->extra = json_encode($order_arr);  //{"charge_id": 1}
-            $newfinance->after_balance = $one_user->asset;
+                //更改用户余额
+                $userid = $one->userid;
+                $one_user = Customer::find($userid);
+                $asset = $one_user->asset; //更改前的余额
+                $one_user->asset = $asset + $one->amount;
+                if (!$one_user->save())
+                    throw new \Exception('事务中断2');
 
-            if (!$newfinance->save())
-                throw new \Exception('事务中断3');
+                //添加财务记录
+                $username = Auth::user()->username;
+                $newfinance = new FinancialAsset;
+                $newfinance->userid = $userid;
+                $newfinance->amount = $one->amount;
+                $newfinance->balance = $asset;
+                $newfinance->direction = 1;    //加资产
+                $newfinance->financial_type = 3;  //通过用户申请获得
+                $newfinance->created_at = date('Y-m-d H:i:s');
+                $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
+                $order_arr = ['charge_id' => $id];
+                $newfinance->extra = json_encode($order_arr);  //{"charge_id": 1}
+                $newfinance->after_balance = $one_user->asset;
 
-            //添加管理员日志
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'charge.update';
-            $newlog->parameters = json_encode($request->all());
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if (!$newlog->save())
-                throw new \Exception('事务中断4');
+                if (!$newfinance->save())
+                    throw new \Exception('事务中断3');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            $errorMessage = $e->getMessage();
-            return $errorMessage;
-            //return '审核通过错误，事务回滚';
-        }
+                //添加管理员日志
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'charge.update';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断4');
 
-        return redirect()->route('charge.show', ['charge' => $id]);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                $errorMessage = $e->getMessage();
+                return $errorMessage;
+                //return '审核通过错误，事务回滚';
+            }
+
+            return redirect()->route('charge.show', ['charge' => $id]);
     }
 
     /**
@@ -201,31 +206,35 @@ class AssetCheckController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        if (!(($permission->auth2 ?? 0) & 64)) {
-            return "您没有权限访问这个路径";
-        }
+            if (!(($permission->auth2 ?? 0) & 64)) {
+                return "您没有权限访问这个路径";
+            }
 
-        $request->validate([
-            'comment' => ['required', 'string', 'max:200'],
-        ]);
+            $request->validate([
+                'comment' => ['required', 'string', 'max:200'],
+            ]);
 
-        $comment = trim($request->comment);
-        $id = (int)$id;
-        //事务开启
-        DB::beginTransaction();
-        try {
-            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-            //更改订单状态
-            $one = AssetCheck::find($id);
-            $one->status = 2;
-            $one->adminid = Auth::id();
-            $one->comment = $comment;
-            if (!$one->save())
-                throw new \Exception('事务中断5');
+            $comment = trim($request->comment);
+            $id = (int)$id;
+            //事务开启
+            DB::beginTransaction();
+            try {
+                DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+                //更改订单状态
+                $one = AssetCheck::find($id);
+                $one->status = 2;
+                $one->adminid = Auth::id();
+                $one->comment = $comment;
+                if (!$one->save())
+                    throw new \Exception('事务中断5');
 
             $asset_check = AssetCheck::where('status', "=", 0)->get();
             Redis::set('asset_check_status', $asset_check->count());
@@ -242,20 +251,20 @@ class AssetCheckController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断6');
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            /**
-             * $errorMessage = $e->getMessage();
-             * $errorCode = $e->getCode();
-             * $stackTrace = $e->getTraceAsString();
-             */
-            $errorMessage = $e->getMessage();
-            return $errorMessage;
-            //return '审核通过错误，事务回滚';
-        }
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                /**
+                 * $errorMessage = $e->getMessage();
+                 * $errorCode = $e->getCode();
+                 * $stackTrace = $e->getTraceAsString();
+                 */
+                $errorMessage = $e->getMessage();
+                return $errorMessage;
+                //return '审核通过错误，事务回滚';
+            }
 
-        return redirect()->route('charge.show', ['charge' => $id]);
+            return redirect()->route('charge.show', ['charge' => $id]);
     }
 
     public function charge_search(Request $request)

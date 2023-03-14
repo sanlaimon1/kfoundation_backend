@@ -8,7 +8,8 @@ use App\Models\Config;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use App\Models\Log;
- 
+use Illuminate\Support\Facades\Redis;
+
 class AgreementController extends Controller
 {
 
@@ -98,6 +99,12 @@ class AgreementController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         $role_id = Auth::user()->rid;        
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 

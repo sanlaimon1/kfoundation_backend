@@ -9,6 +9,7 @@ use App\Models\Level;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use DB;
+use Illuminate\Support\Facades\Redis;
 
 class GoodsController extends Controller
 {
@@ -78,85 +79,91 @@ class GoodsController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 4) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
 
-        $request->validate([
-            'goods_name' => ['required', 'string', 'max:45'],
-            "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-            'score' => ['required', 'integer', 'gte:0'],
-            'level_id' => ['required', 'integer', 'exists:levels,level_id'],
-            'store_num' => ['required', 'integer', 'gte:0'],
-            'count_exchange' => ['required', 'integer', 'gte:0'],
-            'sort' => ['required',  'integer', 'gte:0'],
-            'enable' => ['required', 'integer', 'in:0,1'],
-            'comment' => ['required', 'string',  'max:100'],
-        ]);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $goods_name = trim( $request->get('goods_name') );
-        $score = trim( $request->get('score') );
-        $level_id = trim( $request->get('level_id') );
-        $store_num = trim( $request->get('store_num') );
-        $count_exchange = trim( $request->get('count_exchange') );
-        $sort = trim( $request->get('sort') );
-        $enable = trim( $request->get('enable') );
-        $comment = trim( $request->get('comment') );
+            if( !(($permission->auth2 ?? 0) & 4) ){
+                return "您没有权限访问这个路径";
+            }
 
-        $score = (int)$score;
-        $store_num = (int)$store_num;
-        $count_exchange = (int)$count_exchange;
-        $sort = (int)$sort;
+            $request->validate([
+                'goods_name' => ['required', 'string', 'max:45'],
+                "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+                'score' => ['required', 'integer', 'gte:0'],
+                'level_id' => ['required', 'integer', 'exists:levels,level_id'],
+                'store_num' => ['required', 'integer', 'gte:0'],
+                'count_exchange' => ['required', 'integer', 'gte:0'],
+                'sort' => ['required',  'integer', 'gte:0'],
+                'enable' => ['required', 'integer', 'in:0,1'],
+                'comment' => ['required', 'string',  'max:100'],
+            ]);
 
-        if($request->hasFile('litpic')){
-            $get_litpic = time().'.'.$request->litpic->extension();
-            $request->litpic->move(public_path('/images/'),$get_litpic);
-            $res_litpic = '/images/'.$get_litpic;
-        }
+            $goods_name = trim( $request->get('goods_name') );
+            $score = trim( $request->get('score') );
+            $level_id = trim( $request->get('level_id') );
+            $store_num = trim( $request->get('store_num') );
+            $count_exchange = trim( $request->get('count_exchange') );
+            $sort = trim( $request->get('sort') );
+            $enable = trim( $request->get('enable') );
+            $comment = trim( $request->get('comment') );
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $newgood = new Goods;
-            $newgood->goods_name = $goods_name;
-            $newgood->litpic = $res_litpic;
-            $newgood->score = $score;
-            $newgood->level_id = $level_id;
-            $newgood->store_num = $store_num;
-            $newgood->count_exchange = $count_exchange;
-            $newgood->sort = $sort;
-            $newgood->enable = $enable;
-            $newgood->comment = $comment;
+            $score = (int)$score;
+            $store_num = (int)$store_num;
+            $count_exchange = (int)$count_exchange;
+            $sort = (int)$sort;
 
-            if(!$newgood->save())
-                throw new \Exception('事务中断1');
+            if($request->hasFile('litpic')){
+                $get_litpic = time().'.'.$request->litpic->extension();
+                $request->litpic->move(public_path('/images/'),$get_litpic);
+                $res_litpic = '/images/'.$get_litpic;
+            }
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 添加站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'goods.store';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+            DB::beginTransaction();
+            try {
+                //code...
+                $newgood = new Goods;
+                $newgood->goods_name = $goods_name;
+                $newgood->litpic = $res_litpic;
+                $newgood->score = $score;
+                $newgood->level_id = $level_id;
+                $newgood->store_num = $store_num;
+                $newgood->count_exchange = $count_exchange;
+                $newgood->sort = $sort;
+                $newgood->enable = $enable;
+                $newgood->comment = $comment;
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断2');
+                if(!$newgood->save())
+                    throw new \Exception('事务中断1');
 
-            DB::commit();
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 添加站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'goods.store';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+                if(!$newlog->save())
+                    throw new \Exception('事务中断2');
 
-        return redirect()->route('goods.index');
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+
+            return redirect()->route('goods.index');
     }
 
     /**
@@ -198,87 +205,93 @@ class GoodsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 32) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'goods_name' => ['required', 'string', 'max:45'],
-            "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-            'score' => ['required', 'integer', 'gte:0'],
-            'level_id' => ['required', 'integer', 'exists:levels,level_id'],
-            'store_num' => ['required', 'integer', 'gte:0'],
-            'count_exchange' => ['required', 'integer', 'gte:0'],
-            'sort' => ['required',  'integer', 'gte:0'],
-            'enable' => ['required', 'integer', 'in:0,1'],
-            'comment' => ['required', 'string',  'max:100'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 32) ){
+                return "您没有权限访问这个路径";
+            }
 
-        $goods_name = trim( $request->get('goods_name') );
-        $score = trim( $request->get('score') );
-        $level_id = trim( $request->get('level_id') );
-        $store_num = trim( $request->get('store_num') );
-        $count_exchange = trim( $request->get('count_exchange') );
-        $sort = trim( $request->get('sort') );
-        $enable = trim( $request->get('enable') );
-        $comment = trim( $request->get('comment') );
+            $request->validate([
+                'goods_name' => ['required', 'string', 'max:45'],
+                "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+                'score' => ['required', 'integer', 'gte:0'],
+                'level_id' => ['required', 'integer', 'exists:levels,level_id'],
+                'store_num' => ['required', 'integer', 'gte:0'],
+                'count_exchange' => ['required', 'integer', 'gte:0'],
+                'sort' => ['required',  'integer', 'gte:0'],
+                'enable' => ['required', 'integer', 'in:0,1'],
+                'comment' => ['required', 'string',  'max:100'],
+            ]);
 
-        $score = (int)$score;
-        $store_num = (int)$store_num;
-        $count_exchange = (int)$count_exchange;
-        $sort = (int)$sort;
+            $goods_name = trim( $request->get('goods_name') );
+            $score = trim( $request->get('score') );
+            $level_id = trim( $request->get('level_id') );
+            $store_num = trim( $request->get('store_num') );
+            $count_exchange = trim( $request->get('count_exchange') );
+            $sort = trim( $request->get('sort') );
+            $enable = trim( $request->get('enable') );
+            $comment = trim( $request->get('comment') );
 
-        $newgood = Goods::find($id);
-        $newgood->goods_name = $goods_name;
+            $score = (int)$score;
+            $store_num = (int)$store_num;
+            $count_exchange = (int)$count_exchange;
+            $sort = (int)$sort;
 
-        if($request->hasFile('litpic')){
-            $get_litpic = time().'.'.$request->litpic->extension();
-            $request->litpic->move(public_path('/images/'),$get_litpic);
-            $res_litpic = '/images/'.$get_litpic;
-        }else{
-            $res_litpic = $newgood->litpic;
-        }
+            $newgood = Goods::find($id);
+            $newgood->goods_name = $goods_name;
 
-        DB::beginTransaction();
-        try {
-            $newgood->litpic = $res_litpic;
-            $newgood->score = $score;
-            $newgood->level_id = $level_id;
-            $newgood->store_num = $store_num;
-            $newgood->count_exchange = $count_exchange;
-            $newgood->sort = $sort;
-            $newgood->enable = $enable;
-            $newgood->comment = $comment;
+            if($request->hasFile('litpic')){
+                $get_litpic = time().'.'.$request->litpic->extension();
+                $request->litpic->move(public_path('/images/'),$get_litpic);
+                $res_litpic = '/images/'.$get_litpic;
+            }else{
+                $res_litpic = $newgood->litpic;
+            }
 
-            if(!$newgood->save())
-                throw new \Exception('事务中断3');
+            DB::beginTransaction();
+            try {
+                $newgood->litpic = $res_litpic;
+                $newgood->score = $score;
+                $newgood->level_id = $level_id;
+                $newgood->store_num = $store_num;
+                $newgood->count_exchange = $count_exchange;
+                $newgood->sort = $sort;
+                $newgood->enable = $enable;
+                $newgood->comment = $comment;
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 修改站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'goods.update';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$newgood->save())
+                    throw new \Exception('事务中断3');
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断4');
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 修改站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'goods.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
+                if(!$newlog->save())
+                    throw new \Exception('事务中断4');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
+                DB::commit();
 
-        return redirect()->route('goods.index');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+
+            return redirect()->route('goods.index');
     }
 
     /**
@@ -286,44 +299,50 @@ class GoodsController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $id = (int)$id;
+            if( !(($permission->auth2 ?? 0) & 64) ){
+                return "您没有权限访问这个路径";
+            }
 
-        DB::beginTransaction();
-        try {
-            $one = Goods::find($id);
-            $one->enable = 0;
+            $id = (int)$id;
 
-            if(!$one->save())
-                throw new \Exception('事务中断5');
+            DB::beginTransaction();
+            try {
+                $one = Goods::find($id);
+                $one->enable = 0;
 
-            $username = Auth::user()->username;
-            $newlog = new Log();
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 删除站内信';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'goods.destroy';
-            $input = $request->all();
-            $input_json = json_encode( $input );
-            $newlog->parameters = $input_json;  // 请求参数
-            $newlog->created_at = date('Y-m-d H:i:s');
+                if(!$one->save())
+                    throw new \Exception('事务中断5');
 
-            if(!$newlog->save())
-                throw new \Exception('事务中断6');
+                $username = Auth::user()->username;
+                $newlog = new Log();
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员'. $username. ' 删除站内信';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'goods.destroy';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $newlog->parameters = $input_json;  // 请求参数
+                $newlog->created_at = date('Y-m-d H:i:s');
 
-            DB::commit();
+                if(!$newlog->save())
+                    throw new \Exception('事务中断6');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //echo $e->getMessage();
-            return '添加错误，事务回滚';
-        }
-        return redirect()->route('goods.index');
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
+            return redirect()->route('goods.index');
     }
 }

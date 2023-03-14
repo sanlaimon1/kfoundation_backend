@@ -6,6 +6,7 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Life;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class LifeController extends Controller
 {
@@ -64,41 +65,46 @@ class LifeController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 4) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'production_name'=> ['required', 'string', 'between:1,40'],
-            'sort'=> ['required', 'integer', 'gt:0'],
-            'picture'=> ['required','image','mimes:jpg,png,jpeg,bmp,webp'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 4) ){
+                return "您没有权限访问这个路径";
+            }
 
-        $production_name = trim( $request->get('production_name') );
-        $sort = trim( $request->get('sort') );
-        $extra = trim( $request->get('extra') );
-        $inputs = trim( $request->get('inputs') );
+            $request->validate([
+                'production_name'=> ['required', 'string', 'between:1,40'],
+                'sort'=> ['required', 'integer', 'gt:0'],
+                'picture'=> ['required','image','mimes:jpg,png,jpeg,bmp,webp'],
+            ]);
 
-        $sort = (int)$sort;
+            $production_name = trim( $request->get('production_name') );
+            $sort = trim( $request->get('sort') );
+            $extra = trim( $request->get('extra') );
+            $inputs = trim( $request->get('inputs') );
 
-        if($request->hasFile('picture')){
-            $picture = time().'.'.$request->picture->extension();
-            $request->picture->move(public_path('/images/'),$picture);
-            $image = '/images/'.$picture;
-        }
+            $sort = (int)$sort;
 
-        $newlife = new Life();
-        $newlife->production_name = $production_name;
-        $newlife->picture = $image;
-        $newlife->sort = $sort;
-        $newlife->extra = $extra;
-        $newlife->inputs = $inputs;
-        $newlife->save();
+            if($request->hasFile('picture')){
+                $picture = time().'.'.$request->picture->extension();
+                $request->picture->move(public_path('/images/'),$picture);
+                $image = '/images/'.$picture;
+            }
 
-        return redirect()->route('life.index');
+            $newlife = new Life();
+            $newlife->production_name = $production_name;
+            $newlife->picture = $image;
+            $newlife->sort = $sort;
+            $newlife->extra = $extra;
+            $newlife->inputs = $inputs;
+            $newlife->save();
+
+            return redirect()->route('life.index');
     }
 
     /**
@@ -130,43 +136,49 @@ class LifeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 32) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $request->validate([
-            'production_name'=> ['required', 'string', 'between:1,40'],
-            'sort'=> ['required', 'integer', 'gt:0'],
-            'picture'=> ['image','mimes:jpg,png,jpeg,bmp,webp'],
-        ]);
+            if( !(($permission->auth2 ?? 0) & 32) ){
+                return "您没有权限访问这个路径";
+            }
 
-        $production_name = trim( $request->get('production_name') );
-        $sort = trim( $request->get('sort') );
-        $extra = trim( $request->get('extra') );
-        $inputs = trim( $request->get('inputs') );
+            $request->validate([
+                'production_name'=> ['required', 'string', 'between:1,40'],
+                'sort'=> ['required', 'integer', 'gt:0'],
+                'picture'=> ['image','mimes:jpg,png,jpeg,bmp,webp'],
+            ]);
 
-        $sort = (int)$sort;
+            $production_name = trim( $request->get('production_name') );
+            $sort = trim( $request->get('sort') );
+            $extra = trim( $request->get('extra') );
+            $inputs = trim( $request->get('inputs') );
 
-        if($request->hasFile('picture')){
-            $picture = time().'.'.$request->picture->extension();
-            $request->picture->move(public_path('/images/'),$picture);
-            $image = '/images/'.$picture;
-        } else {
-            $image = $request->old_picture;
-        }
+            $sort = (int)$sort;
 
-        $newlife = Life::find($id);
-        $newlife->production_name = $production_name;
-        $newlife->picture = $image;
-        $newlife->sort = $sort;
-        $newlife->extra = $extra;
-        $newlife->inputs = $inputs;
-        $newlife->save();
+            if($request->hasFile('picture')){
+                $picture = time().'.'.$request->picture->extension();
+                $request->picture->move(public_path('/images/'),$picture);
+                $image = '/images/'.$picture;
+            } else {
+                $image = $request->old_picture;
+            }
 
-        return redirect()->route('life.index');
+            $newlife = Life::find($id);
+            $newlife->production_name = $production_name;
+            $newlife->picture = $image;
+            $newlife->sort = $sort;
+            $newlife->extra = $extra;
+            $newlife->inputs = $inputs;
+            $newlife->save();
+
+            return redirect()->route('life.index');
     }
 
     /**
@@ -174,15 +186,21 @@ class LifeController extends Controller
      */
     public function destroy(string $id)
     {
-        $role_id = Auth::user()->rid;
-        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
-        if( !(($permission->auth2 ?? 0) & 64) ){
-            return "您没有权限访问这个路径";
-        }
+            Redis::set("permission:".Auth::id(), time());
+            Redis::expire("permission:".Auth::id(), 10);
+            
+            $role_id = Auth::user()->rid;
+            $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-        $life = Life::find($id);
-        $life->delete();
-        return redirect()->route('life.index');
+            if( !(($permission->auth2 ?? 0) & 64) ){
+                return "您没有权限访问这个路径";
+            }
+
+            $life = Life::find($id);
+            $life->delete();
+            return redirect()->route('life.index');
     }
 }

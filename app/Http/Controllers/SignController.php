@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class SignController extends Controller
 {
@@ -62,6 +63,12 @@ class SignController extends Controller
      */
     public function store(Request $request)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -145,6 +152,12 @@ class SignController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+        return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         // need to do
         DB::beginTransaction();
         try {

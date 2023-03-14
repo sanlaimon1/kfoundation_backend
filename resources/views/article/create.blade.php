@@ -163,7 +163,7 @@
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" name="sort" id="sort" placeholder="排序" value="">
+                        <input type="number" class="form-control" name="sort" id="sort" placeholder="排序" value="">
                     </div>
 
                 </div>
@@ -174,7 +174,7 @@
                         @error('litpic')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <img id="show_litpic" src="#" width="120" height="120" />
+                        <img id="show_litpic" src="{{asset('images/default.png')}}" width="120" height="120" />
                         
                         <input type="file" id="litpic" name="litpic" hidden/>
                         <label class="choose_litpic" for="litpic">选择</label>

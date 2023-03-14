@@ -8,6 +8,7 @@ use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
+use Illuminate\Support\Facades\Redis;
 
 class WindowhomepageController extends Controller
 {
@@ -87,6 +88,12 @@ class WindowhomepageController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), 10);
+
         //修改数据
         if(!is_numeric($id)) {
             $arr = ['code'=>-1, 'message'=>'id必须是整数'];
