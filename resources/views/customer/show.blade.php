@@ -82,6 +82,14 @@
                 <li class="list-group-item col-4"><strong>注册时间:</strong> {{ $customer->created_at }}</li>
                 <li class="list-group-item col-4"><strong>最后修改时间:</strong> {{ $customer->updated_at }}</li>
             </ul>
+            <ul class="row">
+                <li class="list-group-item col-6"><strong>身份证正面:</strong>
+                    <img src="{{ $customer->idcard_front }}" class="img-fluid" alt="">
+                </li>
+                <li class="list-group-item col-6"><strong>身份证背面:</strong>
+                    <img src="{{ $customer->idcard_back }}" class="img-fluid" alt="">
+                </li>
+            </ul>
             
         </ul>
 

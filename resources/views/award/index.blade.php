@@ -190,6 +190,39 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="card">
+                <label class="card-title bg-success text-white">
+                    {{ $machine_days->comment }}
+                </label>
+                <div class="card-body">
+                    <input class="form-control" id="item-{{ $machine_days->id }}" type="text" name="{{ $machine_days->award_name }}" value="{{ $machine_days->award_value }}" />
+                    <button class="btn btn-danger" data="{{ $machine_days->id }}">保存</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <label class="card-title bg-success text-white">
+                    {{ $machine_yield->comment }}
+                </label>
+                <div class="card-body">
+                    <input class="form-control" id="item-{{ $machine_yield->id }}" type="text" name="{{ $machine_yield->award_name }}" value="{{ $machine_yield->award_value }}" />
+                    <button class="btn btn-danger" data="{{ $machine_yield->id }}">保存</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <label class="card-title bg-success text-white">
+                    {{ $machine_rate->comment }}
+                </label>
+                <div class="card-body">
+                    <input class="form-control" id="item-{{ $machine_rate->id }}" type="text" name="{{ $machine_rate->award_name }}" value="{{ $machine_rate->award_value }}" />
+                    <button class="btn btn-danger" data="{{ $machine_rate->id }}">保存</button>
+                </div>
+            </div>
+            
+        </div>
+
 
     </div>
     @include('loading')

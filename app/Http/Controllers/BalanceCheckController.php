@@ -124,7 +124,7 @@ class BalanceCheckController extends Controller
             $one->adminid = Auth::id();
             if (!$one->save())
                 throw new \Exception('事务中断1');
-            $balance_check = BalanceCheck::where('status', "=", 0)->get();
+            $balance_check = BalanceCheck::where('status', 0);
             Redis::set('balance_check_status', $balance_check->count());
 
             $username = Auth::user()->username;

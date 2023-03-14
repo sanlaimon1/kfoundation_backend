@@ -59,9 +59,14 @@ class AwardController extends Controller
         $balance_min = $item_cate['balance_min'];  
         $balance_max = $item_cate['balance_max'];
         $reinvest = $item_cate['reinvest'];
+        $machine_days = $item_cate['machine_days'];
+        $machine_yield = $item_cate['machine_yield'];
+        $machine_rate = $item_cate['machine_rate'];
 
         return view('award.index', compact('registration_award', 'realname_award', 'everyday_award', 'first_invest',
-                                            'balance_benefit','balance_min','balance_max','reinvest'    ) );
+                                            'balance_benefit','balance_min','balance_max','reinvest','machine_days',
+                                            'machine_yield', 'machine_rate'
+                                        ) );
     }
 
     /**
