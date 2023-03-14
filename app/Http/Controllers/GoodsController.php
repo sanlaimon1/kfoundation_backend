@@ -8,7 +8,7 @@ use App\Models\Goods;
 use App\Models\Level;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class GoodsController extends Controller
@@ -83,7 +83,7 @@ class GoodsController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -209,7 +209,7 @@ class GoodsController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
@@ -303,7 +303,7 @@ class GoodsController extends Controller
             return "10秒内不能重复提交";
 
             Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), 10);
+            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
