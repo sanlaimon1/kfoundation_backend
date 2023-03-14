@@ -144,3 +144,6 @@ Route::post('loginlog_search', 'App\Http\Controllers\LoginLogController@loginlog
 
 //幻灯片管理
 Route::resource('slide', 'App\Http\Controllers\SlideController');
+
+//币价管理
+Route::resource('currency', 'App\Http\Controllers\CurrencyController');
