@@ -53,7 +53,15 @@
             <li class="list-group-item"><strong>项目规模:</strong> {{ $project->project_scale }}</li>            
             <li class="list-group-item"><strong>收益率:</strong> {{ $project->benefit_rate }}</li>
             <li class="list-group-item"><strong>项目进度:</strong> {{ $project->fake_process }}%</li>
-            <li class="list-group-item"><strong>项目期限:</strong> {{ $project->days }}天</li>
+            <li class="list-group-item"><strong>项目期限:</strong> 
+                @if($project->return_mode == 3)
+                    <span class="mt-5 pt-5">{{$project->weeks}} (周)</span>
+                @elseif($project->return_mode == 4)
+                    <span class="mt-5 pt-5">{{$project->months}} (月)  </span>
+                @else
+                    <span class="mt-5 pt-5">{{$project->days}} （天）</span>
+                @endif
+            </li>
             <li class="list-group-item"><strong>最小投资金额:</strong> {{ $project->min_invest }}</li>
             <li class="list-group-item"><strong>最大投资金额:</strong> {{ $project->max_invest }}</li>
             <li class="list-group-item"><strong>限购次数:</strong> {{ $project->max_times }}</li>

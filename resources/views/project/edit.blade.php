@@ -174,7 +174,13 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <!-- <input type="text" class="form-control" id="days" name="days" value="{{$project->days}}" > -->
-                        <span class="mt-5 pt-5">{{$project->days}}</span>
+                        @if($project->return_mode == 3)
+                            <span class="mt-5 pt-5">{{$project->weeks}} (周)</span>
+                        @elseif($project->return_mode == 4)
+                            <span class="mt-5 pt-5">{{$project->months}} (月)  </span>
+                        @else
+                            <span class="mt-5 pt-5">{{$project->days}} （天）</span>
+                        @endif
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="min_invest" class="form-label">最小投资金额</label>
