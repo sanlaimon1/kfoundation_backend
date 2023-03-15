@@ -46,7 +46,7 @@ class ArticleController extends Controller
         }
 
         $perPage = $request->input('perPage', 10);
-        $articles = Article::select('id', 'title','content','categoryid','adminid','litpic','sort')->orderBy('created_at', 'desc')->paginate($perPage);
+        $articles = Article::select('id', 'title','content','categoryid','adminid','litpic','sort')->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('article.index', compact('articles'));
     }
