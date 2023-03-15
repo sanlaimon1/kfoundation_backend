@@ -13,6 +13,7 @@ use App\Models\AssetCheck;
 use App\Models\BalanceCheck;
 use App\Models\Interest;
 use App\Models\FinancialPlatformCoin;
+use App\Models\FinancialAsset;
 use Carbon\Carbon;
 use DB;
 
@@ -53,7 +54,7 @@ class HomeController extends Controller
         $balanceCheck = BalanceCheck::where('customers.identity', 0)
                         ->where('balance_check.status', 1)
                         ->join('customers','customers.id', 'balance_check.userid')->sum('amount');
-        
+
         $todayCustomer = Customer::whereDate('created_at', Carbon::now()->today())
                         ->where('identity', 0)
                         ->count();
@@ -93,12 +94,12 @@ class HomeController extends Controller
                          ->where('customers.identity', 0)
                          ->join('customers', 'customers.id', 'order1.cid')
                          ->count();
-        
+
         $yesterdayCustomerOrder1 = Order1::whereDate('order1.created_at', Carbon::now()->yesterday())
                          ->where('customers.identity', 0)
                          ->join('customers','customers.id', 'order1.cid')
                          ->count();
-        
+
         $weekOrder1 = Order1::whereBetween('order1.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                          ->where('customers.identity', 0)
                          ->join('customers', 'customers.id', 'order1.cid')
@@ -108,13 +109,13 @@ class HomeController extends Controller
                          ->where('customers.identity', 0)
                          ->join('customers', 'customers.id', 'order1.cid')
                          ->count();
-                         
+
         $todayAssetCheckNotZero = AssetCheck::where('customers.identity', '!=', 0)
                                 ->where('asset_check.status', 1)
                                 ->whereDate('asset_check.created_at', Carbon::now()->today())
                                 ->join('customers', 'customers.id', 'asset_check.userid')
                                 ->sum('asset_check.amount');
-                        
+
         $balanceCheckNotzero = BalanceCheck::where('customers.identity', '!=', 0)
                                 ->where('balance_check.status', 1)
                                 ->whereDate('balance_check.created_at', now()->today())
@@ -144,7 +145,13 @@ class HomeController extends Controller
                                   ->join('customers', 'customers.id', 'financial_platform_coin.userid')
                                   ->sum('financial_platform_coin.amount');
 
-        return view('satistatics', compact( 'order1', 'customer', 'assetCheck', 'balanceCheck', 'todayCustomer', 'todayOrder', 'todayAssetCheck', 'interest', 'yesterdayOrder1', 'tomorrowInterest','tomorrowInterestFlag', 'team', 'customerOrder1', 'yesterdayCustomerOrder1', 'weekOrder1', 'monthOrder1', 'todayAssetCheckNotZero', 'balanceCheckNotzero', 'todayOrderCustomer', 'customerAssetCheck', 'customerBalanceCheck', 'customerByPlatformCoin', 'financialPlatformCoin'));
+        $todayfinancialAsset = FinancialAsset::where('financial_type', 1)
+                            ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                            ->sum('amount');
+
+        $financialAsset = FinancialAsset::where('financial_type', 1)->sum('amount');
+
+        return view('satistatics', compact( 'order1', 'customer', 'assetCheck', 'balanceCheck', 'todayCustomer', 'todayOrder', 'todayAssetCheck', 'interest', 'yesterdayOrder1', 'tomorrowInterest','tomorrowInterestFlag', 'team', 'customerOrder1', 'yesterdayCustomerOrder1', 'weekOrder1', 'monthOrder1', 'todayAssetCheckNotZero', 'balanceCheckNotzero', 'todayOrderCustomer', 'customerAssetCheck', 'customerBalanceCheck', 'customerByPlatformCoin', 'financialPlatformCoin','todayfinancialAsset','financialAsset'));
     }
 
     /**
