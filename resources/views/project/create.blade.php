@@ -275,6 +275,10 @@
                 lang: 'zh-CN'
             });
 
+            $('.return_mode').change(function(){
+                $('.days').val('');
+            })
+
             $(".days").keyup(function(){
                 var days = $(this).val();
                 var return_mode  = $(".return_mode").val();
