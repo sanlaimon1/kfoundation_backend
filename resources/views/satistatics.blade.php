@@ -172,6 +172,45 @@
                 </div>
             </div>
             <div class="card bg-secondary text-white">
+                <div class="card-header">今日复投</div>
+                <div class="card-body">
+                    0
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card bg-primary text-white">
+                <div class="card-header">总复投</div>
+                <div class="card-body">
+                    0
+                </div>
+            </div>
+            <div class="card bg-success text-white">
+                <div class="card-header">&nbsp;</div>
+                <div class="card-body">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="card bg-danger text-white">
+                <div class="card-header">&nbsp;</div>
+                <div class="card-body">
+                    
+                </div>
+            </div>
+            <div class="card bg-info text-white">
+                <div class="card-header">&nbsp;</div>
+                <div class="card-body">
+                    
+                </div>
+            </div>
+            <div class="card bg-warning text-white">
+                <div class="card-header">&nbsp;</div>
+                <div class="card-body">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="card bg-secondary text-white">
                 <div class="card-header">&nbsp;</div>
                 <div class="card-body">
                     &nbsp;
