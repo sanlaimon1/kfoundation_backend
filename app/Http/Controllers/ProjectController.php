@@ -128,7 +128,7 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => "required"
+            "project_scale" => ['required', 'numeric', 'gte:0']
         ]);
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
@@ -295,7 +295,7 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => "required"
+            "project_scale" => ['required', 'numeric', 'gte:0']
         ]);
 
         if($request->hasFile('litpic')){
