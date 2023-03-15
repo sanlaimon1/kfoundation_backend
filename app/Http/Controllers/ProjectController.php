@@ -148,7 +148,21 @@ class ProjectController extends Controller
             $project->like_rate = $request->like_rate;
             $project->benefit_rate  = $request->benefit_rate;
             $project->fake_process  = $request->fake_process;
-            $project->days  = $request->days;
+
+            if($request->return_mode == 3){
+
+                $project->weeks  = $request->days;
+
+            } else if($request->return_mode == 4){
+
+                $project->months  = $request->days;
+
+            } else {
+
+                $project->days  = $request->days;
+
+            }
+             
             $project->min_invest  = $request->min_invest;
             $project->max_invest  = $request->max_invest;
             $project->max_times  = $request->max_time;
