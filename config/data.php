@@ -28,7 +28,7 @@ return [
         '网站信息'=>'/website','首页弹窗设置'=>'/windowhomepage', '支付设置'=>'/payment',
         '系统图片设置'=>'/slide', 'APP版本设置'=>'/version', '合同设置'=>'/agreement', '短信参数设置'=>'/sms',
         '管理员操作日志'=>'/log','系统日志'=>'/syslog','用户登录日志'=>'/loginlog',
-        '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers' , "权限表" => '/permission'
+        '访问权限管理'=>'/role', '系统用户管理'=>'/sysusers' , "权限表" => '/permission', "IP黑名单" => '/blockip'
     ],
 
     //支付类型  1 加密货币 2 支付宝 3 微信 4 银行卡
