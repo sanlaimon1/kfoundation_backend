@@ -126,7 +126,7 @@ class ProjectController extends Controller
             "is_homepage" => ['required', 'integer', 'in:0,1'],
             "is_recommend" => ['required', 'integer', 'in:0,1'],
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
-            "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+            "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
             "project_scale" => "required"
         ]);
@@ -134,6 +134,8 @@ class ProjectController extends Controller
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
             $litpic = '/images/project_imgs/'.$litpic;
+        } else {
+            $litpic = '';
         }
         $detail = trim( htmlspecialchars( $request->detail ));
         DB::beginTransaction();

@@ -95,6 +95,7 @@ class ArticleController extends Controller
                 'categoryid' => ['required', 'integer', 'exists:categories,id'],
                 'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
                 'sort' => ['required', 'integer', 'gt:0'],
+                'shown' => 'required',
             ]);
 
             $litpic = '/images/default.png';
@@ -118,6 +119,7 @@ class ArticleController extends Controller
                 $newarticle->categoryid = $categoryid;
                 $newarticle->sort  = $sort;
                 $newarticle->litpic  = $litpic;
+                $newarticle->shown = $request->shown;
                 $newarticle->adminid = Auth::id();
 
                 if(!$newarticle->save())
@@ -209,6 +211,7 @@ class ArticleController extends Controller
                 'categoryid' => ['required', 'integer', 'exists:categories,id'],
                 'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
                 'sort' => ['required', 'integer', 'gt:0'],
+                'shown' => 'required',
             ]);
 
             if($request->hasFile('litpic')){
@@ -234,6 +237,7 @@ class ArticleController extends Controller
                 $newarticle->sort  = $sort;
                 $newarticle->litpic  = $litpic;
                 $newarticle->categoryid = $categoryid;
+                $newarticle->shown = $request->shown;
 
                 if(!$newarticle->save())
                     throw new \Exception('事务中断3');

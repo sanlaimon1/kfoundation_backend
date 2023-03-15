@@ -174,6 +174,26 @@
                     </div>
 
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="shown" class="form-label">标题</label>
+                        @error('shown')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select name="shown"  class="form-select" id="">
+                            <option value="1">显示</option>
+                            <option value="0">隐藏</option>
+                        </select>
+                    </div>
+               
+                    <div class="col-md-6">
+                        <label for="created_at" class="form-label">标题</label>
+                        @error('created_at')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="datetime-local" class="form-control" id="created_at" name="created_at" placeholder="添加时间" value="">
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="mb-3">
@@ -197,10 +217,20 @@
     @include('loading')
     @include('modal')
     <script>
+        const dateInput = document.getElementById('add_time');
         $(document).ready(function() {
             $('#summernote').summernote({
                 lang: 'zh-CN'
             });
+
+            dateInput.addEventListener('change',function()
+            {
+                const dateTimeString = dateInput.value;
+                console.log(dateTimeString);
+                const formattedDateTimeString = dateTimeString.replace("T", " ").replace(/\.\d{3}Z/, "");
+                $("#add_time_formatted").val(formattedDateTimeString);
+
+            })
         });
     </script>
 </body>
