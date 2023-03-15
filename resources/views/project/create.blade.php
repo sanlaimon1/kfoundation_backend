@@ -65,14 +65,14 @@
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="guarantee" class="form-label">担保机构</label>
+                        <label for="guarantee" class="form-label">担保机构（描述）</label>
                         @error('guarantee')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="guarantee" name="guarantee" placeholder="" >
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="risk" class="form-label">投资零风险</label>
+                        <label for="risk" class="form-label">投资零风险（描述）</label>
                         @error('risk')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -122,7 +122,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="team_rate" class="form-label">团购收益率</label>
+                        <label for="team_rate" class="form-label">团购收益率（％）</label>
                         @error('team_rate')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -132,7 +132,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="like_rate" class="form-label">拼赞收益率</label>
+                        <label for="like_rate" class="form-label">拼赞收益率（％）</label>
                         @error('like_rate')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -149,7 +149,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="benefit_rate" class="form-label">收益率</label>
+                        <label for="benefit_rate" class="form-label">收益率（％）</label>
                         @error('benefit_rate')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -166,7 +166,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="days" class="form-label">周期</label>
+                        <label for="days" class="form-label days_label">周期 (天)</label>
                         @error('days')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -277,6 +277,16 @@
 
             $('.return_mode').change(function(){
                 $('.days').val('');
+                var return_mode = $(this).val();
+                if(return_mode == 1){
+                    $('.days_label').text('周期 (天)')
+                } else if(return_mode == 3) {
+                    $('.days_label').text('周期 (周)')
+                }else if(return_mode == 4) {
+                    $('.days_label').text('周期 (月)')
+                } else {
+                    $('.days_label').text('周期 (天)')
+                }
             })
 
             $(".days").keyup(function(){
