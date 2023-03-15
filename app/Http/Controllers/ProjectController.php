@@ -89,10 +89,8 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -127,14 +125,11 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => 'required',
         ]);
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
             $litpic = '/images/project_imgs/'.$litpic;
-        } else {
-            $litpic = '';
         }
         $detail = trim( htmlspecialchars( $request->detail ));
         DB::beginTransaction();
@@ -177,7 +172,6 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
-            $project->project_scale = $request->project_scale;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -257,10 +251,8 @@ class ProjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -293,7 +285,6 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => 'required',
         ]);
 
         if($request->hasFile('litpic')){
@@ -328,7 +319,6 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
-            $project->project_scale = $request->project_scale;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');
@@ -365,10 +355,8 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));

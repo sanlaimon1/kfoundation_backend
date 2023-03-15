@@ -220,11 +220,11 @@ class PaymentController extends Controller
             }
 
         } else if($ptype == 4) {
-            $request->validate([
-                'bank' => ['required', 'string', 'max:30'],
-                'bank_name' => ['required', 'string', 'max:10'],
-                'bank_account' => ['required', 'string', 'between:16,19'],
-            ]);
+            // $request->validate([
+            //     'bank' => ['required', 'string', 'max:30'],
+            //     'bank_name' => ['required', 'string', 'max:10'],
+            //     'bank_account' => ['required', 'string', 'between:16,19'],
+            // ]);
 
             $bank = trim( $request->get('bank') );
             $bank_name = trim( $request->get('bank_name') );

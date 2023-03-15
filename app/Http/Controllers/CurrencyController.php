@@ -58,10 +58,8 @@ class CurrencyController extends Controller
      */
     public function store(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -158,10 +156,8 @@ class CurrencyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -236,10 +232,8 @@ class CurrencyController extends Controller
      */
     public function destroy(Request $request,string $id)
     {
-        if (Redis::exists("permission:".Auth::id())){
-            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
-            return json_encode( $arr );
-        }
+        if (Redis::exists("permission:".Auth::id())) 
+            return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
