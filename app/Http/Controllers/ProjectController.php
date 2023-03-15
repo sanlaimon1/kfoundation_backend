@@ -114,14 +114,14 @@ class ProjectController extends Controller
             "return_mode" => ['required', 'integer'],
             "amount" => "required",
             "is_given" => ['required', 'integer', 'in:0,1'],
-            "team_rate" => "required",
-            "like_rate" => "required",
-            "benefit_rate" => "required",
-            "fake_process" => "required",
-            "days" => "required",
-            "min_invest" => "required",
-            "max_invest" => "required",
-            "max_time" => "required",
+            "team_rate" => ['required', 'numeric', 'gte:0'],
+            "like_rate" => ['required', 'numeric', 'gte:0'],
+            "benefit_rate" => ['required', 'numeric', 'gte:0'],
+            "fake_process" => ['required', 'numeric', 'gte:0'],
+            "days" => ['required', 'integer', 'gt:0'],
+            "min_invest" => ['required', 'numeric', 'gte:0'],
+            "max_invest" => ['required', 'numeric', 'gte:0'],
+            "max_time" => ['required', 'numeric', 'gte:0'],
             "desc" => ['required', 'string', 'max:100'],
             "is_homepage" => ['required', 'integer', 'in:0,1'],
             "is_recommend" => ['required', 'integer', 'in:0,1'],
@@ -168,7 +168,7 @@ class ProjectController extends Controller
                 $project->days  = $request->days;
 
             }
-             
+
             $project->min_invest  = $request->min_invest;
             $project->max_invest  = $request->max_invest;
             $project->max_times  = $request->max_time;
@@ -282,13 +282,13 @@ class ProjectController extends Controller
             "usage" => ['required', 'string', 'max:45'],
             "amount" => "required",
             "is_given" => ['required', 'integer', 'in:0,1'],
-            "team_rate" => "required",
-            "like_rate" => "required",
-            "benefit_rate" => "required",
-            "fake_process" => "required",
-            "min_invest" => "required",
-            "max_invest" => "required",
-            "max_time" => "required",
+            "team_rate" => ['required', 'numeric', 'gte:0'],
+            "like_rate" => ['required', 'numeric', 'gte:0'],
+            "benefit_rate" => ['required', 'numeric', 'gte:0'],
+            "fake_process" => ['required', 'numeric', 'gte:0'],
+            "min_invest" => ['required', 'numeric', 'gte:0'],
+            "max_invest" => ['required', 'numeric', 'gte:0'],
+            "max_time" => ['required', 'numeric', 'gte:0'],
             "desc" => ['required', 'string', 'max:100'],
             "is_homepage" => ['required', 'integer', 'in:0,1'],
             "is_recommend" => ['required', 'integer', 'in:0,1'],
