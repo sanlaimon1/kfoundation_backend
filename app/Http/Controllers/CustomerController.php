@@ -87,8 +87,10 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -229,8 +231,10 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
@@ -313,8 +317,10 @@ class CustomerController extends Controller
      */
     public function destroy(Request $request,string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
@@ -409,8 +415,10 @@ class CustomerController extends Controller
      */
     public function kick(Request $request, string $id) 
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
@@ -470,8 +478,10 @@ class CustomerController extends Controller
     //存儲密碼1
     public function customer_password1(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -523,8 +533,10 @@ class CustomerController extends Controller
     //存儲密碼2
     public function customer_password2(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -587,8 +599,10 @@ class CustomerController extends Controller
     //存儲財務餘額
     public function charge_financial_balance(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -651,8 +665,10 @@ class CustomerController extends Controller
     //儲存金融資產
     public function charge_financial_asset(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -713,8 +729,10 @@ class CustomerController extends Controller
     //門店財務整合
     public function charge_financial_integration(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -776,8 +794,10 @@ class CustomerController extends Controller
     //存儲金融平台幣
     public function charge_financial_platform_coin(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -847,8 +867,10 @@ class CustomerController extends Controller
     //門店提款餘額
     public function withdraw_financial_balance(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -910,8 +932,10 @@ class CustomerController extends Controller
     //存入和提取金融資產
     public function withdraw_financial_asset(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -973,8 +997,10 @@ class CustomerController extends Controller
     //商店撤回財務整合
     public function withdraw_financial_integration(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -1037,8 +1063,10 @@ class CustomerController extends Controller
     //商店取款金融平台幣
     public function withdraw_financial_platform_coin(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
