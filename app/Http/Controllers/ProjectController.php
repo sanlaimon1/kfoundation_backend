@@ -338,9 +338,9 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 存储条目 ';
+            $newlog->action ='管理员' . $username . ' 添加项目';
             $newlog->ip = $request->ip();
-            $newlog->route = 'project.store';
+            $newlog->route = 'project.update';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
