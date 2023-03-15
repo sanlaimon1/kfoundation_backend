@@ -178,8 +178,10 @@
                             <span class="mt-5 pt-5">{{$project->weeks}} (周)</span>
                         @elseif($project->return_mode == 4)
                             <span class="mt-5 pt-5">{{$project->months}} (月)  </span>
+                        @elseif($project->return_mode == 1)
+                            <span class="mt-5 pt-5">{{$project->days}} * 24 （小时）</span>
                         @else
-                            <span class="mt-5 pt-5">{{$project->days}} （天）</span>
+                            <span class="mt-5 pt-5">{{$project->days}} (天)</span>
                         @endif
                     </div>
                     <div class="col-md-6 mb-3">
