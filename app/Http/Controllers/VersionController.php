@@ -102,8 +102,10 @@ class VersionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -131,8 +133,8 @@ class VersionController extends Controller
              //查询一条数据
             $one_config = Config::find($id);
             $one_config->config_value = $config_value;
-            $one_config->save();
-            if(!$one_config->delete())
+            // $one_config->save();
+            if(!$one_config->update())
                 throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
