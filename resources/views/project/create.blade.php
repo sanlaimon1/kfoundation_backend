@@ -95,7 +95,7 @@
                         @error('return_mode')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <select id="return_mode" name="return_mode"  class="form-select" >
+                        <select id="return_mode" name="return_mode"  class="form-select return_mode" >
                             @foreach( $return_modes as $key=>$return_mode)
                             <option value="{{ $key }}" <?=($key==2) ? 'selected' : '' ?>> {{ $return_mode }} </option>
                             @endforeach
@@ -170,7 +170,7 @@
                         @error('days')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="days" name="days" placeholder="" >
+                        <input type="text" class="form-control days" id="days" name="days" placeholder="" >
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="min_invest" class="form-label">最小投资金额</label>
@@ -274,6 +274,15 @@
             $('#detail').summernote({
                 lang: 'zh-CN'
             });
+
+            $(".days").keyup(function(){
+                var days = $(this).val();
+                var return_mode  = $(".return_mode").val();
+                if(return_mode == 1 && days > 1){
+                    alert("按小时计算，天数最多1天");
+                    $('.days').val(1);
+                }
+            })
         });
     </script>
 </body>

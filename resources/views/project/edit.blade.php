@@ -95,11 +95,13 @@
                         @error('return_mode')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <select id="return_mode" name="return_mode"  class="form-select" >
+                        <br>
+                        <!-- <select id="return_mode" name="return_mode"  class="form-select" >
                             @foreach( $return_modes as $key=>$return_mode)
                             <option value="{{ $key }}" {{$key == $project->return_mode ? 'selected' : '' }}> {{ $return_mode }} </option>
                             @endforeach
-                        </select>
+                        </select> -->
+                        <span class="mt-5 pt-5">{{ $return_modes[$project->return_mode] }}</span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="amount" class="form-label">购买金额</label>
@@ -167,10 +169,12 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="days" class="form-label">周期</label>
+                        <br>
                         @error('days')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="days" name="days" value="{{$project->days}}" >
+                        <!-- <input type="text" class="form-control" id="days" name="days" value="{{$project->days}}" > -->
+                        <span class="mt-5 pt-5">{{$project->days}}</span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="min_invest" class="form-label">最小投资金额</label>
