@@ -16,6 +16,9 @@
     <link href="/css/summernote.min.css" rel="stylesheet">
     <script src="/js/summernote.min.js"></script>
     <script src="/js/summernote-zh-CN.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
+    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
 </head>
 
 <body>
