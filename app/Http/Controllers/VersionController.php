@@ -131,8 +131,8 @@ class VersionController extends Controller
              //查询一条数据
             $one_config = Config::find($id);
             $one_config->config_value = $config_value;
-            $one_config->save();
-            if(!$one_config->delete())
+            // $one_config->save();
+            if(!$one_config->update())
                 throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
