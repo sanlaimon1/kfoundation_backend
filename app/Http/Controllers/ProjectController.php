@@ -127,6 +127,7 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
+            "project_scale" => 'required',
         ]);
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
@@ -176,6 +177,7 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
+            $project->project_scale = $request->project_scale;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -291,6 +293,7 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
+            "project_scale" => 'required',
         ]);
 
         if($request->hasFile('litpic')){
@@ -325,6 +328,7 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
+            $project->project_scale = $request->project_scale;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');

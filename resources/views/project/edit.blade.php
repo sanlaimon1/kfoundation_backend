@@ -270,7 +270,7 @@
                         @error('detail')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea type="text" class="form-control" id="detail" name="detail" value="" > {{html_entity_decode($project->details)}}</textarea>
+                        <textarea type="text" class="form-control" id="detail" name="detail" value="" > {{ html_entity_decode($project->details) }}</textarea>
                     </div>
                 </div>
                 
