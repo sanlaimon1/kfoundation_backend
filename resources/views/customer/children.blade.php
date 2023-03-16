@@ -4,6 +4,15 @@
         <tr>
             <td>{{ $one->id }}</td>
             <td>{{ $one->phone }}</td>
+            @if ($one->is_sheep == 1)
+            <td>
+                <button class="btn-sm text-white bg-danger" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+            </td>
+            @else
+            <td>
+                <button class="btn-sm text-white bg-success" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+            </td>
+            @endif
             <td>{{ $one->realname }}</td>
             <td>{{ $one->customerExtra()->got_interest }}</td>
             <td>{{ $one->balance }}</td>
