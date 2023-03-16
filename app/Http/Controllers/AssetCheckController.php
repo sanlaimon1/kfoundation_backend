@@ -13,6 +13,8 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Permission;
+use App\Models\TeamExtra;
+use App\Models\Teamlevel;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 
@@ -194,10 +196,11 @@ class AssetCheckController extends Controller
 
                 //10, 维护团队总充值字段的数据 就是本人总提现
             $one_extra = CustomerExtra::where('userid', $userid)->first();
+           
             $one_extra->charge = $one_extra->charge + $one->amount;
             if (!$one_extra->save())
                 throw new \Exception('事务中断5');
-
+            
             //5，检测会员等级是否升级
             $total_recharge = $one_extra->charge;  //个人总充值
             $level_id = $one_user->level_id;       //当前会员等级
@@ -217,6 +220,7 @@ class AssetCheckController extends Controller
 
             //11, 维护团队总充值字段的数据
             $team_extra = TeamExtra::where('userid', $userid)->first();
+            dd($team_extra);
             $team_extra->charge = $team_extra->charge_total + $one->amount;
             if (!$team_extra->save())
                 throw new \Exception('事务中断7');
@@ -235,12 +239,13 @@ class AssetCheckController extends Controller
             $accumulative_amount = $higher_team->accumulative_amount;   //累计奖金界限
             if( ($team_members>$spread_members_num) && ($sub_leaders>$spread_leaders_num) && ($charge_total>$accumulative_amount) )
             {
-                $customer->team_id = $higher_team->id;
-                if( !$customer->save() )
+                $one_user->team_id = $higher_team->id;
+                if( !$one_user->save() )
                     throw new \Exception('事务中断8');
             }
             //7，检测本级团队是否获得团队奖   奖励到余额
-            $current_team = Teamlevel::find( $customer->team_id );
+            $current_team = Teamlevel::find( $one_user->team_id );
+            dd($current_team);
             if($current_team->is_given===1) {
                 $team_award = $current_team->team_award;
                 $award_amount = round($one->amount * $team_award / 100, 2);
