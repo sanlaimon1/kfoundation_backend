@@ -84,13 +84,13 @@
                     <td>{{ $one->level->level_name }}</td>
                     <td>{{ $one->getParentName(); }}</td>
                     <td>
-                        <a class="btn-sm btn-primary" href="{{ route('customer.modify_pass', ['id'=>$one->id]) }}">修改密码</a>
-                        <a class="btn-sm btn-success" href="{{ route('customer.charge', ['id'=>$one->id]) }}">上分</a>
-                        <a class="btn-sm btn-primary" href="{{ route('customer.withdrawal', ['id'=>$one->id]) }}">下分</a>
-                        <a class="btn-sm btn-danger" href="{{ route('customer.kickout', ['id'=>$one->id]) }}">踢出</a>
-                        <a class="btn-sm btn-success" href="{{ route('customer.team', ['id'=>$one->id]) }}">查看团队</a>
-                        <a class="btn-sm btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
-                        <a class="btn-sm btn-warning" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
+                        <a class="btn-sm btn-primary text-decoration-none" href="{{ route('customer.modify_pass', ['id'=>$one->id]) }}">修改密码</a>
+                        <a class="btn-sm btn-success text-decoration-none" href="{{ route('customer.charge', ['id'=>$one->id]) }}">上分</a>
+                        <a class="btn-sm btn-primary text-decoration-none" href="{{ route('customer.withdrawal', ['id'=>$one->id]) }}">下分</a>
+                        <a class="btn-sm btn-danger text-decoration-none" href="{{ route('customer.kickout', ['id'=>$one->id]) }}">踢出</a>
+                        <a class="btn-sm btn-success text-decoration-none" href="{{ route('customer.team', ['id'=>$one->id]) }}">查看团队</a>
+                        <a class="btn-sm btn-primary text-decoration-none" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
+                        <a class="btn-sm btn-warning text-decoration-none" href="{{ route('customer.edit', ['customer'=>$one->id]) }}">编辑</a>
                         <form action="{{ route('customer.destroy', ['customer'=>$one->id]) }}"
                          method="post"  onsubmit="javascript:return del()" class="d-inline-block">
                             {{ csrf_field() }}
