@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\AssetCheck;
 use App\Models\BalanceCheck;
 use App\Models\Customer;
+use App\Models\CustomerExtra;
 use App\Models\FinancialAsset;
+use App\Models\Level;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -376,35 +378,35 @@ class AssetCheckController extends Controller
                 if (!$one->save())
                     throw new \Exception('事务中断5');
 
-            $asset_check = AssetCheck::where('status', "=", 0)->get();
-            Redis::set('asset_check_status', $asset_check->count());
+                $asset_check = AssetCheck::where('status', "=", 0)->get();
+                Redis::set('asset_check_status', $asset_check->count());
 
-            $username = Auth::user()->username;
-            //添加管理员日志
-            $newlog = new Log;
-            $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核拒绝';
-            $newlog->ip = $request->ip();
-            $newlog->route = 'charge.destory';
-            $newlog->parameters = json_encode($request->all());
-            $newlog->created_at = date('Y-m-d H:i:s');
-            if (!$newlog->save())
-                throw new \Exception('事务中断6');
+                $username = Auth::user()->username;
+                //添加管理员日志
+                $newlog = new Log;
+                $newlog->adminid = Auth::id();
+                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核拒绝';
+                $newlog->ip = $request->ip();
+                $newlog->route = 'charge.destory';
+                $newlog->parameters = json_encode($request->all());
+                $newlog->created_at = date('Y-m-d H:i:s');
+                if (!$newlog->save())
+                    throw new \Exception('事务中断6');
 
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                $errorMessage = $e->getMessage();
-                return $errorMessage;
-                //return '审核通过错误，事务回滚';
-            }
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    /**
+                     * $errorMessage = $e->getMessage();
+                     * $errorCode = $e->getCode();
+                     * $stackTrace = $e->getTraceAsString();
+                     */
+                    $errorMessage = $e->getMessage();
+                    return $errorMessage;
+                    //return '审核通过错误，事务回滚';
+                }
 
-            return redirect()->route('charge.show', ['charge' => $id]);
+                return redirect()->route('charge.show', ['charge' => $id]);
     }
 
     public function charge_search(Request $request)
