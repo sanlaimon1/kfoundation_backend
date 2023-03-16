@@ -220,8 +220,7 @@ class AssetCheckController extends Controller
 
             //11, 维护团队总充值字段的数据
             $team_extra = TeamExtra::where('userid', $userid)->first();
-            dd($team_extra);
-            $team_extra->charge = $team_extra->charge_total + $one->amount;
+            $team_extra->charge_total = $team_extra->charge_total + $one->amount;
             if (!$team_extra->save())
                 throw new \Exception('事务中断7');
 
