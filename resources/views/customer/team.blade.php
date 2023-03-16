@@ -93,11 +93,11 @@
                     <td>{{ $one->phone }}</td>
                     @if ($one->is_sheep == 1)
                     <td>
-                        <button class="btn-sm text-white bg-danger change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+                        <button class="btn-sm text-white bg-danger" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
                     </td>
                     @else
                     <td>
-                        <button class="btn-sm text-white bg-success change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+                        <button class="btn-sm text-white bg-success" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
                     </td>
                    @endif
                     <td>{{ $one->realname }}</td>
@@ -158,7 +158,7 @@
                     locale: "zh"       // 使用中文语言
                 });
 
-                $("tbody").on("click",".change_btn",function(){
+                $("tbody").on("click","#change_btn",function(){
                     var id=$(this).data("id");
                     var is_sheep=$(this).data("status");
 
@@ -166,7 +166,7 @@
                                 "id":id,
                                 "is_sheep":is_sheep,
                     };
-
+                    $('.loading').show();
                     $.ajax({
                         url : "/change_sheep",
                         dataType : "json",
@@ -174,7 +174,8 @@
                         data: data,
                         success : function(response){
                             if(response){
-                                console.log(response.message);
+                                //console.log(response.message);
+                                $('.loading').hide();
                                 window.location.reload();
                             }
                         }
