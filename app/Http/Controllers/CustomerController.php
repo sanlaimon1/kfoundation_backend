@@ -95,7 +95,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -240,7 +240,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -327,7 +327,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -372,7 +372,7 @@ class CustomerController extends Controller
     {
         $fid = $request->fid;
         $phone = $request->phone;
-        
+
         $date_string = $request->created_at;
         $date_parts = explode('至', $date_string);
         $start_date = trim($date_parts[0]);
@@ -416,7 +416,7 @@ class CustomerController extends Controller
     /**
      * 踢出逻辑  kick logic
      */
-    public function kick(Request $request, string $id) 
+    public function kick(Request $request, string $id)
     {
         if (Redis::exists("permission:".Auth::id())){
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
@@ -426,7 +426,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(),config('app.redis_second'));
-            
+
             $id = (int)$id;
             $one = Customer::find($id);
 
@@ -490,7 +490,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'password' => 'required|confirmed',
                 'password_confirmation' => 'required|same:password',
@@ -546,7 +546,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'password2' => 'required|confirmed',
                 'password2_confirmation' => 'required|same:password2',
@@ -613,7 +613,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'financial_balance_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -745,7 +745,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'financial_integration_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -811,7 +811,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'financial_platform_coin_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -885,7 +885,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'withdraw_balance_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -951,7 +951,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'withdraw_asset_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -1017,7 +1017,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'withdraw_integration_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -1084,7 +1084,7 @@ class CustomerController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $request->validate([
                 'withdraw_platform_coin_amount' => ['required', 'numeric', 'gt:0']
             ]);
@@ -1200,5 +1200,23 @@ class CustomerController extends Controller
         $count_children = count($children);
 
         return view('customer.team_search',  compact('members', 'one_team', 'one_team_extra', 'count_children'));
+    }
+
+    public function change_sheep(Request $request)
+    {
+        //dd($request);
+        $id = $request->id;
+        $is_sheep = $request->is_sheep;
+        $customer = Customer::find($id);
+        if($is_sheep == 1){
+            $customer->is_sheep = 0;
+        }else{
+            $customer->is_sheep = 1;
+        }
+        $customer->save();
+
+        return response()->json([
+            'message' => "change sheep successfully"
+        ]);
     }
 }

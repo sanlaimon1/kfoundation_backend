@@ -75,6 +75,7 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">用户名</th>
+                    <th scope="col">羊毛</th>
                     <th scope="col">姓名</th>
                     <th scope="col">总收益</th>
                     <th scope="col">余额</th>
@@ -88,6 +89,9 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
+                    <td class="text-white  <?= $one->is_sheep==1 ? 'bg-danger' : 'bg-success' ?>">
+                        <?= $one->is_sheep==1 ? '是' : '否' ?>
+                    </td>
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->customerExtra()->got_interest }}</td>
                     <td>{{ $one->balance }}</td>
@@ -95,9 +99,9 @@
                     <td><?= $one->is_sure==1 ? '<span style="color:green;">已认证</span>' : '<span style="color:red;">未认证</span>' ?></td>
                     <td>
                         @if($one->customerExtra()->all_children_ids!=null or $one->customerExtra()->all_children_ids!='')
-                        <button class="btn btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
+                        <button class="btn-sm btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
                         @endif
-                        <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
+                        <a class="btn-sm btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                     </td>
                 </tr>
                 <!-- 查询下级动态数据 query child customers with dynamic datas //start -->

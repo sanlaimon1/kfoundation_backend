@@ -150,3 +150,6 @@ Route::resource('currency', 'App\Http\Controllers\CurrencyController');
 
 //IP黑名单
 Route::resource('blockip','App\Http\Controllers\BlockipController');
+
+//is_sheep
+Route::post('/change_sheep','App\Http\Controllers\CustomerController@change_sheep')->name('change_sheep');

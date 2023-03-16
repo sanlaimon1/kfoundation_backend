@@ -46,9 +46,9 @@
                 <li class="breadcrumb-item active" aria-current="page">查看团队</li>
             </ol>
         </nav>
-        
+
         <nav class="row">
-           
+
             <div class="col-6">
                 <form action="{{route('team_search')}}" method="POST" >
                     @csrf
@@ -71,12 +71,13 @@
             </div>
 
         </nav>
-        
+
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">用户名</th>
+                    <th scope="col">羊毛</th>
                     <th scope="col">姓名</th>
                     <th scope="col">总收益</th>
                     <th scope="col">余额</th>
@@ -90,6 +91,15 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
+                    @if ($one->is_sheep == 1)
+                    <td>
+                        <button class="btn-sm text-white bg-danger change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+                    </td>
+                    @else
+                    <td>
+                        <button class="btn-sm text-white bg-success change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+                    </td>
+                   @endif
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->customerExtra()->got_interest }}</td>
                     <td>{{ $one->balance }}</td>
@@ -97,13 +107,13 @@
                     <td><?= $one->is_sure==1 ? '<span style="color:green;">已认证</span>' : '<span style="color:red;">未认证</span>' ?></td>
                     <td>
                         @if($one->customerExtra()->all_children_ids!=null or $one->customerExtra()->all_children_ids!='')
-                        <button class="btn btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
+                        <button class="btn-sm btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
                         @endif
-                        <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
+                        <a class="btn-sm btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}">查看会员</a>
                     </td>
                 </tr>
                 <!-- 查询下级动态数据 query child customers with dynamic datas //start -->
-                
+
                 <!-- 查询下级动态数据 query child customers with dynamic datas //end -->
                 @endforeach
             </tbody>
@@ -148,6 +158,28 @@
                     locale: "zh"       // 使用中文语言
                 });
 
+                $("tbody").on("click",".change_btn",function(){
+                    var id=$(this).data("id");
+                    var is_sheep=$(this).data("status");
+
+                    var data = {
+                                "id":id,
+                                "is_sheep":is_sheep,
+                    };
+
+                    $.ajax({
+                        url : "/change_sheep",
+                        dataType : "json",
+                        type: "POST",
+                        data: data,
+                        success : function(response){
+                            if(response){
+                                console.log(response.message);
+                                window.location.reload();
+                            }
+                        }
+                    })
+                });
                 $("#team_search").click(function(){
                     var adminid = $("#adminid").val();
                     var action = $("#action").val();
