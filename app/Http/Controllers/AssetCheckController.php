@@ -231,11 +231,12 @@ class AssetCheckController extends Controller
             $charge_total = $team_extra->charge_total;
             //查询下一个团队级别
             //获得高一级的团队信息
-            $higher_team = Teamlevel::where( 'tid', '>', $one_user->team_id )->orderBy('tid', 'asc')->first();
+            $higher_team = Teamlevel::where( 'tid', '>=', $one_user->team_id )->orderBy('tid', 'asc')->first();
             //直推会员得达到15个，直推的会员里得有2个以上的会员跟自己团队级别相同，累计充值金额得达到对应的等级
             $spread_members_num = $higher_team->spread_members_num;  //直推会员数量限制
             $spread_leaders_num = $higher_team->spread_leaders_num;  //直推会员里跟自己同级的
             $accumulative_amount = $higher_team->accumulative_amount;   //累计奖金界限
+            dd($spread_members_num,$spread_leaders_num,$accumulative_amount);
             if( ($team_members>$spread_members_num) && ($sub_leaders>$spread_leaders_num) && ($charge_total>$accumulative_amount) )
             {
                 $one_user->team_id = $higher_team->id;
@@ -244,7 +245,6 @@ class AssetCheckController extends Controller
             }
             //7，检测本级团队是否获得团队奖   奖励到余额
             $current_team = Teamlevel::find( $one_user->team_id );
-            dd($current_team);
             if($current_team->is_given===1) {
                 $team_award = $current_team->team_award;
                 $award_amount = round($one->amount * $team_award / 100, 2);
