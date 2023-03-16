@@ -190,11 +190,11 @@
                         <input type="text" class="form-control" id="description" name="description" placeholder="描述" value="{{ $one->description }}">
                     </div>
                     <div class="col-3 mb-3">
-                        <label for="rate" class="form-label">汇率(货币->美USDT)</label>
+                        <label for="rate" class="form-label">汇率(美USDT->货币)</label>
                         @error('rate')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="rate" name="rate" placeholder="汇率(货币->美USDT)" value="{{ $one->rate }}">
+                        <input type="text" class="form-control" id="rate" name="rate" placeholder="汇率(美USDT->货币)" value="{{ $one->rate }}">
                     </div>
                 </div>
 
@@ -253,11 +253,11 @@
                          value="<?= array_key_exists('bank_name', $extra) ? $extra['bank_name'] : '' ?>">
                 </div>
                 <div class="col-4 mb-3">
-                    <label for="bank_account" class="form-label">银行名称</label>
+                    <label for="bank_account" class="form-label">银行账号</label>
                     @error('bank_account')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
-                    <input type="text" class="form-control" id="bank_account" name="bank_account" placeholder="银行名称"
+                    <input type="text" class="form-control" id="bank_account" name="bank_account" placeholder="银行账号"
                          value="<?= array_key_exists('bank_account', $extra) ? $extra['bank_account'] : '' ?>">
                 </div>
             </div>
