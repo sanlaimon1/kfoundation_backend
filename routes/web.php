@@ -147,3 +147,6 @@ Route::resource('slide', 'App\Http\Controllers\SlideController');
 
 //币价管理
 Route::resource('currency', 'App\Http\Controllers\CurrencyController');
+
+//IP黑名单
+Route::resource('blockip','App\Http\Controllers\BlockipController');

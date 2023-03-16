@@ -89,8 +89,11 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -111,25 +114,28 @@ class ProjectController extends Controller
             "return_mode" => ['required', 'integer'],
             "amount" => "required",
             "is_given" => ['required', 'integer', 'in:0,1'],
-            "team_rate" => "required",
-            "like_rate" => "required",
-            "benefit_rate" => "required",
-            "fake_process" => "required",
-            "days" => "required",
-            "min_invest" => "required",
-            "max_invest" => "required",
-            "max_time" => "required",
+            "team_rate" => ['required', 'numeric', 'gte:0'],
+            "like_rate" => ['required', 'numeric', 'gte:0'],
+            "benefit_rate" => ['required', 'numeric', 'gte:0'],
+            "fake_process" => ['required', 'numeric', 'gte:0'],
+            "days" => ['required', 'integer', 'gt:0'],
+            "min_invest" => ['required', 'numeric', 'gte:0'],
+            "max_invest" => ['required', 'numeric', 'gte:0'],
+            "max_time" => ['required', 'numeric', 'gte:0'],
             "desc" => ['required', 'string', 'max:100'],
             "is_homepage" => ['required', 'integer', 'in:0,1'],
             "is_recommend" => ['required', 'integer', 'in:0,1'],
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
-            "litpic.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+            "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
+            "project_scale" => ['required', 'numeric', 'gte:0']
         ]);
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
             $litpic = '/images/project_imgs/'.$litpic;
+        } else {
+            $litpic = '';
         }
         $detail = trim( htmlspecialchars( $request->detail ));
         DB::beginTransaction();
@@ -162,7 +168,7 @@ class ProjectController extends Controller
                 $project->days  = $request->days;
 
             }
-             
+
             $project->min_invest  = $request->min_invest;
             $project->max_invest  = $request->max_invest;
             $project->max_times  = $request->max_time;
@@ -172,6 +178,7 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
+            $project->project_scale = $request->project_scale;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -251,8 +258,11 @@ class ProjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -270,23 +280,22 @@ class ProjectController extends Controller
             "guarantee" => ['required', 'string', 'max:45'],
             "risk" => ['required', 'string', 'max:45'],
             "usage" => ['required', 'string', 'max:45'],
-            "return_mode" => ['required', 'integer'],
             "amount" => "required",
             "is_given" => ['required', 'integer', 'in:0,1'],
-            "team_rate" => "required",
-            "like_rate" => "required",
-            "benefit_rate" => "required",
-            "fake_process" => "required",
-            "days" => "required",
-            "min_invest" => "required",
-            "max_invest" => "required",
-            "max_time" => "required",
+            "team_rate" => ['required', 'numeric', 'gte:0'],
+            "like_rate" => ['required', 'numeric', 'gte:0'],
+            "benefit_rate" => ['required', 'numeric', 'gte:0'],
+            "fake_process" => ['required', 'numeric', 'gte:0'],
+            "min_invest" => ['required', 'numeric', 'gte:0'],
+            "max_invest" => ['required', 'numeric', 'gte:0'],
+            "max_time" => ['required', 'numeric', 'gte:0'],
             "desc" => ['required', 'string', 'max:100'],
             "is_homepage" => ['required', 'integer', 'in:0,1'],
             "is_recommend" => ['required', 'integer', 'in:0,1'],
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
+            "project_scale" => ['required', 'numeric', 'gte:0']
         ]);
 
         if($request->hasFile('litpic')){
@@ -306,14 +315,12 @@ class ProjectController extends Controller
             $project->guarantee  = $request->guarantee;
             $project->risk  = $request->risk;
             $project->usage  = $request->usage;
-            $project->return_mode  = $request->return_mode;
             $project->amount  = $request->amount;
             $project->is_given  = $request->is_given;
             $project->team_rate  = $request->team_rate;
             $project->like_rate = $request->like_rate;
             $project->benefit_rate  = $request->benefit_rate;
             $project->fake_process  = $request->fake_process;
-            $project->days  = $request->days;
             $project->min_invest  = $request->min_invest;
             $project->max_invest  = $request->max_invest;
             $project->max_times  = $request->max_time;
@@ -323,6 +330,7 @@ class ProjectController extends Controller
             $project->level_id  = $request->level_id;
             $project->litpic = $litpic;
             $project->details = $detail;
+            $project->project_scale = $request->project_scale;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');
@@ -330,9 +338,9 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 存储条目 ';
+            $newlog->action ='管理员' . $username . ' 添加项目';
             $newlog->ip = $request->ip();
-            $newlog->route = 'project.store';
+            $newlog->route = 'project.update';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -359,8 +367,11 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));

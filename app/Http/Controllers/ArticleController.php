@@ -74,8 +74,11 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -92,6 +95,7 @@ class ArticleController extends Controller
                 'categoryid' => ['required', 'integer', 'exists:categories,id'],
                 'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
                 'sort' => ['required', 'integer', 'gt:0'],
+                'shown' => 'required',
             ]);
 
             $litpic = '/images/default.png';
@@ -115,6 +119,7 @@ class ArticleController extends Controller
                 $newarticle->categoryid = $categoryid;
                 $newarticle->sort  = $sort;
                 $newarticle->litpic  = $litpic;
+                $newarticle->shown = $request->shown;
                 $newarticle->adminid = Auth::id();
 
                 if(!$newarticle->save())
@@ -185,8 +190,11 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -203,6 +211,7 @@ class ArticleController extends Controller
                 'categoryid' => ['required', 'integer', 'exists:categories,id'],
                 'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
                 'sort' => ['required', 'integer', 'gt:0'],
+                'shown' => 'required',
             ]);
 
             if($request->hasFile('litpic')){
@@ -228,6 +237,7 @@ class ArticleController extends Controller
                 $newarticle->sort  = $sort;
                 $newarticle->litpic  = $litpic;
                 $newarticle->categoryid = $categoryid;
+                $newarticle->shown = $request->shown;
 
                 if(!$newarticle->save())
                     throw new \Exception('事务中断3');
@@ -262,8 +272,11 @@ class ArticleController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
-            return "10秒内不能重复提交";
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));

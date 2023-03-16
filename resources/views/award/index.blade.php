@@ -58,7 +58,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/award/' + dataid,
@@ -162,10 +162,10 @@
                 </label>
                 <div class="card-body">
                     <input class="form-control" id="item-{{ $balance_benefit->id }}" type="text" name="{{ $balance_benefit->award_name }}" value="{{ $balance_benefit->award_value }}" />
-                    <button class="btn btn-danger" data="{{ $balance_benefit->id }}">保存</button>
+                    <button class="btn btn-danger" data="{{ $balance_benefit->id }}">保存ggg</button>
                 </div>
             </div>
-            
+
         </div>
 
         <div class="row">
@@ -220,7 +220,7 @@
                     <button class="btn btn-danger" data="{{ $machine_rate->id }}">保存</button>
                 </div>
             </div>
-            
+
         </div>
 
 
