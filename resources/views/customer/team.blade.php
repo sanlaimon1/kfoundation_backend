@@ -58,7 +58,10 @@
                             <button type="submit" class="btn btn-success col-1 mx-3">搜索</button>
                         </div>
                 </form>
-
+            </div>
+            <div class="col-6">
+                <button class="btn btn-success mx-3 col-2" id="set">设置羊毛</button>
+                <button class="btn btn-primary mx-3" id="unset">取消设置羊毛</button>
             </div>
 
             <div class="col-6">
@@ -75,6 +78,7 @@
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
+                    <th scope="col"><input type="checkbox" id="check_all"></th>
                     <th scope="col">ID</th>
                     <th scope="col">用户名</th>
                     <th scope="col">羊毛</th>
@@ -89,7 +93,10 @@
             <tbody id="search_data">
                 @foreach ($members as $one)
                 <tr>
-                    <td>{{ $one->id }}</td>
+                    <td class="single_check">
+                        <input type="checkbox" class="row_checkbox" data-item-id="{{$one->id}}">
+                        {{ $one->id }}
+                    </td>
                     <td>{{ $one->phone }}</td>
 
                     <td class="sheep_column{{$one->id}}">
@@ -187,6 +194,90 @@
                         }
                     })
                 });
+
+                //check all data
+                const checkboxItems = document.querySelectorAll('input[type="checkbox"][data-item-id]');
+                $("thead").on('click', '#check_all', function()
+                {
+                    $("input[type=checkbox]").prop('checked',$(this).prop('checked'));
+                });
+
+                //set wool
+                $(document).on("click","#set", function()
+                {
+                    var isChecked = $("#check_all").prop("checked");
+                    const checkedItemIds = [];
+
+                    if(isChecked)
+                    {
+                        checkboxItems.forEach(item => {
+                            item.checked = true;
+                            checkedItemIds.push(item.getAttribute('data-item-id'));
+                        });
+
+                    }else
+                    {
+                        $('.row_checkbox:checked').each(function () {
+                            checkedItemIds.push($(this).data('item-id'));
+                        });
+
+                    }
+
+                    check_data = checkedItemIds;
+                    var data = { checkedItemIds: check_data };
+                    $('.loading').show();
+                    $.ajax({
+                            url : "/set_sheep",
+                            dataType : "json",
+                            type : "POST",
+                            data :  data,
+                            success : function (response) {
+                                if(response){
+                                    window.location.reload();
+                                    $('.loading').hide();
+                                }
+                            }
+                        });
+                });
+
+                //unset wool
+                $(document).on("click","#unset", function()
+                {
+                    var isChecked = $("#check_all").prop("checked");
+                    const checkedItemIds = [];
+
+                    if(isChecked)
+                    {
+                        checkboxItems.forEach(item => {
+                            item.checked = true;
+                            checkedItemIds.push(item.getAttribute('data-item-id'));
+                        });
+
+                    }else
+                    {
+                        $('.row_checkbox:checked').each(function () {
+                            checkedItemIds.push($(this).data('item-id'));
+                        });
+
+                    }
+
+                    check_data = checkedItemIds;
+                    var data = { checkedItemIds: check_data };
+                    $('.loading').show();
+                    $.ajax({
+                            url : "/unset_sheep",
+                            dataType : "json",
+                            type : "POST",
+                            data :  data,
+                            success : function (response) {
+                                if(response){
+                                    window.location.reload();
+                                    $('.loading').hide();
+                                }
+                            }
+                        });
+                });
+
                 $("#team_search").click(function(){
                     var adminid = $("#adminid").val();
                     var action = $("#action").val();

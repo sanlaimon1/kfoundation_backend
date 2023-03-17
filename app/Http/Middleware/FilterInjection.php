@@ -20,7 +20,7 @@ class FilterInjection
         if(!empty($input))
         {
              foreach( $input as $key=>$value ) {
-                 if( $key==='_token' or $key==='_method' or $key==='path_name' or $key==='config_value' or $key==='content')
+                 if( $key==='_token' or $key==='_method' or $key==='path_name' or $key==='config_value' or $key==='content' or $key==='checkedItemIds')
                      continue;
                  else
                  {
@@ -30,14 +30,14 @@ class FilterInjection
                      {
                          $arr = ['code'=>-30, 'message'=> $key . '里包含非法参数' . $value];
                          return response()->json( $arr );
-                     }    
-                        
+                     }
+
                  }
-                
+
              }
-            
+
         }
-        
+
         return $next($request);
     }
 }

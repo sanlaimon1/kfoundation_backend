@@ -153,3 +153,9 @@ Route::resource('blockip','App\Http\Controllers\BlockipController');
 
 //is_sheep
 Route::post('/change_sheep','App\Http\Controllers\CustomerController@change_sheep')->name('change_sheep');
+
+//set_sheep
+Route::post('/set_sheep','App\Http\Controllers\CustomerController@set_sheep')->name('set_sheep');
+
+//unset_sheep
+Route::post('/unset_sheep','App\Http\Controllers\CustomerController@unset_sheep')->name('unset_sheep');

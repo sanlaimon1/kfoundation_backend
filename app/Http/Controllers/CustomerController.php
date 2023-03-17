@@ -1221,4 +1221,24 @@ class CustomerController extends Controller
             "member" => $member,
         ]);
     }
+
+    public function set_sheep(Request $request)
+    {
+
+        $ids = $request->input('checkedItemIds');
+        $set_sheep = Customer::whereIn('id',$ids)->update(['is_sheep' => 1]);
+        return response()->json([
+            "message" => "set_sheep successfully"
+        ]);
+
+    }
+
+    public function unset_sheep(Request $request)
+    {
+        $ids = $request->input('checkedItemIds');
+        $set_sheep = Customer::whereIn('id',$ids)->update(['is_sheep' => 0]);
+        return response()->json([
+            "message" => "unset_sheep successfully"
+        ]);
+    }
 }
