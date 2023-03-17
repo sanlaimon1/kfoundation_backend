@@ -8,6 +8,7 @@ use App\Models\BalanceCheck;
 use App\Models\Customer;
 use App\Models\CustomerExtra;
 use App\Models\FinancialAsset;
+use App\Models\FinancialBalance;
 use App\Models\Level;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
@@ -236,22 +237,23 @@ class AssetCheckController extends Controller
             $spread_members_num = $higher_team->spread_members_num;  //直推会员数量限制
             $spread_leaders_num = $higher_team->spread_leaders_num;  //直推会员里跟自己同级的
             $accumulative_amount = $higher_team->accumulative_amount;   //累计奖金界限
-            dd($spread_members_num,$spread_leaders_num,$accumulative_amount);
+           
             if( ($team_members>$spread_members_num) && ($sub_leaders>$spread_leaders_num) && ($charge_total>$accumulative_amount) )
             {
-                $one_user->team_id = $higher_team->id;
+                $one_user->team_id = $higher_team->tid;
                 if( !$one_user->save() )
                     throw new \Exception('事务中断8');
             }
             //7，检测本级团队是否获得团队奖   奖励到余额
             $current_team = Teamlevel::find( $one_user->team_id );
+
             if($current_team->is_given===1) {
                 $team_award = $current_team->team_award;
                 $award_amount = round($one->amount * $team_award / 100, 2);
                 $after_balance = $one_user->balance + $award_amount;
                 
                 //添加余额流水记录  系统团队奖励
-                $one_financial_balance = new FinancialBalance;
+                $one_financial_balance = new FinancialBalance();
                 $one_financial_balance->userid = $one_user->id;
                 $one_financial_balance->amount = $award_amount;
                 $one_financial_balance->balance = $one_user->balance;
@@ -268,6 +270,7 @@ class AssetCheckController extends Controller
                     throw new \Exception('事务中断10');
             }
             
+            
             //先获得上级的id
             $parent_id = $one_user->parent_id;
             //8，检测上级团队等级是否升级
@@ -281,14 +284,15 @@ class AssetCheckController extends Controller
             $sub_leaders2 = $parent_team_extra->leaders;
             $charge_total2 = $parent_team_extra->charge_total;
             //获得高一级的团队信息
-            $higher_team2 = Teamlevel::where( 'tid', '>', $parent_user->team_id )->orderBy('tid', 'asc')->first();
+            $higher_team2 = Teamlevel::where( 'tid', '>=', $parent_user->team_id )->orderBy('tid', 'asc')->first();
+           
             //直推会员得达到15个，直推的会员里得有2个以上的会员跟自己团队级别相同，累计充值金额得达到对应的等级
             $spread_members_num2 = $higher_team2->spread_members_num;  //直推会员数量限制
             $spread_leaders_num2 = $higher_team2->spread_leaders_num;  //直推会员里跟自己同级的
             $accumulative_amount2 = $higher_team2->accumulative_amount;   //累计奖金界限
             if( ($team_members2>$spread_members_num2) && ($sub_leaders2>$spread_leaders_num2) && ($charge_total2>$accumulative_amount2) )
             {
-                $parent_user->team_id = $higher_team2->id;
+                $parent_user->team_id = $higher_team2->tid;
                 if( !$parent_user->save() )
                     throw new \Exception('事务中断12');
             }
@@ -299,7 +303,7 @@ class AssetCheckController extends Controller
                 $team_award = $parent_team->team_award;
                 $award_amount2 = round($one->amount * $team_award / 100, 2);
                 $after_balance2 = $parent_user->balance + $award_amount2;
-                
+
                 //添加余额流水记录  系统团队奖励
                 $one_financial_balance2 = new FinancialBalance;
                 $one_financial_balance2->userid = $parent_user->id;
@@ -320,6 +324,7 @@ class AssetCheckController extends Controller
 
             //10, 上级所有的总充值字段都要更新
             $parent_user_extra = CustomerExtra::where('userid', $parent_team_extra->userid)->first();
+
             $level_ids = $parent_user_extra->level_ids;
             if($level_ids !== '0')
             {
@@ -334,7 +339,8 @@ class AssetCheckController extends Controller
 
             //11, 异步检测所有上级团队的升级状态
                 
-                DB::commit();
+                DB::commit(); 
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
