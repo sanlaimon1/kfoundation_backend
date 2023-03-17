@@ -266,6 +266,27 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="status" class="form-label">项目状态</label>
+                        @error('status')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="status" name="status"  class="form-select" >
+                            <option value="1" @if($project->status == 1) selected @endif>上架</option>
+                            <option value="0" @if($project->status == 0) selected @endif>下架</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="sort" class="form-label">排序</label>
+                        @error('sort')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        
+                        <input type="number" class="form-control" id="sort" name="sort" value="{{ $project->sort }}">
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="litpic" class="form-label">项目封面图片</label>
                         @error('litpic')

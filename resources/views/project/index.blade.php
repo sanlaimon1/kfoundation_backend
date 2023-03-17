@@ -56,6 +56,7 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
+                    <th scope="col">排序</th>
                     <th scope="col">项目名称</th>
                     <th scope="col">项目分类</th>
                     <th scope="col">项目规模</th>
@@ -72,6 +73,7 @@
                 @foreach ($projects as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
+                    <td>{{ $one->sort }}</td>
                     <td>{{ $one->project_name }}</td>
                     <td>{{ $one->projectcate->cate_name }}</td>
                     <td>{{ $one->project_scale }}</td>
