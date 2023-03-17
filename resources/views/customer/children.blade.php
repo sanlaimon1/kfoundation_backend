@@ -1,4 +1,4 @@
-<td colspan="8">
+<td colspan="10">
     <table class="table {{ ($level % 2 == 1) ? 'table-success' : 'table-primary' }} table-bordered table-striped text-center">
         @foreach ($members as $one)
         <tr>
@@ -18,9 +18,9 @@
             <td><?= $one->is_sure==1 ? '<span style="color:green;">已认证</span>' : '<span style="color:red;">未认证</span>' ?></td>
             <td>
                 @if($one->customerExtra()->all_children_ids!=null or $one->customerExtra()->all_children_ids!='')
-                <button class="btn btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
+                <button class="btn-sm btn-success children" href="{{ route('customer.list_children', ['id'=>$one->id]) }}">查看下级列表</button>
                 @endif
-                <a class="btn btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}" target="_blank">查看会员</a>
+                <a class="btn-sm btn-primary" href="{{ route('customer.show', ['customer'=>$one->id]) }}" target="_blank">查看会员</a>
             </td>
         </tr>
         @endforeach

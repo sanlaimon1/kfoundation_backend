@@ -983,7 +983,7 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+                $newlog->action = $detail;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_asset';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1006,7 +1006,7 @@ class CustomerController extends Controller
             return redirect()->route('customer.index');
     }
 
-    //商店撤回財務整合
+    //积分下分
     public function withdraw_financial_integration(Request $request)
     {
         if (Redis::exists("permission:".Auth::id())){
@@ -1050,7 +1050,7 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 商店撤回財務整合 ';
+                $newlog->action = $detail;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_integration';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1164,7 +1164,7 @@ class CustomerController extends Controller
         //团队总人数
         $count_children = count($children);
 
-        return view('customer.team',  compact('members', 'one_team', 'one_team_extra', 'count_children'));
+        return view('customer.team', compact('members', 'one_team', 'one_team_extra', 'count_children', 'customer_extra', 'id'));
     }
 
 
@@ -1228,7 +1228,7 @@ class CustomerController extends Controller
         $ids = $request->input('checkedItemIds');
         $set_sheep = Customer::whereIn('id',$ids)->update(['is_sheep' => 1]);
         return response()->json([
-            "message" => "set_sheep successfully"
+            "message" => "设置羊毛党成功"
         ]);
 
     }
@@ -1238,7 +1238,55 @@ class CustomerController extends Controller
         $ids = $request->input('checkedItemIds');
         $set_sheep = Customer::whereIn('id',$ids)->update(['is_sheep' => 0]);
         return response()->json([
-            "message" => "unset_sheep successfully"
+            "message" => "取消设置羊毛党成功"
         ]);
     }
+
+    /**
+     * 查询1级下级会员  query children customers with sub-level 1
+     */
+    public function queryLevel1(string $parentid) {
+        $parentid = (int)$parentid;
+
+        $members = Customer::where('parent_id', $parentid)
+                    ->orderBy('created_at','desc')
+                    ->get();
+
+        return view('customer.members_level', compact( 'members' ));
+    }
+
+    /**
+     * 查询其他级的下级会员  query children customers with sub-level X
+     */
+    public function queryLevelx(Request $request, string $id) {
+        $is_xlevel = $request->has('xlevel');
+        if(!$is_xlevel) {
+            return '没有层级参数';
+        }
+
+        $xlevel = $request->get('xlevel');
+        if( !is_numeric($xlevel) ) {
+            return '层级参数必须是数字';
+        }
+        $id = (int)$id;
+
+        $current_extra = CustomerExtra::where('userid', $id)->first();
+
+        $members_extra = CustomerExtra::select('userid')
+                        ->where('level', $xlevel)
+                        ->whereIn( 'userid', explode(',', $current_extra->all_children_ids) )                    
+                        ->get();
+
+        $userid_array = [];
+        foreach( $members_extra as $one_extra ) {
+            $userid_array[] = $one_extra->userid;
+        }
+
+        $members = Customer::whereIn('id', $userid_array)
+                    ->orderBy('created_at','desc')
+                    ->get();
+
+        return view('customer.members_level', compact( 'members' ));
+    }
+
 }

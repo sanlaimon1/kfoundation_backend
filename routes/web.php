@@ -159,3 +159,8 @@ Route::post('/set_sheep','App\Http\Controllers\CustomerController@set_sheep')->n
 
 //unset_sheep
 Route::post('/unset_sheep','App\Http\Controllers\CustomerController@unset_sheep')->name('unset_sheep');
+
+//查询下级一级用户
+Route::get('/level1/{parentid}', 'App\Http\Controllers\CustomerController@queryLevel1')->name('customer.level1');
+//查询其他级别的下级用户
+Route::get('/levelx/{id}', 'App\Http\Controllers\CustomerController@queryLevelx')->name('customer.levelx');
