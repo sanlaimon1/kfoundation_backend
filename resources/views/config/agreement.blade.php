@@ -63,7 +63,7 @@
                     type: "patch",
                     url: '/agreement/' + dataid,
                     dataType: "json",
-                    data: { config_value:  config_value_string },
+                    data: { "_token": "{{ csrf_token() }}", config_value:  config_value_string },
                     success: function(msg){
                         $('.modal-body').html(msg.message);
                         $('#myModal').show();
