@@ -46,7 +46,7 @@
                 <li class="breadcrumb-item active" aria-current="page">查看团队</li>
             </ol>
         </nav>
-        
+
         <nav class="row">
             <div class="col-3">
                 <div class="row">
@@ -69,7 +69,7 @@
             </div>
 
         </nav>
-        
+
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
@@ -89,8 +89,12 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
-                    <td class="text-white  <?= $one->is_sheep==1 ? 'bg-danger' : 'bg-success' ?>">
-                        <?= $one->is_sheep==1 ? '是' : '否' ?>
+                    <td class="sheep_column{{$one->id}}">
+                        @if ($one->is_sheep == 1)
+                        <button class="btn-sm text-white bg-danger" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+                        @else
+                        <button class="btn-sm text-white bg-success" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+                        @endif
                     </td>
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->customerExtra()->got_interest }}</td>
@@ -105,7 +109,7 @@
                     </td>
                 </tr>
                 <!-- 查询下级动态数据 query child customers with dynamic datas //start -->
-                
+
                 <!-- 查询下级动态数据 query child customers with dynamic datas //end -->
                 @endforeach
             </tbody>
@@ -148,6 +152,37 @@
                     enableTime: true,  // 启用时间选择
                     dateFormat: "Y-m-d H:i", // 自定义日期格式
                     locale: "zh"       // 使用中文语言
+                });
+
+                $("tbody").on("click","#change_btn",function(){
+                    var id=$(this).data("id");
+                    var is_sheep=$(this).data("status");
+
+                    var data = {
+                                "id":id,
+                                "is_sheep":is_sheep,
+                    };
+                    $('.loading').show();
+                    $.ajax({
+                        url : "/change_sheep",
+                        dataType : "json",
+                        type: "POST",
+                        data: data,
+                        success : function(response){
+                            var html = "";
+                            if(response){
+                                if (response.member.is_sheep == 1)
+                                {
+                                    html += `<button class="btn-sm text-white bg-danger" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">是</button>`;
+
+                                } else {
+                                    html += ` <button class="btn-sm text-white bg-success" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">否</button> `;
+                                }
+                                $('.loading').hide();
+                                $('.sheep_column'+response.member.id).html(html);
+                            }
+                        }
+                    })
                 });
 
                 $("#team_search").click(function(){

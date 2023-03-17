@@ -1204,19 +1204,21 @@ class CustomerController extends Controller
 
     public function change_sheep(Request $request)
     {
-        //dd($request);
+
         $id = $request->id;
         $is_sheep = $request->is_sheep;
         $customer = Customer::find($id);
+
         if($is_sheep == 1){
             $customer->is_sheep = 0;
+            $customer->save();
         }else{
             $customer->is_sheep = 1;
+            $customer->save();
         }
-        $customer->save();
-
+        $member = Customer::where('id',$id)->first();
         return response()->json([
-            'message' => "change sheep successfully"
+            "member" => $member,
         ]);
     }
 }

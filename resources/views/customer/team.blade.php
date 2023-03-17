@@ -91,15 +91,14 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
-                    @if ($one->is_sheep == 1)
-                    <td>
-                        <button class="btn-sm text-white bg-danger change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+
+                    <td class="sheep_column{{$one->id}}">
+                        @if ($one->is_sheep == 1)
+                        <button class="btn-sm text-white bg-danger" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
+                        @else
+                        <button class="btn-sm text-white bg-success" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+                        @endif
                     </td>
-                    @else
-                    <td>
-                        <button class="btn-sm text-white bg-success change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
-                    </td>
-                   @endif
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->customerExtra()->got_interest }}</td>
                     <td>{{ $one->balance }}</td>
@@ -158,7 +157,7 @@
                     locale: "zh"       // 使用中文语言
                 });
 
-                $("tbody").on("click",".change_btn",function(){
+                $("tbody").on("click","#change_btn",function(){
                     var id=$(this).data("id");
                     var is_sheep=$(this).data("status");
 
@@ -166,16 +165,24 @@
                                 "id":id,
                                 "is_sheep":is_sheep,
                     };
-
+                    $('.loading').show();
                     $.ajax({
                         url : "/change_sheep",
                         dataType : "json",
                         type: "POST",
                         data: data,
                         success : function(response){
+                            var html = "";
                             if(response){
-                                console.log(response.message);
-                                window.location.reload();
+                                if (response.member.is_sheep == 1)
+                                {
+                                    html += `<button class="btn-sm text-white bg-danger" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">是</button>`;
+
+                                } else {
+                                    html += ` <button class="btn-sm text-white bg-success" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">否</button> `;
+                                }
+                                $('.loading').hide();
+                                $('.sheep_column'+response.member.id).html(html);
                             }
                         }
                     })
