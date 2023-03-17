@@ -1208,6 +1208,7 @@ class CustomerController extends Controller
         $id = $request->id;
         $is_sheep = $request->is_sheep;
         $customer = Customer::find($id);
+
         if($is_sheep == 1){
             $customer->is_sheep = 0;
             $customer->save();
@@ -1215,9 +1216,9 @@ class CustomerController extends Controller
             $customer->is_sheep = 1;
             $customer->save();
         }
-
+        $member = Customer::where('id',$id)->first();
         return response()->json([
-            'message' => "change sheep successfully"
+            "member" => $member,
         ]);
     }
 }

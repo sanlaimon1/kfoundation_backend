@@ -89,15 +89,13 @@
                 <tr>
                     <td>{{ $one->id }}</td>
                     <td>{{ $one->phone }}</td>
-                    @if ($one->is_sheep == 1)
-                    <td>
+                    <td class="sheep_column{{$one->id}}">
+                        @if ($one->is_sheep == 1)
                         <button class="btn-sm text-white bg-danger" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">是</button>
-                    </td>
-                    @else
-                    <td>
+                        @else
                         <button class="btn-sm text-white bg-success" id="change_btn"  data-id="{{$one->id}}"  data-status="{{$one->is_sheep}}">否</button>
+                        @endif
                     </td>
-                   @endif
                     <td>{{ $one->realname }}</td>
                     <td>{{ $one->customerExtra()->got_interest }}</td>
                     <td>{{ $one->balance }}</td>
@@ -171,10 +169,17 @@
                         type: "POST",
                         data: data,
                         success : function(response){
+                            var html = "";
                             if(response){
-                                //console.log(response.message);
+                                if (response.member.is_sheep == 1)
+                                {
+                                    html += `<button class="btn-sm text-white bg-danger" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">是</button>`;
+
+                                } else {
+                                    html += ` <button class="btn-sm text-white bg-success" id="change_btn"  data-id="${response.member.id}"  data-status="${response.member.is_sheep}">否</button> `;
+                                }
                                 $('.loading').hide();
-                                window.location.reload();
+                                $('.sheep_column'+response.member.id).html(html);
                             }
                         }
                     })
