@@ -24,13 +24,13 @@
 
         <ul class="list-group list-group-flush" style="margin-top:1rem;">
             <li class="list-group-item"><strong>ID:</strong> {{ $project->id }}</li>
+            <li class="list-group-item"><strong>排序:</strong> {{ $project->sort }}</li>
             <li class="list-group-item"><strong>项目名称:</strong> {{ $project->project_name }}</li>
             <li class="list-group-item"><strong>项目分类:</strong> {{ $project->projectcate->cate_name }}</li>
 
             <li class="list-group-item"><strong>担保机构:</strong> {{ $project->guarantee }}</li>
             <li class="list-group-item"><strong>投资零风险:</strong> {{ $project->risk }}</li>
             <li class="list-group-item"><strong>资金用途:</strong> {{ $project->usage }}</li>
-            <li class="list-group-item"><strong>前台展示:</strong> {{ $project->frontend }}</li>
             <li class="list-group-item"><strong>返利模式:</strong> 
                 @foreach($return_modes as $key => $return_mode)
                 @if($project->return_mode == $key)
@@ -43,9 +43,16 @@
 
             <li class="list-group-item"><strong>赠送积分:</strong> 
                 @if($project->is_given == 0)
-                否
+                    否
                 @else
-                是
+                    是
+                @endif
+            </li>
+            <li class="list-group-item"><strong>项目状态:</strong>
+                @if($project->status == 1)
+                    上架
+                @else
+                    下架
                 @endif
             </li>
             <li class="list-group-item"><strong>团购收益率:</strong>{{ $project->team_rate }}</li>

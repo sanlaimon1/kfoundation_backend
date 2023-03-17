@@ -45,7 +45,7 @@ class ProjectController extends Controller
         }
 
         $perPage = $request->input('perPage', 10);
-        $projects = Project::where('enable', 1)->orderBy('created_at', 'desc')->paginate($perPage);
+        $projects = Project::where('enable', 1)->orderBy('sort', 'asc')->paginate($perPage);
 
         //项目类型
         $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
@@ -94,7 +94,6 @@ class ProjectController extends Controller
             return json_encode( $arr );
         }
 
-
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
@@ -128,8 +127,11 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => ['required', 'numeric', 'gte:0']
+            "project_scale" => ['required', 'numeric', 'gte:0'],
+            "status"  =>  "required|in:0,1",
+            "sort" => "required|integer|gte:0",
         ]);
+
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
@@ -138,6 +140,8 @@ class ProjectController extends Controller
             $litpic = '';
         }
         $detail = trim( htmlspecialchars( $request->detail ));
+        $status = (int)$request->status;
+        $sort = (int)$request->sort;
         DB::beginTransaction();
         try {
 
@@ -179,6 +183,8 @@ class ProjectController extends Controller
             $project->litpic = $litpic;
             $project->details = $detail;
             $project->project_scale = $request->project_scale;
+            $project->status = $status;
+            $project->sort = $sort;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -295,9 +301,12 @@ class ProjectController extends Controller
             "level_id" => ['required', 'integer', 'exists:levels,level_id'],
             "litpic.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             "detail" => ['required','string'],
-            "project_scale" => ['required', 'numeric', 'gte:0']
+            "project_scale" => ['required', 'numeric', 'gte:0'],
+            "status"  =>  "required|in:0,1",
+            "sort" => "required|integer|gte:0",
         ]);
-
+        $status = (int)$request->status;
+        $sort = (int)$request->sort;
         if($request->hasFile('litpic')){
             $litpic = time().'.'.$request->litpic->extension();
             $request->litpic->move(public_path('/images/project_imgs/'),$litpic);
@@ -331,6 +340,8 @@ class ProjectController extends Controller
             $project->litpic = $litpic;
             $project->details = $detail;
             $project->project_scale = $request->project_scale;
+            $project->status = $status;
+            $project->sort = $sort;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');
