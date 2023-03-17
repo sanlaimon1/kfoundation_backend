@@ -147,12 +147,19 @@ class AssetCheckController extends Controller
             DB::beginTransaction();
             try {
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+                
                 //更改订单状态
                 $one = AssetCheck::find($id);
                 if($one->status!=0)
                     throw new \Exception('订单无需审核');
                 $one->status = 1;
                 $one->adminid = Auth::id();
+                $is_help = $request->get('is_help');
+                if($is_help==='1')
+                {
+                    $is_help = (int)$is_help;
+                }
+                $one->is_help = 1;
                 if (!$one->save())
                     throw new \Exception('事务中断1');
 

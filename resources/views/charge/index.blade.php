@@ -35,7 +35,7 @@
         </nav>
         <h3 class="text-center text-primary">{{ $title }}</h3>
         <nav class="row">
-            <div class="col-3">
+            <div class="col-2">
                 <label class="form-label">财务编号：</label>
                 <input type="text" name="fid" id="fid" class="form-control" />
             </div>
@@ -45,13 +45,22 @@
                 <input type="text" name="customer" id="customer" class="form-control" />
             </div>
 
-            <div class="col-3">
+            <div class="col-2">
                 <label class="form-label">状态：</label>
                 <select name="financial_type" id="financial_type"  class="form-select">
                     <option value="">--请选择--</option>
                     @foreach($types as $type_val=>$one_type)
                     <option value="{{ $type_val }}">{{ $one_type }}</option>
                     @endforeach
+                </select>
+            </div>
+
+            <div class="col-2">
+                <label class="form-label">是否代充：</label>
+                <select name="is_help" id="is_help"  class="form-select">
+                    <option value="">--请选择--</option>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
                 </select>
             </div>
 
@@ -85,7 +94,7 @@
                     <td>{{ $one->created_at }}</td>
                     <td>
                         @if($one->status==1)
-                        <span style="color:green;">已通过</span>
+                        <span style="color:green;">已通过 {{ $one->is_help==1 ? '(内部代充)' : '' }}</span>
                         @elseif($one->status==2)
                         <span style="color:red;">已拒绝</span>
                         @elseif($one->status==0)

@@ -44,10 +44,14 @@
                          style="margin-left: 4rem; float:left;" onsubmit="javascript:return del()">
                             {{ csrf_field() }}
                             @method('PATCH')
-                        <button type="submit" class="btn btn-success">确定通过</button>
+                        <label>
+                            <input type="checkbox" name="is_help" value="1" />
+                            是否代充
+                        </label>
+                        <button type="submit" class="btn btn-success" style="margin-left:1rem;">确定通过</button>
                 </form>
                 
-                <a style="margin-left: 8rem; float:left;" href="{{ route('charge.edit', ['charge'=>$one->id]) }}"
+                <a style="margin-right: 10rem; float:right;" href="{{ route('charge.edit', ['charge'=>$one->id]) }}"
                  class="btn btn-danger">拒绝</a>
                 @endif
             </li>
