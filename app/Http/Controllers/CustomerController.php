@@ -1184,6 +1184,7 @@ class CustomerController extends Controller
         $phone = $request->phone;
         //查询一个用户
         $one_user = Customer::where('phone',$phone)->first();
+        $id = $one_user->id;
         if(empty($one_user)) {
             return '用户不存在';
         }
@@ -1199,7 +1200,7 @@ class CustomerController extends Controller
         //团队总人数
         $count_children = count($children);
 
-        return view('customer.team_search',  compact('members', 'one_team', 'one_team_extra', 'count_children'));
+        return view('customer.team_search',  compact('members', 'one_team', 'one_team_extra', 'count_children','customer_extra','id'));
     }
 
     public function change_sheep(Request $request)
@@ -1274,7 +1275,7 @@ class CustomerController extends Controller
 
         $members_extra = CustomerExtra::select('userid')
                         ->where('level', $xlevel)
-                        ->whereIn( 'userid', explode(',', $current_extra->all_children_ids) )                    
+                        ->whereIn( 'userid', explode(',', $current_extra->all_children_ids) )
                         ->get();
 
         $userid_array = [];

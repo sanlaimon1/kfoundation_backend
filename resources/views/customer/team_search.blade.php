@@ -59,6 +59,11 @@
                 <button class="btn btn-success" id="team_search">搜索</button>
             </div>
 
+            <div class="col-6">
+                <button class="btn btn-success mx-3 col-2" id="set">设置羊毛</button>
+                <button class="btn btn-primary mx-3" id="unset">取消设置羊毛</button>
+            </div>
+
             <div class="col-8">
                 <ul>
                     <li>团队等级: <strong class="value">{{ $one_team->level_name }}</strong></li>
@@ -67,12 +72,66 @@
                     <li>团队总提现: <strong class="value">{{ $one_team_extra->withdrawal_total }}</strong></li>
                 </ul>
             </div>
-
+            <div class="col-12">
+                <ul>
+                    <li class="query-children-customers">
+                        <button id="level-1" level="{{ $customer_extra->level + 1 }}" data="{{ $id }}" class="btn-sm btn-primary">
+                            1级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-2" level="{{ $customer_extra->level + 2 }}" data="{{ $customer_extra->level + 2 }}" class="btn-sm btn-primary">
+                            2级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-3" level="{{ $customer_extra->level + 3 }}" data="{{ $customer_extra->level + 3 }}" class="btn-sm btn-primary">
+                            3级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-4" level="{{ $customer_extra->level + 4 }}" data="{{ $customer_extra->level + 4 }}" class="btn-sm btn-primary">
+                            4级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-5" level="{{ $customer_extra->level + 5 }}" data="{{ $customer_extra->level + 5 }}" class="btn-sm btn-primary">
+                            5级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-6" level="{{ $customer_extra->level + 6 }}" data="{{ $customer_extra->level + 6 }}" class="btn-sm btn-primary">
+                            6级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-7" level="{{ $customer_extra->level + 7 }}" data="{{ $customer_extra->level + 7 }}" class="btn-sm btn-primary">
+                            7级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-8" level="{{ $customer_extra->level + 8 }}" data="{{ $customer_extra->level + 8 }}" class="btn-sm btn-primary">
+                            8级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-9" level="{{ $customer_extra->level + 9 }}" data="{{ $customer_extra->level + 9 }}" class="btn-sm btn-primary">
+                            9级会员
+                        </button>
+                    </li>
+                    <li class="query-children-customers">
+                        <button id="level-10" level="{{ $customer_extra->level + 10 }}" data="{{ $customer_extra->level + 10 }}" class="btn-sm btn-primary">
+                            10级会员
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <table class="table table-bordered table-striped text-center" style="margin-top: 1rem;">
             <thead>
                 <tr>
+                    <th scope="col"><input type="checkbox" id="check_all"></th>
                     <th scope="col">ID</th>
                     <th scope="col">用户名</th>
                     <th scope="col">羊毛</th>
@@ -87,7 +146,12 @@
             <tbody id="search_data">
                 @foreach ($members as $one)
                 <tr>
-                    <td>{{ $one->id }}</td>
+                    <td class="single_check">
+                        <input type="checkbox" class="row_checkbox" data-item-id="{{$one->id}}">
+                    </td>
+                    <td>
+                        {{ $one->id }}
+                    </td>
                     <td>{{ $one->phone }}</td>
                     <td class="sheep_column{{$one->id}}">
                         @if ($one->is_sheep == 1)
@@ -185,6 +249,89 @@
                     })
                 });
 
+                 //check all data
+                 const checkboxItems = document.querySelectorAll('input[type="checkbox"][data-item-id]');
+                $("thead").on('click', '#check_all', function()
+                {
+                    $("input[type=checkbox]").prop('checked',$(this).prop('checked'));
+                });
+
+                //set wool
+                $(document).on("click","#set", function()
+                {
+                    var isChecked = $("#check_all").prop("checked");
+                    const checkedItemIds = [];
+
+                    if(isChecked)
+                    {
+                        checkboxItems.forEach(item => {
+                            item.checked = true;
+                            checkedItemIds.push(item.getAttribute('data-item-id'));
+                        });
+
+                    }else
+                    {
+                        $('.row_checkbox:checked').each(function () {
+                            checkedItemIds.push($(this).data('item-id'));
+                        });
+
+                    }
+
+                    check_data = checkedItemIds;
+                    var data = { checkedItemIds: check_data };
+                    $('.loading').show();
+                    $.ajax({
+                            url : "/set_sheep",
+                            dataType : "json",
+                            type : "POST",
+                            data :  data,
+                            success : function (response) {
+                                if(response){
+                                    window.location.reload();
+                                    $('.loading').hide();
+                                }
+                            }
+                        });
+                });
+
+                //unset wool
+                $(document).on("click","#unset", function()
+                {
+                    var isChecked = $("#check_all").prop("checked");
+                    const checkedItemIds = [];
+
+                    if(isChecked)
+                    {
+                        checkboxItems.forEach(item => {
+                            item.checked = true;
+                            checkedItemIds.push(item.getAttribute('data-item-id'));
+                        });
+
+                    }else
+                    {
+                        $('.row_checkbox:checked').each(function () {
+                            checkedItemIds.push($(this).data('item-id'));
+                        });
+
+                    }
+
+                    check_data = checkedItemIds;
+                    var data = { checkedItemIds: check_data };
+                    $('.loading').show();
+                    $.ajax({
+                            url : "/unset_sheep",
+                            dataType : "json",
+                            type : "POST",
+                            data :  data,
+                            success : function (response) {
+                                if(response){
+                                    window.location.reload();
+                                    $('.loading').hide();
+                                }
+                            }
+                        });
+                });
+
                 $("#team_search").click(function(){
                     var adminid = $("#adminid").val();
                     var action = $("#action").val();
@@ -222,6 +369,32 @@
                     // });
                 });
 
+        });
+
+         //查询层级用户
+         $('li.query-children-customers button').click(function() {
+            $('li.query-children-customers button').removeClass('btn-success').addClass('btn-primary');
+            var this_button = $(this);
+            var level_id = this_button.attr('id');
+            $('.loading').show();
+            if(level_id=='level-1') {
+                $.get('{{ route('customer.level1',['parentid'=>$id]) }}', function(html_text){
+                    $('#search_data').html(html_text);
+                    $('.loading').hide();
+                }, 'html');
+            } else {
+                $.get(
+                    '{{ route('customer.levelx',['id'=>$id]) }}',
+                    {
+                        xlevel : this_button.attr('level')
+                    },
+                    function(html_text){
+                        $('#search_data').html(html_text);
+                        $('.loading').hide();
+                    },
+                    'html');
+            }
+            this_button.addClass('btn-success');
         });
 
         //查询下级
