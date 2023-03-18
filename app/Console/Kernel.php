@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('process-rate')->cron('10,40 * * * *');
+        $schedule->command('process-rate')->cron('10,30 * * * *');
+        // $schedule->command('process-rate')->cron('10,40 * * * *');
     }
 
     /**

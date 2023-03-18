@@ -434,21 +434,27 @@ class AssetCheckController extends Controller
 
     public function charge_search(Request $request)
     {
-
         $fid = $request->fid;
         $customer = $request->customer;
         $financial_type = $request->financial_type;
+        $is_help = $request->is_help;
 
         $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
+        
 
-        if($fid != null && $customer != null && $financial_type != null && $date_string != null)
+        if($fid != null && $customer != null && $financial_type != null && $date_string != null && $is_help != null)
         {
             $charge_search = DB::table('asset_check')
                             ->join('customers', 'customers.id', 'asset_check.userid')
-                            ->where([['asset_check.id', '=', $fid], ['customers.phone', '=', $customer], ['asset_check.status', '=', $financial_type]])
+                            ->where([['asset_check.id', '=', $fid], ['customers.phone', '=', $customer], ['asset_check.status', '=', $financial_type], ['asset_check.is_help', '=', $is_help]])
                             ->whereBetween('asset_check.created_at', [$start_date, $end_date])
                             ->orderBy('asset_check.created_at', 'desc')
                             ->select('customers.phone', 'asset_check.*')
@@ -459,12 +465,12 @@ class AssetCheckController extends Controller
                             ->join('customers', 'customers.id', 'asset_check.userid')
                             ->whereBetween('asset_check.created_at', [$start_date, $end_date])
                             ->orwhere('asset_check.id', '=', $fid)
+                            ->orwhere('asset_check.is_help', '=', $is_help)
                             ->orwhere('customers.phone','=',$customer)
                             ->orwhere('asset_check.status','=', $financial_type)
                             ->orderBy('asset_check.created_at', 'desc')
                             ->select('customers.phone', 'asset_check.*')
                             ->get();
-                            //dd($charge_search);
 
         }
 

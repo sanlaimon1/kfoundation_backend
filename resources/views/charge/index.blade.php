@@ -158,11 +158,13 @@
             var customer = $("#customer").val();
             var financial_type = $("#financial_type").val();
             var date = $("#date").val();
+            var is_help = $('#is_help').val();
             var data = {
                 "fid": fid,
                 "customer": customer,
                 "financial_type": financial_type,
                 "date" : date,
+                "is_help": is_help,
             };
 
             $.ajax({
