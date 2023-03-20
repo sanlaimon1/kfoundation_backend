@@ -196,7 +196,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="password2" class="form-label">取款密码</label>
                         @error('password2')
-                            <div class="alert alert-danger">密码必须包含大小写字母和数字的组合</div>
+                            <div class="alert alert-danger">必须是6位数字</div>
                         @enderror
                         <input type="password" class="form-control" id="password2" name="password2">
                     </div>

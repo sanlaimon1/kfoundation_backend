@@ -113,8 +113,8 @@ class CustomerController extends Controller
                 'password1' => 'required|confirmed',
                 'password1' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
 
-                'password2' => 'required|confirmed',
-                'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
+                'password2' => 'required|confirmed|min:6|max:6',
+                // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
                 "idcard_front.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
                 "idcard_back.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             ]);
@@ -548,9 +548,9 @@ class CustomerController extends Controller
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
             $request->validate([
-                'password2' => 'required|confirmed',
+                'password2' => 'required|confirmed|min:6|max:6',
                 'password2_confirmation' => 'required|same:password2',
-                'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
+                // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
                 // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/','regex:/^[0-9]{6}$/'],
 
             ]);
