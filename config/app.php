@@ -214,6 +214,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'static_url' => 'https://static.kfoundationfrontend.xyz/',
     'redis_second' => 5,
 
 ];

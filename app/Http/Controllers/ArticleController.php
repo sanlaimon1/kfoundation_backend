@@ -48,6 +48,17 @@ class ArticleController extends Controller
         $perPage = $request->input('perPage', 10);
         $articles = Article::select('id', 'title','content','categoryid','adminid','litpic','sort')->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->paginate($perPage);
 
+        $article = Article::select('id', 'title','litpic')->orderBy('id', 'desc')->limit(6)->get();
+        $array_article = [];
+        foreach($article as $one){
+            $data['id'] = $one->id;
+            $data['title'] = $one->title;
+            $data['litpic'] = config("app.static_url").$one->litpic;
+            array_push($array_article, $data);
+        };
+        $redis_article = json_encode($array_article);
+        Redis::set("article:homepage", md5($redis_article));
+        
         return view('article.index', compact('articles'));
     }
 
@@ -78,8 +89,6 @@ class ArticleController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
-
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             $role_id = Auth::user()->rid;
@@ -147,6 +156,21 @@ class ArticleController extends Controller
                 return '添加错误，事务回滚' . $e->getMessage();
             }
 
+            $old_redis_article = Redis::get("article:homepage");
+            $article = Article::select('id', 'title','litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $array_article = [];
+            foreach($article as $one){
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                $data['litpic'] = config("app.static_url").$one->litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);            
+
+            if(md5($redis_article) != $old_redis_article){
+                Redis::set("article:homepage", md5($redis_article));
+            }
+        
         return redirect()->route('article.index');
     }
 
@@ -194,8 +218,6 @@ class ArticleController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
-
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             $role_id = Auth::user()->rid;
@@ -263,6 +285,20 @@ class ArticleController extends Controller
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
+            $old_redis_article = Redis::get("article:homepage");
+            $article = Article::select('id', 'title','litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $array_article = [];
+            foreach($article as $one){
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                $data['litpic'] = config("app.static_url").$one->litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);            
+
+            if(md5($redis_article) != $old_redis_article){
+                Redis::set("article:homepage", md5($redis_article));
+            }
 
             return redirect()->route('article.index');
     }
@@ -314,6 +350,20 @@ class ArticleController extends Controller
                 DB::rollBack();
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
+            }
+            $old_redis_article = Redis::get("article:homepage");
+            $article = Article::select('id', 'title','litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $array_article = [];
+            foreach($article as $one){
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                $data['litpic'] = config("app.static_url").$one->litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);            
+            // dd(md5($redis_article) ."/////////". $old_redis_article);
+            if(md5($redis_article) != $old_redis_article){
+                Redis::set("article:homepage", md5($redis_article));
             }
             return redirect()->route('article.index');
     }
