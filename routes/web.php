@@ -57,6 +57,7 @@ Route::resource('award', 'App\Http\Controllers\AwardController');
 Route::resource('sign', 'App\Http\Controllers\SignController');
 //文章列表
 Route::resource('article', 'App\Http\Controllers\ArticleController');
+Route::post('article_notice', 'App\Http\Controllers\ArticleController@article_notice')->name('article_notice');
 //系统图片设置
 //Route::get('/slide', 'App\Http\Controllers\HomeController@slide')->name('slide');
 Route::post('/save_image', 'App\Http\Controllers\HomeController@save_image')->name('save_image');

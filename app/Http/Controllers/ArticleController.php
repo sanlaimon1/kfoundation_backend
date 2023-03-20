@@ -62,9 +62,12 @@ class ArticleController extends Controller
                 array_push($array_article, $data);
             };
             $redis_article = json_encode($array_article);
-            Redis::set("article:homepage", md5($redis_article));
+            $result = [
+                "article_md5" => md5($redis_article),
+                "article_data" => $redis_article, 
+            ];
+            Redis::set("article:homepage", json_encode($result));
         }
-
         return view('article.index', compact('articles'));
     }
 
@@ -173,7 +176,12 @@ class ArticleController extends Controller
         $redis_article = json_encode($array_article);
 
         if (md5($redis_article) != $old_redis_article) {
-            Redis::set("article:homepage", md5($redis_article));
+            // Redis::set("article:homepage", md5($redis_article));
+            $result = [
+                "article_md5" => md5($redis_article),
+                "article_data" => $redis_article, 
+            ];
+            Redis::set("article:homepage", json_encode($result));
         }
 
         return redirect()->route('article.index');
@@ -300,7 +308,12 @@ class ArticleController extends Controller
         $redis_article = json_encode($array_article);
 
         if (md5($redis_article) != $old_redis_article) {
-            Redis::set("article:homepage", md5($redis_article));
+            // Redis::set("article:homepage", md5($redis_article));
+            $result = [
+                "article_md5" => md5($redis_article),
+                "article_data" => $redis_article, 
+            ];
+            Redis::set("article:homepage", json_encode($result));
         }
 
         return redirect()->route('article.index');
@@ -348,25 +361,52 @@ class ArticleController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
+
+            $old_redis_article = Redis::get("article:homepage");
+            $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $array_article = [];
+            foreach ($article as $one) {
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                $data['litpic'] = config("app.static_url") . $one->litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);
+            if (md5($redis_article) != $old_redis_article) {
+                // Redis::set("article:homepage", md5($redis_article));
+                $result = [
+                    "article_md5" => md5($redis_article),
+                    "article_data" => $redis_article, 
+                ];
+                Redis::set("article:homepage", json_encode($result));
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
-        $old_redis_article = Redis::get("article:homepage");
-        $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
-        $array_article = [];
-        foreach ($article as $one) {
-            $data['id'] = $one->id;
-            $data['title'] = $one->title;
-            $data['litpic'] = config("app.static_url") . $one->litpic;
-            array_push($array_article, $data);
-        };
-        $redis_article = json_encode($array_article);
-        // dd(md5($redis_article) ."/////////". $old_redis_article);
-        if (md5($redis_article) != $old_redis_article) {
-            Redis::set("article:homepage", md5($redis_article));
-        }
+        
         return redirect()->route('article.index');
+    }
+
+    public function article_notice(Request $request)
+    {
+        if (Redis::exists("notice:homepage")) {
+            Redis::get("notice:homepage");
+        } else {
+            $notice = Article::select('id', 'title')->where('categoryid', '=', 4)->orderBy('id', 'desc')->limit(6)->get();
+            $array_notice = [];
+            foreach ($notice as $one) {
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                array_push($array_notice, $data);
+            };
+            $redis_notice = json_encode($array_notice);
+            $result = [
+                "notice_md5" => md5($redis_notice),
+                "notice_data" => $redis_notice, 
+            ];
+            Redis::set("notice:homepage", json_encode($result));
+        }
     }
 }

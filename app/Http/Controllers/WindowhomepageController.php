@@ -138,6 +138,30 @@ class WindowhomepageController extends Controller
             return 'error';
         }
 
+        if (Redis::exists("config:homepage")) {
+
+            Redis::get("project:homepage");
+        } else {
+
+            $config = Config::select('id', 'config_name', 'config_value','cate', 'comment')->where('id', 10)->limit(6)->get();
+            $array_config = [];
+            foreach ($config as $one) {
+                $data['id'] = $one->id;
+                $data['config_name'] = $one->config_name;
+                $data['config_value'] = $one->config_value;
+                $data['cate'] = $one->cate;
+                $data['comment'] = $one->comment;
+                array_push($array_config, $data);
+            };
+            $redis_config = json_encode($array_config);
+            // Redis::set("project:homepage", md5($redis_config));
+            $result = [
+                "config_md5" => md5($redis_config),
+                "config_data" => $redis_config, 
+            ];
+            Redis::set("currency:homepage", json_encode($result));
+        }
+
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );
     }
