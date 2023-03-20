@@ -48,11 +48,7 @@ class ArticleController extends Controller
         $perPage = $request->input('perPage', 10);
         $articles = Article::select('id', 'title', 'content', 'categoryid', 'adminid', 'litpic', 'sort')->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->paginate($perPage);
 
-        if (Redis::exists("article:homepage")) {
-
-            Redis::get("article:homepage");
-        } else {
-
+        if (!Redis::exists("article:homepage:md5")) {
             $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
             $array_article = [];
             foreach ($article as $one) {
@@ -62,12 +58,11 @@ class ArticleController extends Controller
                 array_push($array_article, $data);
             };
             $redis_article = json_encode($array_article);
-            $result = [
-                "article_md5" => md5($redis_article),
-                "article_data" => $redis_article, 
-            ];
-            Redis::set("article:homepage", json_encode($result));
+            
+            Redis::set( "article:homepage:string", $redis_article );
+            Redis::set( "article:homepage:md5", md5($redis_article) );
         }
+
         return view('article.index', compact('articles'));
     }
 
@@ -391,22 +386,19 @@ class ArticleController extends Controller
 
     public function article_notice(Request $request)
     {
-        if (Redis::exists("notice:homepage")) {
-            Redis::get("notice:homepage");
-        } else {
+        if (!Redis::exists("notice:homepage:md5")) {
+           
             $notice = Article::select('id', 'title')->where('categoryid', '=', 4)->orderBy('id', 'desc')->limit(6)->get();
             $array_notice = [];
             foreach ($notice as $one) {
                 $data['id'] = $one->id;
                 $data['title'] = $one->title;
-                array_push($array_notice, $data);
+                $array_notice[] = $data;
             };
             $redis_notice = json_encode($array_notice);
-            $result = [
-                "notice_md5" => md5($redis_notice),
-                "notice_data" => $redis_notice, 
-            ];
-            Redis::set("notice:homepage", json_encode($result));
+            
+            Redis::set("notice:homepage:string", $redis_notice);
+            Redis::set("notice:homepage:md5", md5( $redis_notice ));
         }
     }
 }
