@@ -9,13 +9,7 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
-    <!-- include summernote css/js -->
-    <link href="/css/bootstrap-v3.4.1.min.css" rel="stylesheet">
-    <script src="/js/jquery-v3.5.1.min.js"></script>
-    <script src="/js/bootstrap-v3.4.1.min.js"></script>
-    <link href="/css/summernote.min.css" rel="stylesheet">
-    <script src="/js/summernote.min.js"></script>
-    <script src="/js/summernote-zh-CN.js"></script>
+    <script src="/ckeditor/ckeditor.js"></script>
     <style>
         #app
         {
@@ -110,12 +104,6 @@
 
         });
     </script>
-
-    <!-- include summernote css/js -->
-    <link href="/static/adminlte/plugins/summernote/summernote.min.css" rel="stylesheet">
-    <script src="/static/adminlte/plugins/summernote/summernote.min.js"></script>
-
-
 </head>
 
 <body>
@@ -150,6 +138,11 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <textarea class="form-control" id="summernote" name="content"></textarea>
+                        <script>
+                           CKEDITOR.replace('summernote',{
+                                language: 'zh'
+                            });
+                        </script>
                     </div>
                 </div>
                 <div class="row">
@@ -185,7 +178,7 @@
                             <option value="0">隐藏</option>
                         </select>
                     </div>
-               
+
                     <div class="col-md-6">
                         <label for="created_at" class="form-label">标题</label>
                         @error('created_at')
@@ -219,10 +212,6 @@
     <script>
         const dateInput = document.getElementById('add_time');
         $(document).ready(function() {
-            $('#summernote').summernote({
-                lang: 'zh-CN'
-            });
-
             dateInput.addEventListener('change',function()
             {
                 const dateTimeString = dateInput.value;
