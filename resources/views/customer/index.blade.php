@@ -59,7 +59,7 @@
             </div>
             <div class="col-2">
                 <br />
-                <a href="{{route('customer.create')}}" class="btn btn-primary">创建客户</a>
+                <a href="{{route('customer.create')}}" class="btn btn-primary">添加会员</a>
             </div>
         </nav>
         <br />
