@@ -115,14 +115,16 @@ class CustomerController extends Controller
 
                 'password2' => 'required|confirmed|min:6|max:6',
                 // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
-                "idcard_front.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-                "idcard_back.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+                "idcard_front.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+                "idcard_back.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             ]);
+            $idcard_front = '/images/default.png';
             if($request->hasFile('idcard_front')){
                 $idcard_front = time().'.'.$request->idcard_front->extension();
                 $request->idcard_front->move(public_path('/images/customer_idimg/'),$idcard_front);
                 $idcard_front = '/images/customer_idimg/'.$idcard_front;
             }
+            $idcard_back = '/images/default.png';
             if($request->hasFile('idcard_back')){
                 $idcard_back = time().'back'.'.'.$request->idcard_back->extension();
                 $request->idcard_back->move(public_path('/images/customer_idimg/'),$idcard_back);
