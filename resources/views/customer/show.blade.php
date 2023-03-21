@@ -31,9 +31,9 @@
         <h3 class="text-center text-primary" style="margin-bottom: 0px;">
             <button class="btn btn-primary" onclick="javascript:history.go(-1)">返回</button> 客户详情
         </h3>
-        
+
         <ul class="list-group list-group-flush">
-            
+
             <li class="list-group-item"><strong class="title">用户信息</strong></li>
             <ul class="row">
                 <li class="list-group-item col-4"><strong>ID:</strong> {{ $customer->id }}</li>
@@ -48,7 +48,7 @@
                 <li class="list-group-item col-3"><strong>会员等级:</strong> {{ $customer->level->level_name }}</li>
                 <li class="list-group-item col-3"><strong>身份:</strong> {{ $customer_identity[ $customer->identity ] }}</li>
             </ul>
-           
+
             <li class="list-group-item"><strong class="title">用户资金</strong></li>
             <ul class="row">
                 <li class="list-group-item col-2"><strong>余额:</strong> {{ $customer->balance }}</li>
@@ -90,7 +90,13 @@
                     <img src="{{ $customer->idcard_back }}" class="img-fluid" alt="">
                 </li>
             </ul>
-            
+            <ul class="row">
+                <li class="list-group-item col-4"><strong>羊毛:</strong> {{ $customer->is_sheep==1 ? '是' : '否'  }}</li>
+                <li class="list-group-item col-4"><strong>性别:</strong> {{ $customer->sex ==1 ? '男' : '女'  }}</li>
+                <li class="list-group-item col-4"><strong>出生日期:</strong> {{ $customer->birthday }}</li>
+                <li class="list-group-item col-4"><strong>身份证上的地址:</strong> {{ $customer->address }}</li>
+            </ul>
+
         </ul>
 
     </div>
