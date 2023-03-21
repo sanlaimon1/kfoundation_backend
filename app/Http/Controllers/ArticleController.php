@@ -58,7 +58,6 @@ class ArticleController extends Controller
                 array_push($array_article, $data);
             };
             $redis_article = json_encode($array_article);
-            
             Redis::set( "article:homepage:string", $redis_article );
             Redis::set( "article:homepage:md5", md5($redis_article) );
         }
@@ -159,7 +158,7 @@ class ArticleController extends Controller
             return '添加错误，事务回滚' . $e->getMessage();
         }
 
-        $old_redis_article = Redis::get("article:homepage");
+        $old_redis_article = Redis::get("article:homepage:md5");
         $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
         $array_article = [];
         foreach ($article as $one) {
@@ -171,12 +170,8 @@ class ArticleController extends Controller
         $redis_article = json_encode($array_article);
 
         if (md5($redis_article) != $old_redis_article) {
-            // Redis::set("article:homepage", md5($redis_article));
-            $result = [
-                "article_md5" => md5($redis_article),
-                "article_data" => $redis_article, 
-            ];
-            Redis::set("article:homepage", json_encode($result));
+            Redis::set( "article:homepage:string", $redis_article );
+            Redis::set( "article:homepage:md5", md5($redis_article) );
         }
 
         return redirect()->route('article.index');
@@ -291,7 +286,7 @@ class ArticleController extends Controller
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
-        $old_redis_article = Redis::get("article:homepage");
+        $old_redis_article = Redis::get("article:homepage:md5");
         $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
         $array_article = [];
         foreach ($article as $one) {
@@ -304,11 +299,8 @@ class ArticleController extends Controller
 
         if (md5($redis_article) != $old_redis_article) {
             // Redis::set("article:homepage", md5($redis_article));
-            $result = [
-                "article_md5" => md5($redis_article),
-                "article_data" => $redis_article, 
-            ];
-            Redis::set("article:homepage", json_encode($result));
+            Redis::set( "article:homepage:string", $redis_article );
+            Redis::set( "article:homepage:md5", md5($redis_article) );
         }
 
         return redirect()->route('article.index');
@@ -357,7 +349,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            $old_redis_article = Redis::get("article:homepage");
+            $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
             $array_article = [];
             foreach ($article as $one) {
@@ -368,12 +360,8 @@ class ArticleController extends Controller
             };
             $redis_article = json_encode($array_article);
             if (md5($redis_article) != $old_redis_article) {
-                // Redis::set("article:homepage", md5($redis_article));
-                $result = [
-                    "article_md5" => md5($redis_article),
-                    "article_data" => $redis_article, 
-                ];
-                Redis::set("article:homepage", json_encode($result));
+                Redis::set( "article:homepage:string", $redis_article );
+                Redis::set( "article:homepage:md5", md5($redis_article) );
             }
         } catch (\Exception $e) {
             DB::rollBack();

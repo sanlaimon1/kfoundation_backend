@@ -36,12 +36,7 @@ class CurrencyController extends Controller
 
         $perPage = $request->input('perPage', 10);
         $currencies = Currency::orderBy('sort', 'asc')->paginate($perPage);
-
-        if (Redis::exists("currency:homepage")) {
-
-            Redis::get("currency:homepage");
-        } else {
-
+        if (!Redis::exists("currency:homepage:md5")){
             $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                         ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                         ->orderBy('sort', 'asc')
@@ -57,12 +52,8 @@ class CurrencyController extends Controller
                 array_push($array_currency, $data);
             };
             $redis_currency = json_encode($array_currency);
-            // Redis::set("currency:homepage", md5($redis_currency));
-            $result = [
-                "currency_md5" => md5($redis_currency),
-                "currency_data" => $redis_currency, 
-            ];
-            Redis::set("currency:homepage", json_encode($result));
+            Redis::set( "currency:homepage:string", $redis_currency );
+            Redis::set( "currency:homepage:md5", md5($redis_currency) );
         }
         return view('currency/index', compact('currencies'));
     }
@@ -156,7 +147,7 @@ class CurrencyController extends Controller
             return '添加错误，事务回滚';
         }
 
-        $old_redis_currency = Redis::get("currency:homepage");
+        $old_redis_currency = Redis::get("currency:homepage:md5");
     
         $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                     ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
@@ -174,12 +165,8 @@ class CurrencyController extends Controller
         };
         $redis_currency = json_encode($array_currency);
         if (md5($redis_currency) != $old_redis_currency) {
-            // Redis::set("currency:homepage", md5($redis_currency));
-            $result = [
-                "article_md5" => md5($redis_currency),
-                "article_data" => $redis_currency, 
-            ];
-            Redis::set("currency:homepage", json_encode($result));
+            Redis::set( "currency:homepage:string", $redis_currency );
+            Redis::set( "currency:homepage:md5", md5($redis_currency) );
         }
 
         return redirect()->route('currency.index');
@@ -283,7 +270,7 @@ class CurrencyController extends Controller
             return '添加错误，事务回滚';
         }
 
-        $old_redis_currency = Redis::get("currency:homepage");
+        $old_redis_currency = Redis::get("currency:homepage:md5");
     
         $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                     ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
@@ -301,12 +288,8 @@ class CurrencyController extends Controller
         };
         $redis_currency = json_encode($array_currency);
         if (md5($redis_currency) != $old_redis_currency) {
-            // Redis::set("currency:homepage", md5($redis_currency));
-            $result = [
-                "currency_md5" => md5($redis_currency),
-                "currency_data" => $redis_currency, 
-            ];
-            Redis::set("currency:homepage", json_encode($result));
+            Redis::set( "currency:homepage:string", $redis_currency );
+            Redis::set( "currency:homepage:md5", md5($redis_currency) );
         }
 
         return redirect()->route('currency.index');
@@ -356,7 +339,7 @@ class CurrencyController extends Controller
 
             DB::commit();
 
-            $old_redis_currency = Redis::get("currency:homepage");
+            $old_redis_currency = Redis::get("currency:homepage:md5");
     
             $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                         ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
@@ -374,12 +357,8 @@ class CurrencyController extends Controller
             };
             $redis_currency = json_encode($array_currency);
             if (md5($redis_currency) != $old_redis_currency) {
-                // Redis::set("currency:homepage", md5($redis_currency));
-                $result = [
-                    "currency_md5" => md5($redis_currency),
-                    "currency_data" => $redis_currency, 
-                ];
-                Redis::set("currency:homepage", json_encode($result));
+                Redis::set( "currency:homepage:string", $redis_currency );
+                Redis::set( "currency:homepage:md5", md5($redis_currency) );
             }
 
         } catch (\Exception $e) {

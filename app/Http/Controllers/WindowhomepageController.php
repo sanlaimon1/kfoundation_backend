@@ -48,6 +48,22 @@ class WindowhomepageController extends Controller
         $window_details = $item_cate1['window_details'];  //弹窗详情
         $is_shown = $item_cate1['is_shown'];  //是否显示
 
+        if (!Redis::exists("config:homepage:md5")) {
+            $config = Config::select('id', 'config_name', 'config_value','cate', 'comment')->where('id', 10)->limit(6)->get();
+            $array_config = [];
+            foreach ($config as $one) {
+                $data['id'] = $one->id;
+                $data['config_name'] = $one->config_name;
+                $data['config_value'] = $one->config_value;
+                $data['cate'] = $one->cate;
+                $data['comment'] = $one->comment;
+                array_push($array_config, $data);
+            };
+            $redis_config = json_encode($array_config);
+            Redis::set( "config:homepage:string", $redis_config );
+            Redis::set( "config:homepage:md5", md5($redis_config) );
+        }
+
         return view('config.windowhomepage', compact('window_details','is_shown') );
     }
 
@@ -138,11 +154,7 @@ class WindowhomepageController extends Controller
             return 'error';
         }
 
-        if (Redis::exists("config:homepage")) {
-
-            Redis::get("project:homepage");
-        } else {
-
+        if (!Redis::exists("config:homepage:md5")){
             $config = Config::select('id', 'config_name', 'config_value','cate', 'comment')->where('id', 10)->limit(6)->get();
             $array_config = [];
             foreach ($config as $one) {
@@ -154,12 +166,8 @@ class WindowhomepageController extends Controller
                 array_push($array_config, $data);
             };
             $redis_config = json_encode($array_config);
-            // Redis::set("project:homepage", md5($redis_config));
-            $result = [
-                "config_md5" => md5($redis_config),
-                "config_data" => $redis_config, 
-            ];
-            Redis::set("currency:homepage", json_encode($result));
+            Redis::set("config:homepage:string", $redis_config);
+            Redis::set("config:homepage:md5", md5($redis_config));
         }
 
         $arr = ['code'=>1, 'message'=>'保存成功'];

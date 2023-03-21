@@ -55,12 +55,7 @@ class ProjectController extends Controller
             $types[ $one_cat->id ] = $one_cat->cate_name;
         }
 
-
-        if (Redis::exists("project:homepage")) {
-
-            Redis::get("project:homepage");
-        } else {
-
+        if (!Redis::exists("project:homepage:md5")) {
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
             $array_project = [];
             foreach ($project as $one) {
@@ -73,14 +68,9 @@ class ProjectController extends Controller
                 array_push($array_project, $data);
             };
             $redis_project = json_encode($array_project);
-            // Redis::set("project:homepage", md5($redis_project));
-            $result = [
-                "project_md5" => md5($redis_project),
-                "project_data" => $redis_project, 
-            ];
-            Redis::set("project:homepage", json_encode($result));
+            Redis::set( "project:homepage:string", $redis_project );
+            Redis::set( "project:homepage:md5", md5($redis_project) );
         }
-
         return view('project.index', compact('projects', 'types'));
     }
 
@@ -226,6 +216,24 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+
+            $old_redis_project = Redis::get("project:homepage:md5");
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
+            $array_project = [];
+            foreach ($project as $one) {
+                $data['id'] = $one->id;
+                $data['project_name'] = $one->project_name;
+                $data['return_mode'] = $one->return_mode;
+                $data['days'] = $one->days;
+                $data['weeks'] = $one->weeks;
+                $data['months'] = $one->months;
+                array_push($array_project, $data);
+            };
+            $redis_project = json_encode($array_project);
+            if (md5($redis_project) != $old_redis_project) {
+                Redis::set( "project:homepage:string", $redis_project );
+                Redis::set( "project:homepage:md5", md5($redis_project) );
+            }
         } catch (\Exception $e) {
             DB::rollback();
             /**
@@ -237,30 +245,6 @@ class ProjectController extends Controller
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
-
-        $old_redis_project = Redis::get("project:homepage");
-        $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
-        $array_project = [];
-        foreach ($project as $one) {
-            $data['id'] = $one->id;
-            $data['project_name'] = $one->project_name;
-            $data['return_mode'] = $one->return_mode;
-            $data['days'] = $one->days;
-            $data['weeks'] = $one->weeks;
-            $data['months'] = $one->months;
-            array_push($array_project, $data);
-        };
-        $redis_project = json_encode($array_project);
-
-        if (md5($redis_project) != $old_redis_project) {
-            // Redis::set("project:homepage", md5($redis_project));
-            $result = [
-                "project_md5" => md5($redis_project),
-                "project_data" => $redis_project, 
-            ];
-            Redis::set("project:homepage", json_encode($result));
-        }
-
         return redirect()->route('project.index');
 
     }
@@ -408,6 +392,24 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+
+            $old_redis_project = Redis::get("project:homepage:md5");
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
+            $array_project = [];
+            foreach ($project as $one) {
+                $data['id'] = $one->id;
+                $data['project_name'] = $one->project_name;
+                $data['return_mode'] = $one->return_mode;
+                $data['days'] = $one->days;
+                $data['weeks'] = $one->weeks;
+                $data['months'] = $one->months;
+                array_push($array_project, $data);
+            };
+            $redis_project = json_encode($array_project);
+            if (md5($redis_project) != $old_redis_project) {
+                Redis::set( "project:homepage:string", $redis_project );
+                Redis::set( "project:homepage:md5", md5($redis_project) );
+            }
         } catch (\Exception $e) {
             DB::rollback();
             /**
@@ -419,28 +421,7 @@ class ProjectController extends Controller
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
-        $old_redis_project = Redis::get("project:homepage");
-        $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
-        $array_project = [];
-        foreach ($project as $one) {
-            $data['id'] = $one->id;
-            $data['project_name'] = $one->project_name;
-            $data['return_mode'] = $one->return_mode;
-            $data['days'] = $one->days;
-            $data['weeks'] = $one->weeks;
-            $data['months'] = $one->months;
-            array_push($array_project, $data);
-        };
-        $redis_project = json_encode($array_project);
-
-        if (md5($redis_project) != $old_redis_project) {
-            // Redis::set("project:homepage", md5($redis_project));
-            $result = [
-                "project_md5" => md5($redis_project),
-                "project_data" => $redis_project, 
-            ];
-            Redis::set("project:homepage", json_encode($result));
-        }
+        
         return redirect()->route('project.index');
     }
 
@@ -454,7 +435,6 @@ class ProjectController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -489,9 +469,10 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            $old_redis_project = Redis::get("project:homepage");
+
+            $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
-            $array_article = [];
+            $array_project = [];
             foreach ($project as $one) {
                 $data['id'] = $one->id;
                 $data['project_name'] = $one->project_name;
@@ -501,15 +482,11 @@ class ProjectController extends Controller
                 $data['months'] = $one->months;
                 array_push($array_project, $data);
             };
-            $redis_project = json_encode($array_article);
+            $redis_project = json_encode($array_project);
 
             if (md5($redis_project) != $old_redis_project) {
-                // Redis::set("project:homepage", md5($redis_project));
-                $result = [
-                    "project_md5" => md5($redis_project),
-                    "project_data" => $redis_project, 
-                ];
-                Redis::set("project:homepage", json_encode($result));
+                Redis::set( "project:homepage:string", $redis_project );
+                Redis::set( "project:homepage:md5", md5($redis_project) );
             }
 
         } catch (\Exception $e) {
