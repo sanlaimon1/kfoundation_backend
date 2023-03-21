@@ -45,6 +45,20 @@ class SlideController extends Controller
 
         $records = Slide::orderBy('sort', 'asc')->paginate($perPage);
 
+        $static_url = config("app.static_url");
+        if (!Redis::exists("slider:homepage:md5")){
+            $banners = Slide::select("picture_path",'link')
+                        ->where(['status' => 1, 'type' => 1])
+                        ->orderBy('sort', 'asc')->get();
+            $banner = [];
+            foreach($banners as $one_banner) {
+                $banner[] = [ 'zh_cn'=>$static_url . $one_banner->picture_path, 'url'=>$one_banner->link ];
+            }
+            $redis_slide = json_encode($banner);
+            Redis::set( "slider:homepage:string", $redis_slide );
+            Redis::set( "slider:homepage:md5", md5($redis_slide) );
+        }
+
         return view('slide.index', compact('records'));
     }
 
@@ -125,6 +139,24 @@ class SlideController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+
+            $static_url = config("app.static_url");
+            $old_redis_slide = Redis::get("slider:homepage:md5");
+            $banners = Slide::select("picture_path",'link')
+                        ->where(['status' => 1, 'type' => 1])
+                        ->orderBy('sort', 'asc')->get();
+
+            $banner = [];
+            foreach($banners as $one_banner) {
+                $banner[] = [ 'zh_cn'=>$static_url . $one_banner->picture_path, 'url'=>$one_banner->link ];
+            }
+            $redis_slide = json_encode($banner);
+
+            if (md5($redis_slide) != $old_redis_slide) {
+                Redis::set( "slider:homepage:string", $redis_slide );
+                Redis::set( "slider:homepage:md5", md5($redis_slide) );
+            }
+
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
@@ -220,6 +252,24 @@ class SlideController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
+
+            $static_url = config("app.static_url");
+            $old_redis_slide = Redis::get("slider:homepage:md5");
+            $banners = Slide::select("picture_path",'link')
+                    ->where(['status' => 1, 'type' => 1])
+                    ->orderBy('sort', 'asc')->get();
+
+            $banner = [];
+            foreach($banners as $one_banner) {
+                $banner[] = [ 'zh_cn'=>$static_url . $one_banner->picture_path, 'url'=>$one_banner->link ];
+            }
+            $redis_slide = json_encode($banner);
+
+            if (md5($redis_slide) != $old_redis_slide) {
+                Redis::set( "slider:homepage:string", $redis_slide );
+                Redis::set( "slider:homepage:md5", md5($redis_slide) );
+            }
+
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
@@ -266,6 +316,23 @@ class SlideController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
+
+            $static_url = config("app.static_url");
+            $old_redis_slide = Redis::get("slider:homepage:md5");
+            $banners = Slide::select("picture_path",'link')
+                        ->where(['status' => 1, 'type' => 1])
+                        ->orderBy('sort', 'asc')->get();
+
+            $banner = [];
+            foreach($banners as $one_banner) {
+                $banner[] = [ 'zh_cn'=>$static_url . $one_banner->picture_path, 'url'=>$one_banner->link ];
+            }
+            $redis_slide = json_encode($banner);
+
+            if (md5($redis_slide) != $old_redis_slide) {
+                Redis::set( "slider:homepage:string", $redis_slide );
+                Redis::set( "slider:homepage:md5", md5($redis_slide) );
+            }
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();

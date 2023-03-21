@@ -56,8 +56,9 @@ class ProjectController extends Controller
         }
 
         if (!Redis::exists("project:homepage:md5")) {
-            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
-            $array_project = [];
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
+                                ->where('is_homepage', 1)->where('enable', 1)
+                                ->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->limit(6)->get();
             foreach ($project as $one) {
                 $data['id'] = $one->id;
                 $data['project_name'] = $one->project_name;
@@ -218,7 +219,9 @@ class ProjectController extends Controller
             DB::commit();
 
             $old_redis_project = Redis::get("project:homepage:md5");
-            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
+                                ->where('is_homepage', 1)->where('enable', 1)
+                                ->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->limit(6)->get();
             $array_project = [];
             foreach ($project as $one) {
                 $data['id'] = $one->id;
@@ -394,7 +397,9 @@ class ProjectController extends Controller
             DB::commit();
 
             $old_redis_project = Redis::get("project:homepage:md5");
-            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
+                                ->where('is_homepage', 1)->where('enable', 1)
+                                ->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->limit(6)->get();
             $array_project = [];
             foreach ($project as $one) {
                 $data['id'] = $one->id;
@@ -471,7 +476,9 @@ class ProjectController extends Controller
             DB::commit();
 
             $old_redis_project = Redis::get("project:homepage:md5");
-            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')->where('enable', 1)->orderBy('sort', 'asc')->limit(6)->get();
+            $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
+                                ->where('is_homepage', 1)->where('enable', 1)
+                                ->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->limit(6)->get();
             $array_project = [];
             foreach ($project as $one) {
                 $data['id'] = $one->id;

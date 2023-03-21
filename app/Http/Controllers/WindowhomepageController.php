@@ -48,20 +48,17 @@ class WindowhomepageController extends Controller
         $window_details = $item_cate1['window_details'];  //弹窗详情
         $is_shown = $item_cate1['is_shown'];  //是否显示
 
-        if (!Redis::exists("config:homepage:md5")) {
-            $config = Config::select('id', 'config_name', 'config_value','cate', 'comment')->where('id', 10)->limit(6)->get();
-            $array_config = [];
-            foreach ($config as $one) {
-                $data['id'] = $one->id;
-                $data['config_name'] = $one->config_name;
-                $data['config_value'] = $one->config_value;
-                $data['cate'] = $one->cate;
-                $data['comment'] = $one->comment;
-                array_push($array_config, $data);
-            };
-            $redis_config = json_encode($array_config);
-            Redis::set( "config:homepage:string", $redis_config );
-            Redis::set( "config:homepage:md5", md5($redis_config) );
+        if (!Redis::exists("popwindow:homepage:md5")) {
+            $popup_content = Config::find(10)->config_value;
+
+            $popup = [
+                'content'=>$popup_content,
+                'show'=>1,
+            ];
+
+            $popwindow = json_encode($popup);
+            Redis::set( "popwindow:homepage:string", $popwindow );
+            Redis::set( "popwindow:homepage:md5", md5($popwindow) );
         }
 
         return view('config.windowhomepage', compact('window_details','is_shown') );
@@ -148,28 +145,24 @@ class WindowhomepageController extends Controller
                 throw new \Exception('事务中断2');
             DB::commit();
 
+            $old_popup = Redis::get("popwindow:homepage:md5");
+            $popup_content = Config::find(10)->config_value;
+
+            $popup = [
+                'content'=>$popup_content,
+                'show'=>1,
+            ];
+            $popwindow = json_encode($popup);
+            if(md5($popwindow) != $old_popup) {
+                Redis::set("popwindow:homepage:string", $popwindow);
+                Redis::set("popwindow:homepage:md5", md5($popwindow));
+            }
+
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             return 'error';
         }
-
-        if (!Redis::exists("config:homepage:md5")){
-            $config = Config::select('id', 'config_name', 'config_value','cate', 'comment')->where('id', 10)->limit(6)->get();
-            $array_config = [];
-            foreach ($config as $one) {
-                $data['id'] = $one->id;
-                $data['config_name'] = $one->config_name;
-                $data['config_value'] = $one->config_value;
-                $data['cate'] = $one->cate;
-                $data['comment'] = $one->comment;
-                array_push($array_config, $data);
-            };
-            $redis_config = json_encode($array_config);
-            Redis::set("config:homepage:string", $redis_config);
-            Redis::set("config:homepage:md5", md5($redis_config));
-        }
-
         $arr = ['code'=>1, 'message'=>'保存成功'];
         return response()->json( $arr );
     }

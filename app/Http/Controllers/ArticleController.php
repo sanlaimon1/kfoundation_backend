@@ -40,28 +40,41 @@ class ArticleController extends Controller
     {
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        $static_url = config("app.static_url");
 
         if (!(($permission->auth2 ?? 0) & 1)) {
             return "您没有权限访问这个路径";
         }
 
         $perPage = $request->input('perPage', 10);
-        $articles = Article::select('id', 'title', 'content', 'categoryid', 'adminid', 'litpic', 'sort')->orderBy('sort', 'asc')->orderBy('created_at', 'desc')->paginate($perPage);
+        $articles = Article::select('id', 'title', 'content', 'categoryid', 'adminid', 'litpic', 'sort')
+                    ->orderBy('sort', 'asc')
+                    ->orderBy('created_at', 'desc')
+                    ->paginate($perPage);
 
         if (!Redis::exists("article:homepage:md5")) {
-            $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $article = Article::select('id', 'title', 'litpic')
+                        ->orderBy('sort', 'asc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get();
+
             $array_article = [];
             foreach ($article as $one) {
                 $data['id'] = $one->id;
                 $data['title'] = $one->title;
-                $data['litpic'] = config("app.static_url") . $one->litpic;
+                if($one->litpic == null){
+                    $litpic = $static_url . "/images/default.png" ;
+                }else {
+                    $litpic = $static_url . $one->litpic;
+                }
+                $data['litpic'] = $litpic;
                 array_push($array_article, $data);
             };
             $redis_article = json_encode($array_article);
             Redis::set( "article:homepage:string", $redis_article );
             Redis::set( "article:homepage:md5", md5($redis_article) );
         }
-
         return view('article.index', compact('articles'));
     }
 
@@ -88,6 +101,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        $static_url = config("app.static_url");
         if (Redis::exists("permission:" . Auth::id())) {
             $arr = ['code' => -1, 'message' => config('app.redis_second') . '秒内不能重复提交'];
             return json_encode($arr);
@@ -121,7 +135,6 @@ class ArticleController extends Controller
         $content = trim(htmlspecialchars($request->get('content')));
         $categoryid = trim($request->get('categoryid'));
         $sort = trim($request->sort);
-
         DB::beginTransaction();
         try {
             //code...
@@ -152,28 +165,37 @@ class ArticleController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+
+            $old_redis_article = Redis::get("article:homepage:md5");
+            $article = Article::select('id', 'title', 'litpic')
+                        ->orderBy('sort', 'asc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get();
+
+            $array_article = [];
+            foreach ($article as $one) {
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                if($one->litpic == null){
+                    $litpic = $static_url . "/images/default.png" ;
+                }else {
+                    $litpic = $static_url . $one->litpic;
+                }
+                $data['litpic'] = $litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);
+
+            if (md5($redis_article) != $old_redis_article) {
+                Redis::set( "article:homepage:string", $redis_article );
+                Redis::set( "article:homepage:md5", md5($redis_article) );
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             return '添加错误，事务回滚' . $e->getMessage();
         }
-
-        $old_redis_article = Redis::get("article:homepage:md5");
-        $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
-        $array_article = [];
-        foreach ($article as $one) {
-            $data['id'] = $one->id;
-            $data['title'] = $one->title;
-            $data['litpic'] = config("app.static_url") . $one->litpic;
-            array_push($array_article, $data);
-        };
-        $redis_article = json_encode($array_article);
-
-        if (md5($redis_article) != $old_redis_article) {
-            Redis::set( "article:homepage:string", $redis_article );
-            Redis::set( "article:homepage:md5", md5($redis_article) );
-        }
-
         return redirect()->route('article.index');
     }
 
@@ -217,6 +239,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $static_url = config("app.static_url");
         if (Redis::exists("permission:" . Auth::id())) {
             $arr = ['code' => -1, 'message' => config('app.redis_second') . '秒内不能重复提交'];
             return json_encode($arr);
@@ -281,28 +304,40 @@ class ArticleController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
+
+            $old_redis_article = Redis::get("article:homepage:md5");
+            $article = Article::select('id', 'title', 'litpic')
+                        ->orderBy('sort', 'asc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get();
+
+            $array_article = [];
+            foreach ($article as $one) {
+                $data['id'] = $one->id;
+                $data['title'] = $one->title;
+                if($one->litpic == null){
+                    $litpic = $static_url . "/images/default.png" ;
+                }else {
+                    $litpic = $static_url . $one->litpic;
+                }
+                $data['litpic'] = $litpic;
+                array_push($array_article, $data);
+            };
+            $redis_article = json_encode($array_article);
+
+            if (md5($redis_article) != $old_redis_article) {
+                // Redis::set("article:homepage", md5($redis_article));
+                Redis::set( "article:homepage:string", $redis_article );
+                Redis::set( "article:homepage:md5", md5($redis_article) );
+            }
+
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
-        $old_redis_article = Redis::get("article:homepage:md5");
-        $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
-        $array_article = [];
-        foreach ($article as $one) {
-            $data['id'] = $one->id;
-            $data['title'] = $one->title;
-            $data['litpic'] = config("app.static_url") . $one->litpic;
-            array_push($array_article, $data);
-        };
-        $redis_article = json_encode($array_article);
-
-        if (md5($redis_article) != $old_redis_article) {
-            // Redis::set("article:homepage", md5($redis_article));
-            Redis::set( "article:homepage:string", $redis_article );
-            Redis::set( "article:homepage:md5", md5($redis_article) );
-        }
-
+        
         return redirect()->route('article.index');
     }
 
@@ -311,6 +346,7 @@ class ArticleController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
+        $static_url = config("app.static_url");
         if (Redis::exists("permission:" . Auth::id())) {
             $arr = ['code' => -1, 'message' => config('app.redis_second') . '秒内不能重复提交'];
             return json_encode($arr);
@@ -350,12 +386,22 @@ class ArticleController extends Controller
             DB::commit();
 
             $old_redis_article = Redis::get("article:homepage:md5");
-            $article = Article::select('id', 'title', 'litpic')->orderBy('id', 'desc')->limit(6)->get();
+            $article = Article::select('id', 'title', 'litpic')
+                        ->orderBy('sort', 'asc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get();
+
             $array_article = [];
             foreach ($article as $one) {
                 $data['id'] = $one->id;
                 $data['title'] = $one->title;
-                $data['litpic'] = config("app.static_url") . $one->litpic;
+                if($one->litpic == null){
+                    $litpic = $static_url . "/images/default.png" ;
+                }else {
+                    $litpic = $static_url . $one->litpic;
+                }
+                $data['litpic'] = $litpic;
                 array_push($array_article, $data);
             };
             $redis_article = json_encode($array_article);
@@ -376,7 +422,13 @@ class ArticleController extends Controller
     {
         if (!Redis::exists("notice:homepage:md5")) {
            
-            $notice = Article::select('id', 'title')->where('categoryid', '=', 4)->orderBy('id', 'desc')->limit(6)->get();
+            $notice = Article::select('id', 'title')
+                        ->where('categoryid', '=', 4)
+                        ->orderBy('sort','asc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get();
+
             $array_notice = [];
             foreach ($notice as $one) {
                 $data['id'] = $one->id;
