@@ -229,7 +229,6 @@ class WebsiteController extends Controller
         $logo = '';
         if(Redis::get('logo') == $static_url . Config::find(8)->config_value) {
             $logo = Redis::get('logo');
-            dd($logo);
         } else {
             $logo = $static_url . Config::find(8)->config_value;
             Redis::set('logo', $logo);
