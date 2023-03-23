@@ -55,6 +55,7 @@ class ProjectController extends Controller
             $types[ $one_cat->id ] = $one_cat->cate_name;
         }
 
+        $array_project = [];
         if (!Redis::exists("project:homepage:md5")) {
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
                                 ->where('is_homepage', 1)->where('enable', 1)
