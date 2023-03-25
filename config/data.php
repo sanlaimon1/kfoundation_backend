@@ -11,7 +11,7 @@ return [
     'projects' => [ '项目列表'=>'/project', '项目分类'=>'/projectcate',
                 '已投项目'=>'/order1', '返息明细'=>'/interest','币价管理'=>'/currency'],
     //商城管理
-    'shop'=>['商品管理'=>'/goods', '商品订单管理'=>'/order2'],
+    'shop'=>['商品管理'=>'/goods', '商品订单管理'=>'/order2','交易所管理'=>'/trade'],
     //生活服务
     'service_life'=>['充值缴费'=>'/life','生活服务订单管理'=>'/order3'],
     //用户中心
