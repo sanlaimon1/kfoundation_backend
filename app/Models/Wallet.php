@@ -15,4 +15,9 @@ class Wallet extends Model
         
         return $this->hasOne('App\Models\Customer', 'id', 'userid');
     }
+
+    public function payment()
+    {
+        return $this->belongsTo('App\Models\Payment', 'payid', 'pid');
+    }
 }

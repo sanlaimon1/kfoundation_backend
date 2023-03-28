@@ -10,6 +10,7 @@ use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Cache\RedisStore;
 use Illuminate\Support\Facades\Redis;
 
 class WalletController extends Controller
@@ -30,6 +31,7 @@ class WalletController extends Controller
     public function index(Request $request)
     {
         $role_id = Auth::user()->rid;
+        // $uid = Customer::;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
@@ -43,6 +45,34 @@ class WalletController extends Controller
 
         $title = "用户钱包列表";
 
+        $mywallets_string = $mywallets_dropdownlist_string = '';
+        if(Redis::exists('mywallets')) {
+            $mywallets_string = Redis::get('mywallets');
+        } else {
+            $lists = Wallet::select(['id','payid','address','realname'])
+                        // ->where('userid', $uid)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+            $mywallets = $mywallets_dropdownlist = [];
+            foreach($lists as $one_wallet) {
+                $mywallets[ $one_wallet->id ] = [
+                                'payid'=>$one_wallet->payid,
+                                'payment_name'=>$one_wallet->payment->payment_name,
+                                'address'=>$one_wallet->address,
+                                'realname'=>$one_wallet->realname,
+                                'rate'=>$one_wallet->payment->rate,
+                            ];
+
+                $mywallets_dropdownlist[] = [
+                                'id'=>$one_wallet->id, 'payment_name'=>$one_wallet->payment->payment_name,
+                            ];
+            }
+            $mywallets_string = json_encode($mywallets);
+            Redis::set('mywallets', $mywallets_string);
+            $mywallets_dropdownlist_string = json_encode($mywallets_dropdownlist);
+            Redis::set('mywallets_dropdownlist', $mywallets_dropdownlist_string);
+        }
         return view( 'wallet.index', compact('records', 'types', 'title') );
     }
 
@@ -61,6 +91,7 @@ class WalletController extends Controller
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
         $role_id = Auth::user()->rid;
+        $uid = Auth::user()->id;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
@@ -91,6 +122,34 @@ class WalletController extends Controller
             if(!$log->save())
                 throw new \Exception('事务中断2');
             DB::commit();
+
+            $mywallets_string = $mywallets_dropdownlist_string = '';
+            $old_wallet_redis = Redis::get('mywallet');
+            $lists = Wallet::select(['id','payid','address','realname'])
+                        // ->where('userid', $uid)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+            $mywallets = $mywallets_dropdownlist = [];
+            foreach($lists as $one_wallet) {
+                $mywallets[ $one_wallet->id ] = [
+                                'payid'=>$one_wallet->payid,
+                                'payment_name'=>$one_wallet->payment->payment_name,
+                                'address'=>$one_wallet->address,
+                                'realname'=>$one_wallet->realname,
+                                'rate'=>$one_wallet->payment->rate,
+                            ];
+
+                $mywallets_dropdownlist[] = [
+                                'id'=>$one_wallet->id, 'payment_name'=>$one_wallet->payment->payment_name,
+                            ];
+            }
+            $mywallets_string = json_encode($mywallets);
+            if($old_wallet_redis != $mywallets_string){
+                Redis::set('mywallets', $mywallets_string);
+                $mywallets_dropdownlist_string = json_encode($mywallets_dropdownlist);
+                Redis::set('mywallets_dropdownlist', $mywallets_dropdownlist_string);
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
