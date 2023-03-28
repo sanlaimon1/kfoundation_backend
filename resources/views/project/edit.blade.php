@@ -37,7 +37,7 @@
                 {{ session('message') }}
             </div>
         @endif
-        
+
         <form action="{{route('project.update',$project->id)}}" method="post" enctype="multipart/form-data">
             @csrf
             @method('put')
@@ -86,7 +86,7 @@
                         @enderror
                         <input type="text" class="form-control" id="usage" name="usage" value="{{$project->usage}}" >
                     </div>
-                    
+
                 </div>
 
                 <div class="row">
@@ -256,7 +256,7 @@
                         @error('level_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        
+
                         <select id="level_id" name="level_id"  class="form-select" >
                             @foreach( $levels as $level )
                             <option value="{{ $level->level_id }}" {{ $level->level_id == $project->level_id ? 'selected' : ''}}> {{ $level->level_name }} </option>
@@ -281,7 +281,7 @@
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        
+
                         <input type="number" class="form-control" id="sort" name="sort" value="{{ $project->sort }}">
                     </div>
                 </div>
@@ -301,10 +301,10 @@
                         @error('detail')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea type="text" class="form-control" id="detail" name="detail" value="" > {{$project->details}}</textarea>
+                        <textarea type="text" class="form-control" id="detail" name="detail" >{{ html_entity_decode( $project->details ) }}</textarea>
                     </div>
                 </div>
-                
+
                 <div align="center">
                     <!-- <a class="btn btn-secondary w-25" href="{{ route('project.index') }}" style="margin-right:1rem;">返回</a> -->
                     <button class="btn btn-secondary  w-25" action="action" onclick="window.history.go(-1); return false;" style="margin-right:1rem;">返回</button>
@@ -313,7 +313,7 @@
             </section>
 
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')
