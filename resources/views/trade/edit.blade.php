@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <script src="/ckeditor/ckeditor.js"></script>
 
     <style>
         #app
@@ -162,14 +163,37 @@
                 </div>
                 <div class="row p-3">
                     <div class="mb-3 col-6">
-                    <label for="next_id" class="form-label">下一个商品变化的id</label>
+                        <label for="next_id" class="form-label">下一个商品变化的id</label>
                         @error('next_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="{{$trade_goods->next_id}}">
                     </div>
                     <div class="mb-3 col-6">
-                        <label for="desc" class="form-label">缩略图</label>
+                        <label for="selling_price" class="form-label">卖出价格</label>
+                        @error('selling_price')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" class="form-control" id="selling_price" name="selling_price" placeholder="0.00" value="{{$trade_goods->selling_price}}">
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-12">
+                        <label for="content" class="form-label">描述</label>
+                        @error('content')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <textarea class="form-control" id="content" name="content">{{ html_entity_decode( $trade_goods->description ) }}</textarea>
+                        <script>
+                           CKEDITOR.replace('content',{
+                                language: 'zh'
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-6">
+                        <label for="" class="form-label">缩略图</label>
                         <!-- <button class="btn btn-warning">选择</button> -->
                         <img id="show-images" src="{{$trade_goods->images}}" width="120" height="120" />
                         <input type="file" id="images" name="images" hidden/>
