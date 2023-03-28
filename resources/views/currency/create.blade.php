@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <link href="/css/jquery-ui.css" rel="stylesheet" >
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery-ui.min.js"></script>
+    <script src="i18n/datepicker-zh-TW.js"></script>
 
     <style>
         #app
@@ -134,8 +138,7 @@
                         @error('add_time')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="hidden" name="add_time" id="add_time_formatted" value="">
-                        <input type="datetime-local" step="1" class="form-control" id="add_time"  placeholder="添加时间"  value="">
+                        <input type="text" class="form-control" id="add_time" name="add_time"  placeholder="添加时间"  value="">
 
                     </div>
                     <div class="mb-3 col-6">
@@ -157,21 +160,54 @@
 
 </body>
 </html>
-
 <script>
-    const dateInput = document.getElementById('add_time');
-    $(document).ready(function()
-    {
-        dateInput.addEventListener('change',function()
+    ( function( factory ) { //chinese edition datepicker function
+        if ( typeof define === "function" && define.amd ) {
+
+            // AMD. Register as an anonymous module.
+            define( [ "../widgets/datepicker" ], factory );
+        } else {
+
+            // Browser globals
+            factory( jQuery.datepicker );
+        }
+    }( function( datepicker ) {
+
+        datepicker.regional[ "zh-TW" ] =
         {
-            const dateTimeString = dateInput.value;
-            console.log(dateTimeString);
-            const formattedDateTimeString = dateTimeString.replace("T", " ").replace(/\.\d{3}Z/, "");
-            $("#add_time_formatted").val(formattedDateTimeString);
+            closeText: "關閉",
+            prevText: "&#x3C;上個月",
+            nextText: "下個月&#x3E;",
+            currentText: "今天",
+            monthNames: [ "一月","二月","三月","四月","五月","六月",
+            "七月","八月","九月","十月","十一月","十二月" ],
+            monthNamesShort: [ "一月","二月","三月","四月","五月","六月",
+            "七月","八月","九月","十月","十一月","十二月" ],
+            dayNames: [ "星期日","星期一","星期二","星期三","星期四","星期五","星期六" ],
+            dayNamesShort: [ "週日","週一","週二","週三","週四","週五","週六" ],
+            dayNamesMin: [ "日","一","二","三","四","五","六" ],
+            weekHeader: "週",
+            dateFormat: "yy/mm/dd",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: true,
+            yearSuffix: "年"
+        };
+        datepicker.setDefaults( datepicker.regional[ "zh-TW" ] );
+        return datepicker.regional[ "zh-TW" ];
+    }));
+    $(document).ready(function() {
 
-        })
+        $(function() {
+            $( "#add_time" ).datepicker({
+                dateFormat: 'yy-mm-dd',
+                language : 'sv'
+            });
 
-    });
 
+        });
+    })
 </script>
+
+
 

@@ -120,7 +120,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('trade.index') }}">交易所管理</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">创建交易所</li>
+                <li class="breadcrumb-item active" aria-current="page">创建交易商品</li>
             </ol>
         </nav>
 
@@ -165,7 +165,7 @@
                         @error('next_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="">
+                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="0">
                     </div>
                     <div class="mb-3 col-6">
                         <label for="desc" class="form-label">缩略图</label>
