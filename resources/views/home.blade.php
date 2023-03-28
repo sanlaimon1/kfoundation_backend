@@ -392,13 +392,12 @@
                     var asset_check_status = json.asset_check_status;
                     var balance_check_status = json.balance_check_status;
 
-                    // if (code == 2) {
-                    //     var message = json.message;
-                    //     alert(message);
-                    //     //登出
-                    //     document.getElementById('logout-form').submit();
-                    //     return;
-                    // }
+                    if (code == 2) {
+                        var message = json.message;
+                        //登出
+                        document.getElementById('logout-form').submit();
+                        return;
+                    }
 
                     if ((asset_check_status > 0 || balance_check_status > 0) && (code == 1)) {
 

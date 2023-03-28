@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\Log;
 use App\Rules\ForbidUserRule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -129,6 +131,17 @@ class LoginController extends Controller
                 $request->session()->put('auth.password_confirmed_at', time());
             }
 
+            $username = Auth::user()->username;
+            $sessionId =$request->session()->getId();
+            if(Redis::exists('online:'.$username)){
+                $redis_sessionId = Redis::get('online:'.$username);                
+                Redis::del('online:'.$username,$redis_sessionId);
+                Redis::set('online:'.$username,$sessionId);
+               
+            }else{
+                Redis::set('online:'.$username,$sessionId);
+            }
+            
             return $this->sendLoginResponse($request);
         } else {
             $error_message = '密码错误';
