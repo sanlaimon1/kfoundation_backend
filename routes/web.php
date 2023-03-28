@@ -165,3 +165,5 @@ Route::post('/unset_sheep','App\Http\Controllers\CustomerController@unset_sheep'
 Route::get('/level1/{parentid}', 'App\Http\Controllers\CustomerController@queryLevel1')->name('customer.level1');
 //查询其他级别的下级用户
 Route::get('/levelx/{id}', 'App\Http\Controllers\CustomerController@queryLevelx')->name('customer.levelx');
+//交易所管理
+Route::resource('trade', 'App\Http\Controllers\TradeController');

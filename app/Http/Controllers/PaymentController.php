@@ -35,6 +35,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        $static_url = config("app.static_url"); // 静态访问的url
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -45,6 +46,27 @@ class PaymentController extends Controller
         $perPage = $request->input('perPage', 10);
         $payments = Payment::select('pid', 'sort','show','payment_name','ptype', 'logo')->orderBy('sort','asc')->paginate($perPage);
 
+        if(Redis::exists('payments')) {
+            $payment_string = Redis::get('payments');
+        } else {
+            $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
+                    ->where('show', 1)
+                    ->orderBy('sort', 'asc')
+                    ->get();
+
+            $payments = [];
+            foreach($list_payment as $one_payment) {
+                $payments[$one_payment->pid] = [
+                                'pname'=>$one_payment->payment_name, 
+                                'min'=>$one_payment->min_pay,
+                                'rate'=>$one_payment->rate,
+                                'logo'=>$static_url . $one_payment->logo,
+                            ];
+            }
+
+            $payment_string = json_encode($payments);
+            Redis::set('payments', $payment_string);
+        }
         return view('config.payment', compact('payments'));
     }
 
@@ -108,6 +130,7 @@ class PaymentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $static_url = config("app.static_url"); // 静态访问的url
         if (Redis::exists("permission:".Auth::id())){
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
@@ -135,7 +158,7 @@ class PaymentController extends Controller
         $request->validate([
             'payment_name' => ['required', 'string', 'between:4,20'],
             'sort' => ['required', 'integer', 'gt:0'],
-            'level' => ['required', 'integer', 'gte:0'],
+            // 'level' => ['required', 'integer', 'gte:0'],
             'ptype' => ['required', 'integer', 'in:' . $ptypes_string],
             'give' => ['required', 'numeric', 'gte:0'],
             'rate' => ['required', 'numeric', 'gte:0'],
@@ -146,14 +169,14 @@ class PaymentController extends Controller
 
         $payment_name = trim( $request->get('payment_name') );
         $sort = trim( $request->get('sort') );
-        $level = trim( $request->get('level') );
+        // $level = trim( $request->get('level') );
         $ptype = trim( $request->get('ptype') );
         $give = trim( $request->get('give') );
         $description = trim( $request->get('description') );
         $rate = trim($request->get('rate'));
 
         $sort = (int)$sort;
-        $level = (int)$level;
+        // $level = (int)$level;
         $ptype = (int)$ptype;
 
         $id = (int)$id;
@@ -171,7 +194,7 @@ class PaymentController extends Controller
                 $one = Payment::find($id);
                 $one->payment_name = $payment_name;
                 $one->sort = $sort;
-                $one->level = $level;
+                // $one->level = $level;
                 $one->ptype = $ptype;
                 if($request->hasFile('upload_logo')){
                     $upload_logo = time().'.'.$request->upload_logo->extension();
@@ -212,10 +235,29 @@ class PaymentController extends Controller
                     throw new \Exception('事务中断2');
 
                 DB::commit();
+                // $old_payment_redis = Redis::get("payments");
+                // $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
+                //         ->where('show', 1)
+                //         ->orderBy('sort', 'asc')
+                //         ->get();
+                // $payments = [];
+                // foreach($list_payment as $one_payment) {
+                //     $payments[$one_payment->pid] = [
+                //                     'pname'=>$one_payment->payment_name, 
+                //                     'min'=>$one_payment->min_pay,
+                //                     'rate'=>$one_payment->rate,
+                //                     'logo'=>$static_url . $one_payment->logo,
+                //                 ];
+                // }
+
+                // $payment_string = json_encode($payments);
+                // if($old_payment_redis != $payment_string){
+                //     Redis::set('payments', $payment_string);
+                // }
 
             } catch (\Exception $e) {
                 DB::rollBack();
-                //echo $e->getMessage();
+                echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
 
@@ -235,7 +277,7 @@ class PaymentController extends Controller
                 $one = Payment::find($id);
                 $one->payment_name = $payment_name;
                 $one->sort = $sort;
-                $one->level = $level;
+                // $one->level = $level;
                 $one->ptype = $ptype;
                 if($request->hasFile('upload_logo')){
                     $upload_logo = time().'.'.$request->upload_logo->extension();
@@ -269,12 +311,32 @@ class PaymentController extends Controller
 
                 DB::commit();
 
+                $old_payment_redis = Redis::get("payments");
+                $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
+                        ->where('show', 1)
+                        ->orderBy('sort', 'asc')
+                        ->get();
+                $payments = [];
+                foreach($list_payment as $one_payment) {
+                    $payments[$one_payment->pid] = [
+                                    'pname'=>$one_payment->payment_name, 
+                                    'min'=>$one_payment->min_pay,
+                                    'rate'=>$one_payment->rate,
+                                    'logo'=>$static_url . $one_payment->logo,
+                                ];
+                }
+
+                $payment_string = json_encode($payments);
+                if($old_payment_redis != $payment_string){
+                    Redis::set('payments', $payment_string);
+                }
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
-
+            
         } else {
             return '未知类型';
         }

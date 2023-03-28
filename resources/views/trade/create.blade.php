@@ -9,10 +9,7 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
-    <link href="/css/jquery-ui.css" rel="stylesheet" >
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery-ui.min.js"></script>
-    <script src="i18n/datepicker-zh-TW.js"></script>
+    <script src="/ckeditor/ckeditor.js"></script>
 
     <style>
         #app
@@ -33,6 +30,18 @@
             border: 1px solid black;
             border-radius:5px;
             margin-top: .5rem;
+        }
+        .images
+        {
+
+            display: inline-block;
+            background-color: #ffc107;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: #000
         }
     </style>
     <script>
@@ -80,7 +89,26 @@
                 location.reload();
             });
         });
+
+        $(function(){
+            function readURLimages(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#show-images').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#images").change(function(){
+                readURLimages(this);
+            });
+        });
     </script>
+
 
 </head>
 
@@ -89,64 +117,86 @@
         <nav id="nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('satistatics') }}">后台首页</a></li>
-                <li class="breadcrumb-item">项目管理</li>
+                <li class="breadcrumb-item">商城管理</li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('currency.index') }}">币价管理</a>
+                    <a href="{{ route('trade.index') }}">交易所管理</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">创建新币价</li>
+                <li class="breadcrumb-item active" aria-current="page">创建交易商品</li>
             </ol>
         </nav>
 
-        <form action="{{ route('currency.store') }}" method="post">
+        <form action="{{ route('trade.store') }}" method="post" enctype="multipart/form-data">
             {{ csrf_field() }}
             <section class="row frame">
                 <div class="row p-3">
                     <div class="mb-3 col-6">
-                        <label for="new_price" class="form-label">最新价格</label>
-                        @error('new_price')
+                        <label for="goods_name" class="form-label">商品名称</label>
+                        @error('goods_name')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control " id="new_price" name="new_price" placeholder="最新价格" value="">
+                        <input type="text" class="form-control " id="goods_name" name="goods_name" placeholder="商品名称" value="">
                     </div>
                     <div class="mb-3 col-6">
-                        <label for="open_price" class="form-label">开盘价格</label>
-                            @error('open_price')
+                        <label for="days" class="form-label">天数</label>
+                            @error('days')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
-                            <input type="number" step="any" class="form-control" id="open_price" name="open_price" placeholder="开盘价格" value="">
+                            <input type="number" class="form-control" id="days" name="days" placeholder="天数" value="">
                     </div>
                 </div>
                 <div class="row p-3">
                     <div class="mb-3 col-6">
-                        <label for="min_price" class="form-label">最低价格</label>
-                        @error('min_price')
+                        <label for="price" class="form-label">价格</label>
+                        @error('price')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="min_price" name="min_price" placeholder="最低价格" value="">
+                        <input type="number" step="any" class="form-control" id="price" name="price" placeholder="价格" value="">
                     </div>
                     <div class="mb-3 col-6">
-                        <label for="max_price" class="form-label">最高价格</label>
-                        @error('max_price')
+                        <label for="fee" class="form-label">手续费百分比</label>
+                        @error('fee')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" step="any" class="form-control" id="max_price" name="max_price" placeholder="最高价格" value="">
+                        <input type="number" step="any" class="form-control" id="fee" name="fee" placeholder="手续费百分比" value="">
                     </div>
                 </div>
                 <div class="row p-3">
                     <div class="mb-3 col-6">
-                        <label for="add_time" class="form-label">添加时间</label>
-                        @error('add_time')
+                        <label for="next_id" class="form-label">下一个商品变化的id</label>
+                        @error('next_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="add_time" name="add_time"  placeholder="添加时间"  value="">
-
+                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="0">
                     </div>
                     <div class="mb-3 col-6">
-                        <label for="sort" class="form-label">排序</label>
-                        @error('sort')
+                        <label for="selling_price" class="form-label">卖出价格</label>
+                        @error('selling_price')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="">
+                        <input type="number" class="form-control" id="selling_price" name="selling_price" placeholder="0.00" value="">
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-12">
+                        <label for="content" class="form-label">描述</label>
+                        @error('content')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <textarea class="form-control" id="content" name="content"></textarea>
+                        <script>
+                           CKEDITOR.replace('content',{
+                                language: 'zh'
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-6">
+                        <label for="" class="form-label">缩略图</label>
+                        <!-- <button class="btn btn-warning">选择</button> -->
+                        <img id="show-images" src="#" width="120" height="120" />
+                        <input type="file" id="images" name="images" hidden/>
+                        <label class="images" for="images">选择</label>
                     </div>
                 </div>
             </section>
@@ -160,54 +210,3 @@
 
 </body>
 </html>
-<script>
-    ( function( factory ) { //chinese edition datepicker function
-        if ( typeof define === "function" && define.amd ) {
-
-            // AMD. Register as an anonymous module.
-            define( [ "../widgets/datepicker" ], factory );
-        } else {
-
-            // Browser globals
-            factory( jQuery.datepicker );
-        }
-    }( function( datepicker ) {
-
-        datepicker.regional[ "zh-TW" ] =
-        {
-            closeText: "關閉",
-            prevText: "&#x3C;上個月",
-            nextText: "下個月&#x3E;",
-            currentText: "今天",
-            monthNames: [ "一月","二月","三月","四月","五月","六月",
-            "七月","八月","九月","十月","十一月","十二月" ],
-            monthNamesShort: [ "一月","二月","三月","四月","五月","六月",
-            "七月","八月","九月","十月","十一月","十二月" ],
-            dayNames: [ "星期日","星期一","星期二","星期三","星期四","星期五","星期六" ],
-            dayNamesShort: [ "週日","週一","週二","週三","週四","週五","週六" ],
-            dayNamesMin: [ "日","一","二","三","四","五","六" ],
-            weekHeader: "週",
-            dateFormat: "yy/mm/dd",
-            firstDay: 1,
-            isRTL: false,
-            showMonthAfterYear: true,
-            yearSuffix: "年"
-        };
-        datepicker.setDefaults( datepicker.regional[ "zh-TW" ] );
-        return datepicker.regional[ "zh-TW" ];
-    }));
-    $(document).ready(function() {
-
-        $(function() {
-            $( "#add_time" ).datepicker({
-                dateFormat: 'yy-mm-dd',
-                language : 'sv'
-            });
-
-
-        });
-    })
-</script>
-
-
-

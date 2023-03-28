@@ -154,13 +154,13 @@
                         @enderror
                         <input type="text" class="form-control" id="sort" name="sort" placeholder="排序" value="{{ $one->sort }}">
                     </div>
-                    <div class="col-3 mb-3">
+                    <!-- <div class="col-3 mb-3">
                         <label for="level" class="form-label">成长值达标显示</label>
                         @error('level')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="level" name="level" placeholder="成长值达标显示" value="{{ $one->level }}">
-                    </div>
+                    </div> -->
                     <div class="col-3 mb-3">
                         <label for="ptype" class="form-label">支付分类</label>
                         @error('ptype')

@@ -169,6 +169,7 @@ class BlockipController extends Controller
             $ipaddress = $blockip->ipaddress;
             if(!$blockip->delete())
                 throw new \Exception('事务中断2');
+            Redis::del('login:blockip');
 
             $username = Auth::user()->username;
             $newlog = new Log();

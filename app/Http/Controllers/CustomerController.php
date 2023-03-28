@@ -106,7 +106,7 @@ class CustomerController extends Controller
             $request->validate([
                 "phone" => 'required|unique:customers',
                 "is_allowed_code" => ['required', 'integer', 'in:0,1'],
-                "identity" => ['required', 'integer', 'in:0,1,2'],
+                "identity" => ['required', 'integer', 'in:1,2'],
                 "is_sure" => ['required', 'integer', 'in:0,1'],
                 "level_id" => ['required', 'integer', 'exists:levels,level_id'],
                 "team_id" => ['required', 'integer', 'exists:teamlevels,tid'],
@@ -115,14 +115,16 @@ class CustomerController extends Controller
 
                 'password2' => 'required|confirmed|min:6|max:6',
                 // 'password2' => ['regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
-                "idcard_front.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-                "idcard_back.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
+                "idcard_front.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
+                "idcard_back.*" => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             ]);
+            $idcard_front = '/images/default.png';
             if($request->hasFile('idcard_front')){
                 $idcard_front = time().'.'.$request->idcard_front->extension();
                 $request->idcard_front->move(public_path('/images/customer_idimg/'),$idcard_front);
                 $idcard_front = '/images/customer_idimg/'.$idcard_front;
             }
+            $idcard_back = '/images/default.png';
             if($request->hasFile('idcard_back')){
                 $idcard_back = time().'back'.'.'.$request->idcard_back->extension();
                 $request->idcard_back->move(public_path('/images/customer_idimg/'),$idcard_back);
@@ -164,6 +166,21 @@ class CustomerController extends Controller
                 if(!$customer->save())
                 throw new \Exception('事务中断1');
 
+                $customer_extra = new CustomerExtra();
+                $customer_extra->userid = $customer->id;
+                $customer_extra->level_ids = 0;
+                $customer_extra->all_children_ids = '';
+
+                if(!$customer_extra->save())
+                throw new \Exception('事务中断2');
+
+                $team_extra = new TeamExtra();
+                $team_extra->userid = $customer->id;
+
+                if(!$team_extra->save())
+                throw new \Exception('事务中断3');
+
+
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
@@ -173,7 +190,7 @@ class CustomerController extends Controller
                 $newlog->parameters = json_encode( $request->all() );
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if(!$newlog->save())
-                    throw new \Exception('事务中断2');
+                    throw new \Exception('事务中断4');
 
                 DB::commit();
             } catch (\Exception $e) {

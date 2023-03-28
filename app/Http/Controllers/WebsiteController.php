@@ -43,6 +43,56 @@ class WebsiteController extends Controller
             $item_cate1[ $one->config_name ] = $one;
         }
 
+        // store string data of web_name/ is_kline/  in redis
+        $static_url = config("app.static_url");
+        $web_name = '';
+        if(Redis::exists('web_name')) {
+            $web_name = Redis::get('web_name');
+        } else {
+            $web_name = Config::find(1)->config_value;
+            Redis::set('web_name', $web_name);
+        }
+
+        $is_kline = '';
+        if(Redis::exists('is_kline')) {
+            $is_kline = Redis::get('is_kline');
+        } else {
+            $is_kline = Config::find(7)->config_value;
+            Redis::set('is_kline', $is_kline);
+        }
+
+        $customer_service = '';
+        if(Redis::exists('customer_service')) {
+            $customer_service = Redis::get('customer_service');
+        } else {
+            $customer_service = Config::find(3)->config_value;
+            Redis::set('customer_service', $customer_service);
+        }
+
+        $home_video = '';
+        if(Redis::exists('home_video')) {
+            $home_video = Redis::get('home_video');
+        } else {
+            $home_video = $static_url.Config::find(9)->config_value;
+            Redis::set('home_video', $home_video);
+        }
+
+        $logo = '';
+        if(Redis::exists('logo')) {
+            $logo = Redis::get('logo');
+        } else {
+            $logo = $static_url . Config::find(8)->config_value;
+            Redis::set('logo', $logo);
+        }
+
+        $data = [
+            "web_name" => $web_name,
+            "customer_service" => $customer_service,
+            "logo" => $logo,
+            "home_video" => $home_video,
+            "is_kline" => $is_kline,
+        ];
+
         $website = $item_cate1['website'];  //网站名称
         $domain_name = $item_cate1['domain_name'];  //网站域名
         $customer_service = $item_cate1['customer_service'];  //客服链接
@@ -140,6 +190,57 @@ class WebsiteController extends Controller
         $one_config = Config::find($id);
         $one_config->config_value = $config_value;
         $one_config->save();
+
+        // store string data of web_name/ is_kline/  in redis
+        $static_url = config("app.static_url");
+        $web_name = '';
+
+        if(Redis::get('web_name') == Config::find(1)->config_value) {
+            $web_name = Redis::get('web_name');
+        } else {
+            $web_name = Config::find(1)->config_value;
+            Redis::set('web_name', $web_name);
+        }
+
+        $is_kline = '';
+        if(Redis::get('is_kline') == Config::find(7)->config_value) {
+            $is_kline = Redis::get('is_kline');
+        } else {
+            $is_kline = Config::find(7)->config_value;
+            Redis::set('is_kline', $is_kline);
+        }
+
+        $customer_service = '';
+        if(Redis::get('customer_service') == Config::find(3)->config_value) {
+            $customer_service = Redis::get('customer_service');
+        } else {
+            $customer_service = Config::find(3)->config_value;
+            Redis::set('customer_service', $customer_service);
+        }
+
+        $home_video = '';
+        if(Redis::get('home_video') == $static_url . Config::find(9)->config_value) {
+            $home_video = Redis::get('home_video');
+        } else {
+            $home_video = $static_url . Config::find(9)->config_value;
+            Redis::set('home_video', $home_video);
+        }
+
+        $logo = '';
+        if(Redis::get('logo') == $static_url . Config::find(8)->config_value) {
+            $logo = Redis::get('logo');
+        } else {
+            $logo = $static_url . Config::find(8)->config_value;
+            Redis::set('logo', $logo);
+        }
+
+        $data = [
+            "web_name" => $web_name,
+            "customer_service" => $customer_service,
+            "logo" => $logo,
+            "home_video" => $home_video,
+            "is_kline" => $is_kline,
+        ];
 
         if($id == 8 || $id == 9){
             return redirect()->route('website.index');
