@@ -99,7 +99,7 @@ class CurrencyController extends Controller
             'open_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
             'min_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
             'max_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
-            'add_time' => ['required', 'date' ,'date_format:Y-m-d H:i:s'],
+            'add_time' => ['required', 'date' ,'date_format:Y-m-d'],
             'sort' => ['required', 'integer', 'gt:0'],
         ]);
 
@@ -148,7 +148,7 @@ class CurrencyController extends Controller
         }
 
         $old_redis_currency = Redis::get("currency:homepage:md5");
-    
+
         $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                     ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                     ->orderBy('sort', 'asc')->orderBy('add_time', 'desc')
@@ -222,7 +222,7 @@ class CurrencyController extends Controller
             'open_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
             'min_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
             'max_price' => ['required', 'numeric', 'regex:/^\d{1,11}(\.\d{0,2})?$/'],
-            'add_time' => ['required', 'date' ,'date_format:Y-m-d H:i:s'],
+            'add_time' => ['required', 'date' ,'date_format:Y-m-d'],
             'sort' => ['required', 'integer', 'gt:0'],
         ]);
 
@@ -271,7 +271,7 @@ class CurrencyController extends Controller
         }
 
         $old_redis_currency = Redis::get("currency:homepage:md5");
-    
+
         $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                     ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                     ->orderBy('sort', 'asc')->orderBy('add_time', 'desc')
@@ -341,7 +341,7 @@ class CurrencyController extends Controller
             DB::commit();
 
             $old_redis_currency = Redis::get("currency:homepage:md5");
-    
+
             $currency = Currency::select('id', 'new_price', 'open_price', 'min_price', 'max_price', 'add_time')
                         ->whereBetween("add_time", [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                         ->orderBy('sort', 'asc')->orderBy('add_time', 'desc')

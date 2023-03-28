@@ -72,7 +72,9 @@ class TradeController extends Controller
             'price' => ['required', 'numeric', 'regex:/^\d{1,12}(\.\d{0,2})?$/'],
             'fee' => ['required', 'numeric', 'regex:/^\d{1,5}(\.\d{0,2})?$/'],
             "images.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-            'next_id' => ['required', 'integer', 'gt:0'],
+            'next_id' => ['required', 'integer', 'gte:0'],
+            'content' => ['required'],
+            'selling_price' => ['required','numeric']
         ]);
 
         $goods_name = trim( $request->get('goods_name') );
@@ -80,6 +82,8 @@ class TradeController extends Controller
         $price = trim( $request->get('price') );
         $fee = trim( $request->get('fee') );
         $next_id = trim( $request->get('next_id') );
+        $description = trim(htmlspecialchars($request->get('content')));
+        $selling_price = trim($request->get('selling_price'));
 
         $days = (int)$days;
         $next_id = (int)$next_id;
@@ -102,6 +106,8 @@ class TradeController extends Controller
             $newtrade_goods->fee = $fee;
             $newtrade_goods->images = $res_images;
             $newtrade_goods->next_id = $next_id;
+            $newtrade_goods->description = $description;
+            $newtrade_goods->selling_price = $selling_price;
             $newtrade_goods->created_at = date('Y-m-d H:i:s');
 
             if(!$newtrade_goods->save())
@@ -184,6 +190,8 @@ class TradeController extends Controller
             'fee' => ['required', 'numeric', 'regex:/^\d{1,5}(\.\d{0,2})?$/'],
             "images.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             'next_id' => ['required', 'integer', 'gt:0'],
+            'content' => ['required'],
+            'selling_price' => ['required','numeric']
         ]);
 
         $goods_name = trim( $request->get('goods_name') );
@@ -191,6 +199,8 @@ class TradeController extends Controller
         $price = trim( $request->get('price') );
         $fee = trim( $request->get('fee') );
         $next_id = trim( $request->get('next_id') );
+        $description = trim(htmlspecialchars($request->get('content')));
+        $selling_price = trim($request->get('selling_price'));
 
         $days = (int)$days;
         $next_id = (int)$next_id;
@@ -215,6 +225,8 @@ class TradeController extends Controller
             $newtrade_goods->fee = $fee;
             $newtrade_goods->images = $res_images;
             $newtrade_goods->next_id = $next_id;
+            $newtrade_goods->description = $description;
+            $newtrade_goods->selling_price = $selling_price;
             $newtrade_goods->created_at = date('Y-m-d H:i:s');
 
             if(!$newtrade_goods->save())

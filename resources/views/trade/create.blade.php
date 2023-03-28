@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/loading.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+    <script src="/ckeditor/ckeditor.js"></script>
 
     <style>
         #app
@@ -120,7 +121,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('trade.index') }}">交易所管理</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">创建交易所</li>
+                <li class="breadcrumb-item active" aria-current="page">创建交易商品</li>
             </ol>
         </nav>
 
@@ -161,14 +162,37 @@
                 </div>
                 <div class="row p-3">
                     <div class="mb-3 col-6">
-                    <label for="next_id" class="form-label">下一个商品变化的id</label>
+                        <label for="next_id" class="form-label">下一个商品变化的id</label>
                         @error('next_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="">
+                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="0">
                     </div>
                     <div class="mb-3 col-6">
-                        <label for="desc" class="form-label">缩略图</label>
+                        <label for="selling_price" class="form-label">卖出价格</label>
+                        @error('selling_price')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" class="form-control" id="selling_price" name="selling_price" placeholder="0.00" value="">
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-12">
+                        <label for="content" class="form-label">描述</label>
+                        @error('content')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <textarea class="form-control" id="content" name="content"></textarea>
+                        <script>
+                           CKEDITOR.replace('content',{
+                                language: 'zh'
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <div class="mb-3 col-6">
+                        <label for="" class="form-label">缩略图</label>
                         <!-- <button class="btn btn-warning">选择</button> -->
                         <img id="show-images" src="#" width="120" height="120" />
                         <input type="file" id="images" name="images" hidden/>
