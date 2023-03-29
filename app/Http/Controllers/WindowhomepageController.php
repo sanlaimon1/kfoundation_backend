@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class WindowhomepageController extends Controller
 {
@@ -144,6 +145,7 @@ class WindowhomepageController extends Controller
             if(!$log->save())
                 throw new \Exception('事务中断2');
             DB::commit();
+            LogFile::channel("update")->info("文章列表 更新成功");
 
             $old_popup = Redis::get("popwindow:homepage:md5");
             $popup_content = Config::find(10)->config_value;
@@ -160,6 +162,8 @@ class WindowhomepageController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             //echo $e->getMessage();
             return 'error';
         }

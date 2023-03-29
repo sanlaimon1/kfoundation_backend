@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class VersionController extends Controller
 {
@@ -149,8 +150,12 @@ class VersionController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("update")->info("APP版本设置 更新成功");
+
         } catch (\Exception $e) {
             DB::rollback();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 

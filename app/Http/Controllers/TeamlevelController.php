@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class TeamlevelController extends Controller
 {
@@ -74,7 +75,6 @@ class TeamlevelController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -151,8 +151,11 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("团队等级管理 存儲成功");
         } catch (\Exception $e) {
             DB::rollback();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -272,8 +275,11 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
+            LogFile::channel("update")->info("团队等级管理 更新成功");
         } catch (\Exception $e) {
             DB::rollback();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -319,8 +325,12 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
+            LogFile::channel("destroy")->info("团队等级管理 刪除成功");
+
         } catch (\Exception $e) {
             DB::rollback();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('teamlevel.index');

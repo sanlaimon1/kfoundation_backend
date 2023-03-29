@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class WalletController extends Controller
 {
@@ -122,6 +123,8 @@ class WalletController extends Controller
             if(!$log->save())
                 throw new \Exception('事务中断2');
             DB::commit();
+            LogFile::channel("destroy")->info("用户钱包列表 刪除成功");
+
 
             $mywallets_string = $mywallets_dropdownlist_string = '';
             $old_wallet_redis = Redis::get('mywallet');
@@ -153,6 +156,8 @@ class WalletController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             //echo $e->getMessage();
             return 'error';
         }
