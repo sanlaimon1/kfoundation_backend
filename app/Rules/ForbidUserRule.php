@@ -23,7 +23,7 @@ class ForbidUserRule implements ValidationRule
            $fail("用户 {$value} 不存在.");
         }
 
-        if ($oneuser->status ?? 0 === 0) {
+        else if ($oneuser->status === 0) {
             $fail("用户已锁定，请联系管理员.");
         }
     }
