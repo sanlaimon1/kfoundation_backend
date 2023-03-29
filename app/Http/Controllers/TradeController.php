@@ -9,6 +9,7 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class TradeController extends Controller
 {
@@ -140,9 +141,12 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("交易所管理 存儲成功");
 
         } catch (\Exception $e) {
             DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
@@ -271,10 +275,13 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("update")->info("交易所管理 更新成功");
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -326,9 +333,12 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("destroy")->info("交易所管理 刪除成功");
 
         }catch (\Exception $e) {
             DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
