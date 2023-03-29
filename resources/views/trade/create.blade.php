@@ -161,6 +161,35 @@
                     </div>
                 </div>
                 <div class="row p-3">
+                    <div class="mb-3 col-4">
+                        <label for="step" class="form-label">步骤</label>
+                        @error('step')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <input type="number" class="form-control" id="step" name="step" placeholder="步骤" value="">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label for="is_over" class="form-label">是否结束 </label>
+                        @error('is_over')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="is_over" name="is_over" class="form-select" >
+                            <option value="0">未结束</option>
+                            <option value="1">结束</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label for="show" class="form-label">显示 / 不显示 </label>
+                        @error('show')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="show" name="show" class="form-select" >
+                            <option value="0">不显示</option>
+                            <option value="1">显示</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row p-3">
                     <div class="mb-3 col-6">
                         <label for="next_id" class="form-label">下一个商品变化的id</label>
                         @error('next_id')

@@ -167,3 +167,5 @@ Route::get('/level1/{parentid}', 'App\Http\Controllers\CustomerController@queryL
 Route::get('/levelx/{id}', 'App\Http\Controllers\CustomerController@queryLevelx')->name('customer.levelx');
 //交易所管理
 Route::resource('trade', 'App\Http\Controllers\TradeController');
+//trade_goods search
+Route::post('product_search','App\Http\Controllers\TradeController@product_search')->name('product_search');

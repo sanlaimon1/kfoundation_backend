@@ -74,7 +74,10 @@ class TradeController extends Controller
             "images.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             'next_id' => ['required', 'integer', 'gte:0'],
             'content' => ['required'],
-            'selling_price' => ['required','numeric']
+            'selling_price' => ['required','numeric'],
+            'step' => ['required', 'integer'],
+            'show' => ['required', 'integer'],
+            'is_over' => ['required', 'integer']
         ]);
 
         $goods_name = trim( $request->get('goods_name') );
@@ -84,9 +87,15 @@ class TradeController extends Controller
         $next_id = trim( $request->get('next_id') );
         $description = trim(htmlspecialchars($request->get('content')));
         $selling_price = trim($request->get('selling_price'));
+        $step = trim($request->get('step'));
+        $show = trim($request->get('show'));
+        $is_over = trim($request->get('is_over'));
 
         $days = (int)$days;
         $next_id = (int)$next_id;
+        $step = (int)$step;
+        $show = (int)$show;
+        $is_over = (int)$is_over;
 
         if($request->hasFile('images'))
         {
@@ -108,6 +117,9 @@ class TradeController extends Controller
             $newtrade_goods->next_id = $next_id;
             $newtrade_goods->description = $description;
             $newtrade_goods->selling_price = $selling_price;
+            $newtrade_goods->step = $step;
+            $newtrade_goods->show = $show;
+            $newtrade_goods->is_over = $is_over;
             $newtrade_goods->created_at = date('Y-m-d H:i:s');
 
             if(!$newtrade_goods->save())
@@ -191,7 +203,10 @@ class TradeController extends Controller
             "images.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
             'next_id' => ['required', 'integer', 'gt:0'],
             'content' => ['required'],
-            'selling_price' => ['required','numeric']
+            'selling_price' => ['required','numeric'],
+            'step' => ['required', 'integer'],
+            'show' => ['required', 'integer'],
+            'is_over' => ['required', 'integer']
         ]);
 
         $goods_name = trim( $request->get('goods_name') );
@@ -201,9 +216,15 @@ class TradeController extends Controller
         $next_id = trim( $request->get('next_id') );
         $description = trim(htmlspecialchars($request->get('content')));
         $selling_price = trim($request->get('selling_price'));
+        $step = trim($request->get('step'));
+        $show = trim($request->get('show'));
+        $is_over = trim($request->get('is_over'));
 
         $days = (int)$days;
         $next_id = (int)$next_id;
+        $step = (int)$step;
+        $show = (int)$show;
+        $is_over = (int)$is_over;
 
         $newtrade_goods = TradeGoods::find($id);
 
@@ -227,6 +248,9 @@ class TradeController extends Controller
             $newtrade_goods->next_id = $next_id;
             $newtrade_goods->description = $description;
             $newtrade_goods->selling_price = $selling_price;
+            $newtrade_goods->step = $step;
+            $newtrade_goods->show = $show;
+            $newtrade_goods->is_over = $is_over;
             $newtrade_goods->created_at = date('Y-m-d H:i:s');
 
             if(!$newtrade_goods->save())
@@ -310,5 +334,46 @@ class TradeController extends Controller
         }
 
         return redirect()->route('trade.index');
+    }
+
+    public function product_search(Request $request)
+    {
+
+        $goods_name = $request->goods_name;
+        $is_over = $request->is_over;
+        $show = $request->show;
+        $date_string = $request->created_at;
+        $date_parts = explode('至', $date_string);
+        if (count($date_parts) == 2) {
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            // Handle the case where $date_string doesn't include the '至' separator
+            $start_date = $end_date = null;
+        }
+
+
+        if($goods_name != null  && $is_over != null &&  $show !=null && $date_string!=null)
+        {
+            $product_search = DB::table('trade_goods')
+                                ->whereBetween('created_at', [$start_date, $end_date])
+                                ->where('goods_name', '=', $goods_name)
+                                ->where('is_over', '=', $is_over)
+                                ->where('show', '=', $show)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+        }else{
+            $product_search = DB::table('trade_goods')
+                                ->whereBetween('created_at', [$start_date, $end_date])
+                                ->orwhere('goods_name', '=', $goods_name)
+                                ->orwhere('is_over', '=', $is_over)
+                                ->orwhere('show', '=', $show)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+        }
+
+        return response()->json([
+            "product_search" => $product_search,
+        ]);
     }
 }
