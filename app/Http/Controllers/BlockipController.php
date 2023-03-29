@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Models\Log;
 use App\Models\Blockip;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class BlockipController extends Controller
 {
@@ -110,10 +111,12 @@ class BlockipController extends Controller
             throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("文章列表 IP黑名单");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return 'error';
         }
 
@@ -186,10 +189,14 @@ class BlockipController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("destroy")->info("IP黑名单 刪除成功");
+
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 

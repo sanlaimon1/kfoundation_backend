@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class CurrencyController extends Controller
 {
@@ -140,10 +141,13 @@ class CurrencyController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("币价管理 存儲成功");
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -263,10 +267,13 @@ class CurrencyController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("update")->info("币价管理 更新成功");
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -339,6 +346,7 @@ class CurrencyController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("destroy")->info("币价管理 刪除成功");
 
             $old_redis_currency = Redis::get("currency:homepage:md5");
 
@@ -366,6 +374,8 @@ class CurrencyController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('currency.index');

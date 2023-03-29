@@ -127,6 +127,25 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'login_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/login/login_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+
+        'register' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/register/register.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
         'store' => [
             'driver' => 'daily',
             'path' => storage_path('logs/store/store.log'),

@@ -21,6 +21,7 @@ use App\Models\TeamExtra;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use App\Rules\InvitedCodeRule;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class CustomerController extends Controller
 {
@@ -193,6 +194,8 @@ class CustomerController extends Controller
                     throw new \Exception('事务中断4');
 
                 DB::commit();
+                LogFile::channel("store")->info("会员列表 存儲成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -201,6 +204,7 @@ class CustomerController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
+                LogFile::channel("error")->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -316,6 +320,8 @@ class CustomerController extends Controller
                     throw new \Exception('事务中断4');
 
                 DB::commit();
+                LogFile::channel("update")->info("会员列表 更新成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -324,6 +330,7 @@ class CustomerController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
+                LogFile::channel("error")->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -375,10 +382,13 @@ class CustomerController extends Controller
                     throw new \Exception('事务中断6');
 
                 DB::commit();
+                LogFile::channel("destroy")->info("会员列表 刪除成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
+                $errorMessage = $e->getMessage();
+                LogFile::channel("error")->error($errorMessage);
                 return '修改错误，事务回滚';
             }
 

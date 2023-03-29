@@ -11,6 +11,7 @@ use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class ProjectController extends Controller
 {
@@ -218,6 +219,7 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("项目列表 存儲成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -246,6 +248,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
@@ -396,6 +399,7 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("update")->info("项目列表 更新成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -424,6 +428,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
@@ -475,6 +480,7 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("destroy")->info("项目列表 刪除成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -505,6 +511,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }

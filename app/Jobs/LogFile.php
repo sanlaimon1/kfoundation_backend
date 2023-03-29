@@ -34,6 +34,9 @@ class LogFile implements ShouldQueue
         if($this->method == "login"){
             Log::channel('login')->info($this->message);
         }
+        if($this->method == "register"){
+            Log::channel('register')->info($this->message);
+        }
         if($this->method == "store"){
             Log::channel('store')->info($this->message . " 存儲成功");
         }

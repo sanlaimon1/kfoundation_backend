@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Life;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
+use Illuminate\Support\Facades\DB;
 
 class LifeController extends Controller
 {
@@ -99,13 +101,28 @@ class LifeController extends Controller
                 $image = '/images/'.$picture;
             }
 
-            $newlife = new Life();
-            $newlife->production_name = $production_name;
-            $newlife->picture = $image;
-            $newlife->sort = $sort;
-            $newlife->extra = $extra;
-            $newlife->inputs = $inputs;
-            $newlife->save();
+            DB::beginTransaction();
+            try {
+
+                $newlife = new Life();
+                $newlife->production_name = $production_name;
+                $newlife->picture = $image;
+                $newlife->sort = $sort;
+                $newlife->extra = $extra;
+                $newlife->inputs = $inputs;
+                if(!$newlife->save())
+                    throw new \Exception('事务中断1');
+
+                DB::commit();
+                LogFile::channel("store")->info("充值缴费 存儲成功");
+
+            }  catch (\Exception $e) {
+                DB::rollBack();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
 
             return redirect()->route('life.index');
     }
@@ -144,7 +161,6 @@ class LifeController extends Controller
             return json_encode( $arr );
         }
 
-
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
@@ -175,15 +191,27 @@ class LifeController extends Controller
             } else {
                 $image = $request->old_picture;
             }
+            DB::beginTransaction();
+            try {
+                $newlife = Life::find($id);
+                $newlife->production_name = $production_name;
+                $newlife->picture = $image;
+                $newlife->sort = $sort;
+                $newlife->extra = $extra;
+                $newlife->inputs = $inputs;
+                if(!$newlife->save())
+                    throw new \Exception('事务中断1');
+                
+                DB::commit();
+                LogFile::channel("update")->info("充值缴费 更新成功");
 
-            $newlife = Life::find($id);
-            $newlife->production_name = $production_name;
-            $newlife->picture = $image;
-            $newlife->sort = $sort;
-            $newlife->extra = $extra;
-            $newlife->inputs = $inputs;
-            $newlife->save();
-
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
             return redirect()->route('life.index');
     }
 
@@ -197,7 +225,6 @@ class LifeController extends Controller
             return json_encode( $arr );
         }
 
-
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
@@ -207,9 +234,21 @@ class LifeController extends Controller
             if( !(($permission->auth2 ?? 0) & 64) ){
                 return "您没有权限访问这个路径";
             }
+            DB::beginTransaction();
+            try {
+                $life = Life::find($id);
+                if(!$life->delete())
+                    throw new \Exception('事务中断1');
+                DB::commit();
+                LogFile::channel("destroy")->info("充值缴费 刪除成功");
 
-            $life = Life::find($id);
-            $life->delete();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
+                //echo $e->getMessage();
+                return '添加错误，事务回滚';
+            }
             return redirect()->route('life.index');
     }
 }
