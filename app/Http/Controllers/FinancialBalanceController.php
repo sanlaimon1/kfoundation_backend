@@ -59,9 +59,15 @@ class FinancialBalanceController extends Controller
         $financial_type = $request->financial_type;
 
         $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
+
 
         if($financial_id != null && $customer != null && $financial_type != 0 && $date_string != null)
         {

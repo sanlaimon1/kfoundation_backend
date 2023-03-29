@@ -399,11 +399,16 @@ class CustomerController extends Controller
     {
         $fid = $request->fid;
         $phone = $request->phone;
-
         $date_string = $request->created_at;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
+
         if($fid !=null && $phone != null && $date_string!=null)
         {
             $search_customer = DB::table('customers')

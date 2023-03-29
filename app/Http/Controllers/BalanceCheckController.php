@@ -170,7 +170,7 @@ class BalanceCheckController extends Controller
                 if($level_ids !== '0')
                 {
                     $level_ids = ltrim ($level_ids,'0');    //取消开头的 0
-                    $level_ids = ltrim ($level_ids,',');    //取消开头的 , 
+                    $level_ids = ltrim ($level_ids,',');    //取消开头的 ,
                     //更新上级附加表  执行sql
                     $affected_rows = DB::update('update team_extra set withdrawal_total=withdrawal_total+' . $one->amount . ' where userid in ( ' . $level_ids . ' )');
                     if($affected_rows<0) {
@@ -286,18 +286,22 @@ class BalanceCheckController extends Controller
 
         return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
-    
+
     public function withdrawal_search(Request $request)
     {
         //dd($request);
         $bid = $request->bid;
         $customer = $request->customer;
         $status = $request->status;
-
         $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
 
         if($bid != null && $customer != null && $status != null && $date_string != null)
         {
