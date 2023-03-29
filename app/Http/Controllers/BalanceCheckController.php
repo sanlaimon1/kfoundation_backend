@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class BalanceCheckController extends Controller
 {
@@ -178,6 +179,8 @@ class BalanceCheckController extends Controller
                 }
 
                 DB::commit();
+                LogFile::channel("update")->info("余额提现审核 更新成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -186,6 +189,7 @@ class BalanceCheckController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
+                LogFile::channel("error")->error($errorMessage);
                 return $errorMessage;
                 //return '审核通过错误，事务回滚';
             }
@@ -265,6 +269,8 @@ class BalanceCheckController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
+            LogFile::channel("destroy")->info("余额提现审核 刪除成功");
+
         } catch (\Exception $e) {
             DB::rollback();
             /**
@@ -273,6 +279,7 @@ class BalanceCheckController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
             //return '审核通过错误，事务回滚';
         }

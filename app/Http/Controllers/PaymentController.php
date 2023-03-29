@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class PaymentController extends Controller
 {
@@ -235,6 +236,8 @@ class PaymentController extends Controller
                     throw new \Exception('事务中断2');
 
                 DB::commit();
+                LogFile::channel("update")->info("支付设置 更新成功");
+
                 // $old_payment_redis = Redis::get("payments");
                 // $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
                 //         ->where('show', 1)
@@ -258,6 +261,8 @@ class PaymentController extends Controller
             } catch (\Exception $e) {
                 DB::rollBack();
                 echo $e->getMessage();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -310,6 +315,7 @@ class PaymentController extends Controller
                     throw new \Exception('事务中断4');
 
                 DB::commit();
+                LogFile::channel("update")->info("支付设置 更新成功");
 
                 $old_payment_redis = Redis::get("payments");
                 $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
@@ -333,6 +339,8 @@ class PaymentController extends Controller
 
             } catch (\Exception $e) {
                 DB::rollBack();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }

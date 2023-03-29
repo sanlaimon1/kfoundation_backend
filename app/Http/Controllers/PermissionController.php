@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class PermissionController extends Controller
 {
@@ -85,6 +86,7 @@ class PermissionController extends Controller
                     throw new \Exception('事务中断2');
     
                 DB::commit();
+                LogFile::channel("store")->info("权限表 更新成功");
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -94,6 +96,8 @@ class PermissionController extends Controller
                  */
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 return '添加错误，事务回滚';
             }
         }
@@ -121,6 +125,8 @@ class PermissionController extends Controller
                     throw new \Exception('事务中断2');
     
                 DB::commit();
+                LogFile::channel("store")->info("权限表 存儲成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -130,6 +136,8 @@ class PermissionController extends Controller
                  */
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 return '添加错误，事务回滚';
             }
         }
@@ -217,6 +225,7 @@ class PermissionController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("destroy")->info("权限表 刪除成功");
         } catch (\Exception $e) {
             DB::rollback();
             /**
@@ -226,6 +235,8 @@ class PermissionController extends Controller
              */
             //$errorMessage = $e->getMessage();
             //return $errorMessage;
+            $message = $e->getMessage();
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
 

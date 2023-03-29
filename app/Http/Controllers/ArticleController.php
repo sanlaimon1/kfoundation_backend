@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Jobs\LogFile;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class ArticleController extends Controller
 {
@@ -166,10 +166,7 @@ class ArticleController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-
-            $method = "store";
-            $message = "文章列表";
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("store")->info("文章列表 存儲成功");
 
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
@@ -198,9 +195,8 @@ class ArticleController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            $method = "error";
             $message = $e->getMessage();
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚' . $e->getMessage();
         }
         return redirect()->route('article.index');
@@ -312,9 +308,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            $method = "update";
-            $message = "文章列表";
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("update")->info("文章列表 更新成功");
 
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
@@ -345,9 +339,8 @@ class ArticleController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $method = "error";
             $message = $e->getMessage();
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("error")->error($message);
             return '添加错误，事务回滚';
         }
         
@@ -364,7 +357,6 @@ class ArticleController extends Controller
             $arr = ['code' => -1, 'message' => config('app.redis_second') . '秒内不能重复提交'];
             return json_encode($arr);
         }
-
 
         Redis::set("permission:" . Auth::id(), time());
         Redis::expire("permission:" . Auth::id(), config('app.redis_second'));

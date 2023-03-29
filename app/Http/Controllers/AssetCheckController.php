@@ -18,7 +18,7 @@ use App\Models\TeamExtra;
 use App\Models\Teamlevel;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
-use App\Jobs\LogFile;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class AssetCheckController extends Controller
 {
@@ -347,10 +347,8 @@ class AssetCheckController extends Controller
             //11, 异步检测所有上级团队的升级状态
                 
                 DB::commit(); 
+                LogFile::channel("update")->info("资产流水记录 更新成功");
 
-                $method = "update";
-                $message = "资产流水记录";
-                dispatch(new LogFile($method, $message));
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -359,8 +357,7 @@ class AssetCheckController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
-                $method = "error";
-                dispatch(new LogFile($method, $errorMessage));
+                LogFile::channel("error")->error($errorMessage);
                 return $errorMessage;
                 //return '审核通过错误，事务回滚';
             }
@@ -422,6 +419,8 @@ class AssetCheckController extends Controller
                     throw new \Exception('事务中断6');
 
                     DB::commit();
+                    LogFile::channel("destroy")->info("资产流水记录 刪除成功");
+
                 } catch (\Exception $e) {
                     DB::rollback();
                     /**
@@ -430,6 +429,7 @@ class AssetCheckController extends Controller
                      * $stackTrace = $e->getTraceAsString();
                      */
                     $errorMessage = $e->getMessage();
+                    LogFile::channel("error")->error($errorMessage);
                     return $errorMessage;
                     //return '审核通过错误，事务回滚';
                 }

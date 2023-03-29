@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class InboxController extends Controller
 {
@@ -140,8 +141,12 @@ class InboxController extends Controller
                     throw new \Exception('事务中断2');
 
                 DB::commit();
+                LogFile::channel("store")->info("站内信列表 存儲成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 /**
                  * $errorMessage = $e->getMessage();
                  * $errorCode = $e->getCode();
@@ -197,7 +202,6 @@ class InboxController extends Controller
             return json_encode( $arr );
         }
 
-
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
             
@@ -240,8 +244,11 @@ class InboxController extends Controller
                     throw new \Exception('事务中断4');
 
                 DB::commit();
+                LogFile::channel("update")->info("站内信列表 更新成功");
             } catch (\Exception $e) {
                 DB::rollback();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 /**
                  * $errorMessage = $e->getMessage();
                  * $errorCode = $e->getCode();
@@ -295,8 +302,11 @@ class InboxController extends Controller
                     throw new \Exception('事务中断6');
 
                 DB::commit();
+                LogFile::channel("destroy")->info("站内信列表 刪除成功");
             } catch (\Exception $e) {
                 DB::rollback();
+                $message = $e->getMessage();
+                LogFile::channel("error")->error($message);
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
                 return '修改错误，事务回滚';

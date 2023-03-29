@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class SlideController extends Controller
 {
@@ -139,6 +140,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
+            LogFile::channel("store")->info("系统图片设置 存儲成功");
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -160,6 +162,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
         }
         return redirect()->route('slide.index');
@@ -252,6 +255,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
+            LogFile::channel("update")->info("系统图片设置 更新成功");
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -273,6 +277,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
         }
         return redirect()->route('slide.index');
@@ -316,6 +321,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
+            LogFile::channel("destroy")->info("系统图片设置 刪除成功");
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -336,6 +342,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
             return $errorMessage;
         }
 

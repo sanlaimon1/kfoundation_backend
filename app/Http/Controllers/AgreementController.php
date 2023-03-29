@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Log;
 use Illuminate\Support\Facades\Redis;
-use App\Jobs\LogFile;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class AgreementController extends Controller
 {
@@ -147,16 +147,13 @@ class AgreementController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
-
-            $method = "update";
-            $message = "合同设置";
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("update")->info("合同设置 更新成功");
 
         } catch (\Exception $e) {
             DB::rollback();
-            $method = "error";
             $message = $e->getMessage();
-            dispatch(new LogFile($method, $message));
+            LogFile::channel("error")->error($message);
+
             return '修改错误，事务回滚';
         }
         $arr = ['code'=>1, 'message'=>'保存成功'];
