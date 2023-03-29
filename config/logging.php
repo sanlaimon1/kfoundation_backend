@@ -117,6 +117,61 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'login' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/login/login.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/store/store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/update/update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/destroy/destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+
+        'debug' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/debug.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'warning' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/warning.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
     ],
 
 ];

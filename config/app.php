@@ -216,5 +216,7 @@ return [
 
     'static_url' => 'https://static.kfoundationfrontend.xyz/',
     'redis_second' => 5,
+    'log_max_files' => 365,
+    'log' => 'daily',
 
 ];

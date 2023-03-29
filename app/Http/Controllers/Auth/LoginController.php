@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Log;
 use App\Rules\ForbidUserRule;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\LogFile;
 
 class LoginController extends Controller
 {
@@ -109,6 +110,11 @@ class LoginController extends Controller
                     throw new \Exception('登录事务中断2');
 
                 DB::commit();
+
+                $method = "login";
+                $message = $username . " 登录成功";
+                dispatch(new LogFile($method, $message));
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -116,7 +122,10 @@ class LoginController extends Controller
                  * $errorCode = $e->getCode();
                  * $stackTrace = $e->getTraceAsString();
                  */
-                
+                $method = "error";
+                $message = $e->getMessage();
+                dispatch(new LogFile($method, $message));
+
                 $this->guard()->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -171,6 +180,10 @@ class LoginController extends Controller
         if ($response = $this->loggedOut($request)) {
             return $response;
         }
+
+        $method = "logout";
+        $message = "註銷成功";
+        dispatch(new LogFile($method, $message));
 
         return $request->wantsJson()
             ? new JsonResponse([], 204)

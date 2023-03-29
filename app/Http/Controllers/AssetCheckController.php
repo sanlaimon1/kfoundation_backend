@@ -18,6 +18,7 @@ use App\Models\TeamExtra;
 use App\Models\Teamlevel;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
+use App\Jobs\LogFile;
 
 class AssetCheckController extends Controller
 {
@@ -131,7 +132,6 @@ class AssetCheckController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
@@ -348,6 +348,9 @@ class AssetCheckController extends Controller
                 
                 DB::commit(); 
 
+                $method = "update";
+                $message = "资产流水记录";
+                dispatch(new LogFile($method, $message));
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -356,6 +359,8 @@ class AssetCheckController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
+                $method = "error";
+                dispatch(new LogFile($method, $errorMessage));
                 return $errorMessage;
                 //return '审核通过错误，事务回滚';
             }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use App\Jobs\LogFile;
 
 class ArticleController extends Controller
 {
@@ -166,6 +167,10 @@ class ArticleController extends Controller
 
             DB::commit();
 
+            $method = "store";
+            $message = "文章列表";
+            dispatch(new LogFile($method, $message));
+
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
                         ->orderBy('sort', 'asc')
@@ -193,7 +198,9 @@ class ArticleController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            //echo $e->getMessage();
+            $method = "error";
+            $message = $e->getMessage();
+            dispatch(new LogFile($method, $message));
             return '添加错误，事务回滚' . $e->getMessage();
         }
         return redirect()->route('article.index');
@@ -305,6 +312,10 @@ class ArticleController extends Controller
 
             DB::commit();
 
+            $method = "update";
+            $message = "文章列表";
+            dispatch(new LogFile($method, $message));
+
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
                         ->orderBy('sort', 'asc')
@@ -334,7 +345,9 @@ class ArticleController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            //echo $e->getMessage();
+            $method = "error";
+            $message = $e->getMessage();
+            dispatch(new LogFile($method, $message));
             return '添加错误，事务回滚';
         }
         
@@ -385,6 +398,10 @@ class ArticleController extends Controller
 
             DB::commit();
 
+            $method = "destroy";
+            $message = "文章列表";
+            dispatch(new LogFile($method, $message));
+
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
                         ->orderBy('sort', 'asc')
@@ -411,6 +428,9 @@ class ArticleController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
+            $method = "error";
+            $message = $e->getMessage();
+            dispatch(new LogFile($method, $message));
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
