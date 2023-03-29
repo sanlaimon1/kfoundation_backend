@@ -35,7 +35,7 @@
                 <li class="breadcrumb-item active" aria-current="page">交易所管理</li>
             </ol>
         </nav>
-        <a href="{{ route('trade.create') }}" class="btn btn-primary">创建交易所</a>
+        <a href="{{ route('trade.create') }}" class="btn btn-primary">创建交易所商品</a>
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
