@@ -195,7 +195,7 @@
                         @error('next_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="0">
+                        <input type="number" class="form-control" id="next_id" name="next_id" placeholder="下一个商品变化的id" value="">
                     </div>
                     <div class="mb-3 col-6">
                         <label for="selling_price" class="form-label">卖出价格</label>

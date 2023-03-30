@@ -44,7 +44,9 @@ class TradeController extends Controller
             return "您没有权限访问这个路径";
         }
 
-        return view('trade/create');
+        $trade_goods = TradeGoods::select('id','goods_name')
+                        ->where('next_id',0)->get();
+        return view('trade/create',compact('trade_goods'));
     }
 
     /**
@@ -104,6 +106,10 @@ class TradeController extends Controller
             $request->images->move(public_path('/trade_images/'),$get_images);
             $res_images = '/trade_images/'.$get_images;
 
+        }
+
+        if($is_over == 1){
+            $next_id = 0;
         }
 
         DB::beginTransaction();
@@ -176,7 +182,11 @@ class TradeController extends Controller
         }
 
         $trade_goods = TradeGoods::find($id);
-        return view('trade.edit',compact('trade_goods'));
+        $nextid_data = TradeGoods::select('id')
+                        ->where('next_id',0)
+                        ->where('id','!=',$id)
+                        ->get();
+        return view('trade.edit',compact('trade_goods','nextid_data'));
     }
 
     /**
@@ -239,6 +249,10 @@ class TradeController extends Controller
             $res_images = '/trade_images/'.$get_images;
         }else{
             $res_images = $newtrade_goods->litpic;
+        }
+
+        if($is_over == 1){
+            $next_id = 0;
         }
 
         DB::beginTransaction();
