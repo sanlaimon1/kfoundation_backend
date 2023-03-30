@@ -215,7 +215,7 @@ class TradeController extends Controller
             'price' => ['required', 'numeric', 'regex:/^\d{1,12}(\.\d{0,2})?$/'],
             'fee' => ['required', 'numeric', 'regex:/^\d{1,5}(\.\d{0,2})?$/'],
             "images.*" => 'required|image|mimes:jpg,png,jpeg,bmp,webp',
-            'next_id' => ['required', 'integer', 'gt:0'],
+            'next_id' => ['required', 'integer', 'gte:0'],
             'content' => ['required'],
             'selling_price' => ['required','numeric'],
             'step' => ['required', 'integer'],
