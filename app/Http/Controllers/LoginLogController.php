@@ -42,14 +42,18 @@ class LoginLogController extends Controller
 
     public function loginlog_search(Request $request)
     {
-
-        $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
-
         $user = $request->phone;
         $action = $request->action;
+        $date_string = $request->date;
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
+
         if($date_string != null && $user != null && $action != null){
             $loginlog_search = DB::table('login_logs')
                             ->join('customers', 'customers.id', 'login_logs.userid')

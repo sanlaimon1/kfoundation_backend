@@ -75,9 +75,15 @@ class LogController extends Controller
     public function log_search(Request $request)
     {
         $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
+
         $search_logs = DB::table('logs')
                             ->join('admins','admins.id','=','logs.adminid')
                             ->whereBetween('logs.created_at', [$start_date, $end_date])

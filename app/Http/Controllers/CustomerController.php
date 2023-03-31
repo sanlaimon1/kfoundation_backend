@@ -411,24 +411,31 @@ class CustomerController extends Controller
 
         if($fid !=null && $phone != null && $date_string!=null)
         {
-            $search_customer = DB::table('customers')
-                            ->whereBetween('customers.created_at', [$start_date, $end_date])
+            $search_customer =Customer::whereBetween('customers.created_at', [$start_date, $end_date])
                             ->where([['customers.id','=',$fid],['customers.phone','=',$phone],['customers.status','=',1]])
                             ->orderBy('customers.created_at','desc')
                             ->select('customers.*')
+                            ->with('level')
                             ->get();
-
+            foreach($search_customer as $customer)
+            {
+                $customer->parent_name = $customer->getParentName();
+            }
         }else{
-            $search_customer = DB::table('customers')
-                                ->where('customers.status',1)
+            $search_customer = Customer::where('customers.status',1)
                                 ->whereBetween('customers.created_at', [$start_date, $end_date])
                                 ->orwhere([['customers.id','=',$fid],['customers.status',1]])
                                 ->orwhere([['customers.phone','=',$phone],['customers.status',1]])
                                 ->orderBy('customers.created_at','desc')
                                 ->select('customers.*')
+                                ->with('level')
                                 ->get();
-
+            foreach($search_customer as $customer)
+            {
+                $customer->parent_name = $customer->getParentName();
+            }
         }
+
         return response()->json([
             "search_customer" => $search_customer
         ]);

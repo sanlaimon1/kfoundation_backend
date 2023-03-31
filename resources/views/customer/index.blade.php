@@ -159,24 +159,34 @@
                     var html = "";
                     console.log(response);
                     $.each(response.search_customer,function(i,v){
+                        let modifyPassUrl = "{{ route('customer.modify_pass', ['id' => ':id']) }}";
+                            modifyPassUrl = modifyPassUrl.replace(':id', v.id);
+                        let chargeUrl = "{{ route('customer.charge', ['id'=> ':id']) }}";
+                            chargeUrl = chargeUrl.replace(':id',v.id);
+                        let withdrawalUrl = "{{ route('customer.withdrawal', ['id' => ':id']) }}";
+                            withdrawalUrl = withdrawalUrl.replace(':id',v.id);
+                        let kickoutUrl = "{{ route('customer.kickout', ['id' => ':id']) }}";
+                            kickoutUrl = kickoutUrl.replace(':id',v.id);
                     html +=`<tr>
                                 <td>${v.id}</td>
                                 <td>${v.phone}</td>
                                 <td>${v.realname}</td>
-                                <td>${v.asset}</td>
-                                <td>${v.balance}</td>
-                                <td>${v.integration}</td>
-                                <td>${v.platform_coin}</td>
-                                <td>${v.created_at}</td>
+                                <td>${v.level.level_name}</td>
+                                <td>${v.parent_name}</td>
                                 <td>
-                                    <a href="{{ url('team/${v.id}') }}" class="btn-sm btn-primary">查看团队</a>
-                                    <a href="{{url('customer/${v.id}/edit')}}" class="btn-sm btn-warning">编辑</a>
+                                    <a class="btn-sm btn-primary text-decoration-none" href="${modifyPassUrl}">修改密码</a>
+                                    <a class="btn-sm btn-success text-decoration-none" href="${chargeUrl}">上分</a>
+                                    <a class="btn-sm btn-primary text-decoration-none" href="${withdrawalUrl}">下分</a>
+                                    <a class="btn-sm btn-danger text-decoration-none" href="${kickoutUrl}">踢出</a>
+                                    <a href="{{ url('team/${v.id}') }}" class="btn-sm btn-primary text-decoration-none ">查看团队</a>
+                                    <a class="btn-sm btn-primary text-decoration-none" href="{{url('customer/${v.id}')}}">查看会员</a>
+                                    <a text-decoration-none href="{{url('customer/${v.id}/edit')}}" class="btn-sm btn-warning">编辑</a>
                                     <form action="{{ url('/customer/${v.id}') }}"
                                     method="post"
-                                    style="float:right;" onsubmit="javascript:return del()">
+                                     onsubmit="javascript:return del()" class="d-inline-block">
                                         {{ csrf_field() }}
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">删除</button>
+                                        <button type="submit" class="btn-sm btn-danger">删除</button>
                                     </form>
                                 </td>
                             </tr>`;

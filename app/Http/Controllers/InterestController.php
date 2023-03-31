@@ -63,18 +63,27 @@ class InterestController extends Controller
 
         $pid = $request->pid;
         $customer = $request->customer;
+        $status = $request->status;
 
         $created_at = $request->created_at;
-        $date_parts = explode('至', $created_at);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($created_at){
+            $date_parts = explode('至', $created_at);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
 
         $refund_time = $request->refund_time;
-        $date_parts2 = explode('至', $refund_time);
-        $start_date2 = trim($date_parts2[0]);
-        $end_date2 = trim($date_parts2[1]);
-
-        $status = $request->status;
+        if($refund_time){
+            $date_parts2 = explode('至', $refund_time);
+            $start_date2 = trim($date_parts2[0]);
+            $end_date2 = trim($date_parts2[1]);
+        } else {
+            $start_date2 = '';
+            $end_date2 = '';
+        }
 
         if($pid != null && $customer != null && $created_at != null && $refund_time != null && $status != null)
         {

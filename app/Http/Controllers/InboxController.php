@@ -204,7 +204,7 @@ class InboxController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -275,7 +275,7 @@ class InboxController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -318,9 +318,14 @@ class InboxController extends Controller
     {
         $title  = $request->title;
         $date_string = $request->date;
-        $date_parts = explode('至', $date_string);
-        $start_date = trim($date_parts[0]);
-        $end_date = trim($date_parts[1]);
+        if($date_string){
+            $date_parts = explode('至', $date_string);
+            $start_date = trim($date_parts[0]);
+            $end_date = trim($date_parts[1]);
+        } else {
+            $start_date = '';
+            $end_date = '';
+        }
 
         if($title != null && $date_string != null)
         {
