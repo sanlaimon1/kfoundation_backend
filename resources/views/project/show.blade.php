@@ -5,7 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/css/bootstrap.min.css" rel="stylesheet" >
-    
+    <style>
+        #this-content
+        {
+            margin-top:1rem;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        #this-content li.list-group-item
+        {
+            float:left;
+            width: 48%;
+            margin-right: 1rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -22,7 +36,7 @@
         <br />
         <h3 class="text-center text-primary">项目详情</h3>
 
-        <ul class="list-group list-group-flush" style="margin-top:1rem;">
+        <ul id="this-content" class="list-group list-group-flush">
             <li class="list-group-item"><strong>ID:</strong> {{ $project->id }}</li>
             <li class="list-group-item"><strong>排序:</strong> {{ $project->sort }}</li>
             <li class="list-group-item"><strong>项目名称:</strong> {{ $project->project_name }}</li>
@@ -100,6 +114,8 @@
             <li class="list-group-item"><strong>项目详情:</strong> {!! $details !!}</li>
 
             <li class="list-group-item"><strong>发布时间:</strong> {{ $project->created_at }}</li>
+
+            <li class="list-group-item"><strong>绑定产品 ID:</strong> {{ $bind_projectid }} - {{ $bind_project_name }}</li>
 
         </ul>
 

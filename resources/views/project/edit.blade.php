@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <title>参数设置</title>
+    <title>编辑项目</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -301,7 +301,7 @@
                         @error('detail')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea type="text" class="form-control" id="detail" name="detail" >{{ html_entity_decode( $project->details ) }}</textarea>
+                        <textarea type="text" class="form-control" id="detail" name="detail" ><?= html_entity_decode( $project->details ) ?></textarea>
                     </div>
                 </div>
 

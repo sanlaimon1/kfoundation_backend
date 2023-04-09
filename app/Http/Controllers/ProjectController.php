@@ -210,7 +210,7 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 存储条目 ';
+            $newlog->action = '管理员' . $username . ' 添加项目:' . $project->project_name;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.store';
             $newlog->parameters = json_encode( $request->all() );
@@ -219,7 +219,7 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("项目列表 存儲成功");
+            LogFile::channel("store")->info("项目添加成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -257,7 +257,8 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * 显示一个项目详细信息
+     * display detail of a project
      */
     public function show(string $id)
     {
@@ -270,7 +271,17 @@ class ProjectController extends Controller
 
         $project = Project::find($id);
         $return_modes = config('types.return_mode');
-        return view('project.show', compact('project','return_modes'));
+        //绑定产品
+        $bind_project_name = '没有绑定';
+        $bind_projectid = $project->bind_projectid;
+        if($bind_projectid!=0) {
+            $bind_project = Project::find($bind_projectid);
+            if(!empty($bind_project)) {
+                $bind_project_name = $bind_project->project_name;
+            }
+        }
+            
+        return view('project.show', compact('project','return_modes', 'bind_project_name', 'bind_projectid'));
     }
 
     /**
@@ -390,7 +401,7 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action ='管理员' . $username . ' 添加项目';
+            $newlog->action ='管理员' . $username . ' 修改项目:' . $project->project_name;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.update';
             $newlog->parameters = json_encode( $request->all() );
@@ -399,7 +410,7 @@ class ProjectController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("update")->info("项目列表 更新成功");
+            LogFile::channel("update")->info("项目更新成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -526,5 +537,102 @@ class ProjectController extends Controller
                                 ->orderBy('created_at', 'desc')
                                 ->get()->load('projectcate');
         return response()->json($search_projects);
+    }
+
+    /**
+     * 编辑绑定产品
+     */
+    public function editBindProject(string $id)
+    {
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 16) ){
+            return "您没有权限访问这个路径";
+        }
+
+        $project = Project::find($id);
+
+        //查询项目列表
+        $selected_projects = Project::select(['id','project_name'])
+                                    ->where('enable', 1)
+                                    ->where('status', 1)
+                                    ->where('id', '!=', $id)
+                                    ->get();
+        $select_array = [];
+        $select_array[0] = '未绑定';
+        foreach( $selected_projects as $one) {
+            $select_array[$one->id] = $one->project_name;
+        }
+
+        return view('project.edit2', compact('project', 'select_array'));
+    }
+
+    /**
+     * 编辑绑定产品
+     */
+    public function updateBindProject(Request $request, string $id)
+    {
+        if (Redis::exists("permission:".Auth::id())){
+            $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
+            return json_encode( $arr );
+        }
+
+
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
+
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+
+        if( !(($permission->auth2 ?? 0) & 32) ){
+            return "您没有权限访问这个路径";
+        }
+
+        $request->validate([
+            "bindid" =>  ['required', 'integer', 'exists:projects,id'],
+        ]);
+        $bindid = (int)$request->bindid;
+        $id = (int)$id;
+
+        if($bindid==$id) {
+            $arr = ['code'=>-2, 'message'=> '不能绑定自己的id'];
+            return json_encode( $arr );
+        }
+        
+        DB::beginTransaction();
+        try {
+            $project = Project::find($id);
+            $project->bind_projectid  = $request->bindid;
+            $project->save();
+            if(!$project->save())
+                throw new \Exception('事务中断8-1');
+
+            //查询绑定项目
+            $bind_project = Project::find($bindid);
+
+            $username = Auth::user()->username;
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action ='管理员' . $username . ' 绑定项目' . $bindid . ' ' . $bind_project->project_name . ' 到 ' . $project->project_name;
+            $newlog->ip = $request->ip();
+            $newlog->route = 'bind.update';
+            $newlog->parameters = json_encode( $request->all() );
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if(!$newlog->save())
+                throw new \Exception('事务中断8-2');
+
+            DB::commit();
+            LogFile::channel("update")->info("项目绑定成功");
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errorMessage = $e->getMessage();
+            LogFile::channel("error")->error($errorMessage);
+            return $errorMessage;
+            //return '绑定错误，事务回滚';
+        }
+        
+        return redirect()->route('project.index');
     }
 }

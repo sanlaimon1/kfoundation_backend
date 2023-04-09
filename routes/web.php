@@ -79,6 +79,10 @@ Route::post('inbox_search', 'App\Http\Controllers\InboxController@inbox_search')
 Route::resource('project', 'App\Http\Controllers\ProjectController');
 //项目搜索
 Route::post('project_search', [ProjectController::class, 'project_search'])->name('project_search');
+//编辑绑定项目
+Route::get('/project/editbind/{id}', 'App\Http\Controllers\ProjectController@editBindProject')->name('bind.project');
+//编辑绑定项目提交逻辑
+Route::post('/project/updatebind/{id}', 'App\Http\Controllers\ProjectController@updateBindProject')->name('bind.update');
 //角色管理列出URI
 Route::get('/roles/geturi/{key}', 'App\Http\Controllers\RoleController@listuri')->name('roles.listuri');
 //权限表

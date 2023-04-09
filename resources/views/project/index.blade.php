@@ -63,10 +63,9 @@
                     <th scope="col">收益率</th>
                     <th scope="col">项目期限</th>
                     <th scope="col">起购金额</th>
-                    <th scope="col">限购次数</th>
                     <th scope="col">项目进度</th>
                     <th scope="col">发布时间</th>
-                    <th scope="col" style="width:200px;">操作</th>
+                    <th scope="col" style="width:300px;">操作</th>
                 </tr>
             </thead>
             <tbody id="search_data">
@@ -80,10 +79,10 @@
                     <td>{{ $one->benefit_rate }}</td>
                     <td>{{ $one->days }}天</td>
                     <td>{{ $one->amount }}</td>
-                    <td>{{ $one->max_times }}</td>
                     <td>{{ $one->fake_process }}%</td>
                     <td>{{ $one->created_at }}</td>
                     <td>
+                        <a class="btn btn-success" href="{{ route('bind.project', ['id'=>$one->id]) }}">绑定产品</a>
                         <a class="btn btn-primary" href="{{ route('project.show', ['project'=>$one->id]) }}">查看</a>
                         <a class="btn btn-warning" href="{{ route('project.edit', ['project'=>$one->id]) }}">编辑</a>
                         <form action="{{ route('project.destroy', ['project'=>$one->id]) }}"
