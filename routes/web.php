@@ -173,3 +173,5 @@ Route::get('/levelx/{id}', 'App\Http\Controllers\CustomerController@queryLevelx'
 Route::resource('trade', 'App\Http\Controllers\TradeController');
 //trade_goods search
 Route::post('product_search','App\Http\Controllers\TradeController@product_search')->name('product_search');
+//交易所商品
+Route::resource('/financial_productions','App\Http\Controllers\FinancialProductionController');

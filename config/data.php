@@ -9,7 +9,7 @@ return [
     ],
     //项目管理
     'projects' => [ '项目列表'=>'/project', '项目分类'=>'/projectcate',
-                '已投项目'=>'/order1', '返息明细'=>'/interest','币价管理'=>'/currency'],
+                '已投项目'=>'/order1', '返息明细'=>'/interest','币价管理'=>'/currency','交易所商品'=>'/financial_productions'],
     //商城管理
     'shop'=>['商品管理'=>'/goods', '商品订单管理'=>'/order2','交易所管理'=>'/trade'],
     //生活服务
