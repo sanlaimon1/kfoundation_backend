@@ -37,7 +37,7 @@
                 {{ session('message') }}
             </div>
         @endif
-        
+
         <form action="{{route('project.store')}}" method="post" enctype="multipart/form-data">
             @csrf
             <section class="row frame mt-5 mx-5 px-5">
@@ -78,7 +78,7 @@
                         @enderror
                         <input type="text" class="form-control" id="risk" name="risk" placeholder="" >
                     </div>
-                
+
                     <div class="col-md-4 mb-3">
                         <label for="usage" class="form-label">资金用途</label>
                         @error('usage')
@@ -86,7 +86,7 @@
                         @enderror
                         <input type="text" class="form-control" id="usage" name="usage" placeholder="" >
                     </div>
-                    
+
                 </div>
 
                 <div class="row">
@@ -234,7 +234,7 @@
                         @error('level_id')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        
+
                         <select id="level_id" name="level_id"  class="form-select" >
                             @foreach( $levels as $level )
                             <option value="{{ $level->level_id }}" > {{ $level->level_name }} </option>
@@ -244,7 +244,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="status" class="form-label">项目状态</label>
                         @error('status')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -254,13 +254,23 @@
                             <option value="0">下架</option>
                         </select>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="sort" class="form-label">排序</label>
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        
+
                         <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" >
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="lang" class="form-label">语言</label>
+                        @error('lang')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="lang" name="lang" class="form-select" >
+                            <option value="cn">cn</option>
+                            <option value="en">en</option>
+                        </select>
                     </div>
                 </div>
 
@@ -280,13 +290,13 @@
                         <textarea type="text" class="form-control" id="detail" name="detail" placeholder="" ></textarea>
                     </div>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary w-25  col-4 offset-4" >修改</button>
 
             </section>
 
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')
