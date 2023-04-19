@@ -115,86 +115,107 @@ class BalanceCheckController extends Controller
         }
 
 
-            Redis::set("permission:".Auth::id(), time());
-            Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            $role_id = Auth::user()->rid;
-            $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
+        Redis::set("permission:".Auth::id(), time());
+        Redis::expire("permission:".Auth::id(), config('app.redis_second'));
+        $role_id = Auth::user()->rid;
+        $permission = Permission::where("path_name", "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
-            if (!(($permission->auth2 ?? 0) & 32)) {
-                return "您没有权限访问这个路径";
-            }
+        if (!(($permission->auth2 ?? 0) & 32)) {
+            return "您没有权限访问这个路径";
+        }
 
-            $id = (int)$id;
-            //事务开启
-            DB::beginTransaction();
-            try {
-                DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-                //更改订单状态
-                $one = BalanceCheck::find($id);
-                if($one->status!=0)
-                    throw new \Exception('订单无需审核');
-                $one->status = 1;
-                $one->adminid = Auth::id();
-                if (!$one->save())
-                    throw new \Exception('事务中断1');
-                $balance_check = BalanceCheck::where('status', 0);
-                Redis::set('balance_check_status', $balance_check->count());
+        $id = (int)$id;
+        //事务开启
+        DB::beginTransaction();
+        try {
+            DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+            //更改订单状态
+            $one = BalanceCheck::find($id);
+            if($one->status!=0)
+                throw new \Exception('订单无需审核');
+            $one->status = 1;
+            $one->adminid = Auth::id();
+            if (!$one->save())
+                throw new \Exception('事务中断1');
+            $balance_check = BalanceCheck::where('status', 0);
+            Redis::set('balance_check_status', $balance_check->count());
+            $balance_check = array(
+                'id' => $one->id,
+                'userid' => $one->userid,
+                'amount' => $one->amount,
+                'status' => $one->status,
+                'adminid' => $one->adminid,
+                'created_at' => $one->created_at,
+                'updated_at' => $one->updated_at
+            );
+            $username = Auth::user()->username;
+            //添加管理员日志
+            $newlog = new Log;
+            $newlog->adminid = Auth::id();
+            $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
+            $newlog->ip = $request->ip();
+            $newlog->route = 'withdrawal.update';
+            $newlog->parameters = json_encode($request->all());
+            $newlog->created_at = date('Y-m-d H:i:s');
+            if (!$newlog->save())
+                throw new \Exception('事务中断2');
 
-                $username = Auth::user()->username;
-                //添加管理员日志
-                $newlog = new Log;
-                $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
-                $newlog->ip = $request->ip();
-                $newlog->route = 'withdrawal.update';
-                $newlog->parameters = json_encode($request->all());
-                $newlog->created_at = date('Y-m-d H:i:s');
-                if (!$newlog->save())
-                    throw new \Exception('事务中断2');
+            //维护团队总提现字段的数据  就是本人总提现
+            $one_extra = CustomerExtra::where('userid', $one->userid)->first();
+            $one_extra->withdrawal = $one_extra->withdrawal + $one->amount;
+            if (!$one_extra->save())
+                throw new \Exception('事务中断3');
+            $cutomer_extra = array(
+                'id' => $one_extra->id,
+                'userid' => $one_extra->userid,
+                'withdrawal' => $one_extra->withdrawal
+            );
+            //维护团队总提现字段的数据
+            $team_extra = TeamExtra::where('userid', $one->userid)->first();
+            $team_extra->withdrawal_total = $team_extra->withdrawal_total + $one->amount;
+            if (!$team_extra->save())
+                throw new \Exception('事务中断4');
 
-                //维护团队总提现字段的数据  就是本人总提现
-                $one_extra = CustomerExtra::where('userid', $one->userid)->first();
-                $one_extra->withdrawal = $one_extra->withdrawal + $one->amount;
-                if (!$one_extra->save())
-                    throw new \Exception('事务中断3');
-
-                //维护团队总提现字段的数据
-                $team_extra = TeamExtra::where('userid', $userid)->first();
-                $team_extra->withdrawal_total = $team_extra->withdrawal_total + $one->amount;
-                if (!$team_extra->save())
-                    throw new \Exception('事务中断4');
-
-                //更新所有上级字段
-                $parent_user_extra = CustomerExtra::where('userid', $team_extra->userid)->first();
-                $level_ids = $parent_user_extra->level_ids;
-                if($level_ids !== '0')
-                {
-                    $level_ids = ltrim ($level_ids,'0');    //取消开头的 0
-                    $level_ids = ltrim ($level_ids,',');    //取消开头的 ,
-                    //更新上级附加表  执行sql
-                    $affected_rows = DB::update('update team_extra set withdrawal_total=withdrawal_total+' . $one->amount . ' where userid in ( ' . $level_ids . ' )');
-                    if($affected_rows<0) {
-                        throw new \Exception('事务中断15');
-                    }
+            $team_extra_data = array(
+                'id' => $team_extra->id,
+                'withdrawal_total' => $team_extra->withdrawal_total
+            );
+            //更新所有上级字段
+            $parent_user_extra = CustomerExtra::where('userid', $team_extra->userid)->first();
+            $level_ids = $parent_user_extra->level_ids;
+            if($level_ids !== '0')
+            {
+                $level_ids = ltrim ($level_ids,'0');    //取消开头的 0
+                $level_ids = ltrim ($level_ids,',');    //取消开头的 ,
+                //更新上级附加表  执行sql
+                $affected_rows = DB::update('update team_extra set withdrawal_total=withdrawal_total+' . $one->amount . ' where userid in ( ' . $level_ids . ' )');
+                if($affected_rows<0) {
+                    throw new \Exception('事务中断15');
                 }
-
-                DB::commit();
-                LogFile::channel("update")->info("余额提现审核 更新成功");
-
-            } catch (\Exception $e) {
-                DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                $errorMessage = $e->getMessage();
-                LogFile::channel("error")->error($errorMessage);
-                return $errorMessage;
-                //return '审核通过错误，事务回滚';
             }
+            $balance_check_data = array(
+                'balance_check' => $balance_check,
+                'cutomer_extra' => $cutomer_extra,
+                'team_extra_data' => $team_extra_data
+            );
+            $balance_check_json = json_encode($balance_check_data);
+            DB::commit();
+            LogFile::channel("balance_check")->info($balance_check_json);
 
-            return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            /**
+             * $errorMessage = $e->getMessage();
+             * $errorCode = $e->getCode();
+             * $stackTrace = $e->getTraceAsString();
+             */
+            $errorMessage = $e->getMessage();
+            LogFile::channel("balance_check_error")->error($errorMessage);
+            return $errorMessage;
+            //return '审核通过错误，事务回滚';
+        }
+
+        return redirect()->route('withdrawal.show', ['withdrawal' => $id]);
     }
 
     /**
