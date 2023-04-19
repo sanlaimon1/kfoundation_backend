@@ -109,14 +109,20 @@ class BlockipController extends Controller
 
             if(! $log->save())
             throw new \Exception('事务中断2');
-
+            $blockip = array(
+                'id' => $blockip->id,
+                'ipaddress' => $blockip->ipaddress,
+                'longip' => $blockip->longip,
+                'subnet' => $blockip->subnet,
+            );
+            $blockip_json = json_encode($blockip);
             DB::commit();
-            LogFile::channel("store")->info("文章列表 IP黑名单");
+            LogFile::channel("blockip_store")->info($blockip_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("blockip_store_error")->error($message);
             return 'error';
         }
 
@@ -170,6 +176,13 @@ class BlockipController extends Controller
         {
             $blockip = Blockip::find($id);
             $ipaddress = $blockip->ipaddress;
+            $blockip_data = array(
+                'id' => $blockip->id,
+                'ipaddress' => $blockip->ipaddress,
+                'longip' => $blockip->longip,
+                'subnet' => $blockip->subnet,
+            );
+            $blockip_json = json_encode($blockip_data);
             if(!$blockip->delete())
                 throw new \Exception('事务中断2');
             Redis::del('login:blockip');
@@ -189,14 +202,14 @@ class BlockipController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("destroy")->info("IP黑名单 刪除成功");
+            LogFile::channel("blockip_destroy")->info($blockip_json);
 
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("blockip_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
 
