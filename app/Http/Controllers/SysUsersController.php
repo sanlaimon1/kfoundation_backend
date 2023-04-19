@@ -141,6 +141,17 @@ class SysUsersController extends Controller
 
             if(!$newadmin->save())
                 throw new \Exception('事务中断1');
+            
+            $newadmins = array(
+                'id' => $newadmin->id,
+                'username' => $newadmin->username,
+                'desc' => $newadmin->desc,
+                'password' => $newadmin->password,
+                'created_at' => $newadmin->created_at,
+                'salt' => $newadmin->salt,
+            );
+
+            $newadmin_json = json_encode($newadmins);
 
             $username = Auth::user()->username;
             $newlog = new Log;
@@ -154,12 +165,12 @@ class SysUsersController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("系统用户管理 存儲成功");
+            LogFile::channel("sysuser_store")->info($newadmin_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sysuser_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -266,6 +277,15 @@ class SysUsersController extends Controller
 
             if(!$one->save())
                 throw new \Exception('事务中断3');
+            
+            $admin = array(
+                'id' => $one->id,
+                'desc' => $one->desc,
+                'status' => $one->status,
+                'rid' => $one->rid,
+            );
+
+            $admin_json = json_encode($admin);
 
             $username = Auth::user()->username;
             $newlog = new Log;
@@ -279,11 +299,11 @@ class SysUsersController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
-            LogFile::channel("update")->info("系统用户管理 更新成功");
+            LogFile::channel("sysuser_update")->info($admin_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sysuser_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -336,6 +356,14 @@ class SysUsersController extends Controller
                 if(!$one->save())
                     throw new \Exception('事务中断5');
 
+                $password = array(
+                    'id' => $one->id,
+                    'salt' => $one->salt,
+                    'password' => $one->password,
+                );
+
+                $password_json = json_encode($password);
+
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
@@ -348,11 +376,11 @@ class SysUsersController extends Controller
                     throw new \Exception('事务中断6');
 
                 DB::commit();
-                LogFile::channel("update")->info("系统用户管理 Password 更新成功");
+                LogFile::channel("sysuser_password_update")->info($password_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("sysuser_password_update_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -392,6 +420,13 @@ class SysUsersController extends Controller
             $one->is_deleted = 1;
             if(!$one->save())
                 throw new \Exception('事务中断7');
+            
+            $sysuser = array(
+                'id' => $one->id,
+                'is_deleted' => $one->is_deleted,
+            );
+
+            $sysuser_json = json_encode($sysuser);
 
             $username = Auth::user()->username;
             $newlog = new Log;
@@ -405,11 +440,11 @@ class SysUsersController extends Controller
                 throw new \Exception('事务中断8');
 
             DB::commit();
-            LogFile::channel("destroy")->info("系统用户管理 刪除成功");
+            LogFile::channel("sysuser_destroy")->info($sysuser_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sysuser_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
 
