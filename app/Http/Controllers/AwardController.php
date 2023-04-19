@@ -158,16 +158,21 @@ class AwardController extends Controller
 
                 if(!$newlog->save())
                     throw new \Exception('事务中断2');
-
+                $award = array(
+                    'id' => $one->id,
+                    'award_name' => $one->award_name,
+                    'award_value' => $one->award_value
+                );
+                $award_json = json_encode($award);
                 DB::commit();
-                LogFile::channel("update")->info("系统奖励 更新成功");
+                LogFile::channel("award_update")->info($award_json);
 
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("award_update_error")->error($message);
                 return '添加错误，事务回滚';
             }
             $arr = ['code'=>1, 'message'=>'保存成功'];
