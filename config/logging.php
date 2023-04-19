@@ -218,6 +218,42 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'asset_check_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/asset_check/asset_check_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'asset_check_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/asset_check/asset_check_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'asset_check_status' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/asset_check/asset_check_status.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'asset_check_status_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/asset_check/asset_check_status_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
 
         'debug' => [
             'driver' => 'daily',

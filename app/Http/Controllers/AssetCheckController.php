@@ -162,6 +162,17 @@ class AssetCheckController extends Controller
                 $one->is_help = 1;
                 if (!$one->save())
                     throw new \Exception('事务中断1');
+                
+                $asset_check_data = array(
+                    'id' => $one->id,
+                    'userid' => $one->userid,
+                    'amount' => $one->amount,
+                    'status'=> $one->status,
+                    'adminid' => $one->adminid,
+                    'is_help' => $one->is_help,
+                    'created_at' => $one->created_at,
+                    'updated_at' => $one->updated_at
+                );
 
                 $asset_check = AssetCheck::where('status', "=", 0)->get();
                 Redis::set('asset_check_status', $asset_check->count());
@@ -173,7 +184,7 @@ class AssetCheckController extends Controller
                 $one_user->asset = $asset + $one->amount;
                 if (!$one_user->save())
                     throw new \Exception('事务中断2');
-
+                
                 //添加财务记录
                 $username = Auth::user()->username;
                 $newfinance = new FinancialAsset;
@@ -190,6 +201,19 @@ class AssetCheckController extends Controller
 
                 if (!$newfinance->save())
                     throw new \Exception('事务中断3');
+                
+                $financial_asset = array(
+                    'id' => $newfinance->id,
+                    'userid' => $newfinance->userid,
+                    'amount' => $newfinance->amount,
+                    'balance' => $newfinance->balance,
+                    'direction' => $newfinance->direction,
+                    'financial_type' => $newfinance->financial_type,
+                    'details' => $newfinance->details,
+                    'extra' => $newfinance->extra,
+                    'after_balance' => $newfinance->after_balance,
+                    'created_at' => $newfinance->created_at
+                );
 
                 //添加管理员日志
                 $newlog = new Log;
@@ -208,7 +232,11 @@ class AssetCheckController extends Controller
             $one_extra->charge = $one_extra->charge + $one->amount;
             if (!$one_extra->save())
                 throw new \Exception('事务中断5');
-            
+            $customer_extra = array(
+                'id' => $one_extra->id,
+                'userid' => $one_extra->userid,
+                'charge' => $one_extra->charge
+            );
             //5，检测会员等级是否升级
             $total_recharge = $one_extra->charge;  //个人总充值
             $level_id = $one_user->level_id;       //当前会员等级
@@ -231,7 +259,10 @@ class AssetCheckController extends Controller
             $team_extra->charge_total = $team_extra->charge_total + $one->amount;
             if (!$team_extra->save())
                 throw new \Exception('事务中断7');
-
+            $team_extra_data = array(
+                'id' => $team_extra->id,
+                'charge_total' => $team_extra->charge_total
+            );
             //6，检测本级团队等级是否升级
             //得到用户总数   下级团队长总数   团队总充值数
             $team_members = $team_extra->team_members;
@@ -277,7 +308,16 @@ class AssetCheckController extends Controller
                     throw new \Exception('事务中断10');
             }
             
-            
+            $customer = array(
+                'id' => $one_user->id,
+                'phone' => $one_user->phone,
+                'realname' => $one_user->realname,
+                'asset' => $one_user->asset,
+                'level_id' => $one_user->level_id,
+                'team_id' => $one_user->team_id,
+                'balance' => $one_user->balance
+
+            );
             //先获得上级的id
             $parent_id = $one_user->parent_id;
             //8，检测上级团队等级是否升级
@@ -345,9 +385,17 @@ class AssetCheckController extends Controller
             }
 
             //11, 异步检测所有上级团队的升级状态
-                
-                DB::commit(); 
-                LogFile::channel("update")->info("资产流水记录 更新成功");
+            $asset_check_update = array(
+                'asset_check_data' => $asset_check_data,
+                'financial_asset' => $financial_asset,
+                'customer_extra' => $customer_extra,
+                'team_extra_data' => $team_extra_data,
+                'customer' => $customer,
+
+            );
+            $asset_check_json = json_encode($asset_check_update);
+            DB::commit(); 
+            LogFile::channel("asset_check_update")->info($asset_check_json);
 
             } catch (\Exception $e) {
                 DB::rollback();
@@ -357,7 +405,7 @@ class AssetCheckController extends Controller
                  * $stackTrace = $e->getTraceAsString();
                  */
                 $errorMessage = $e->getMessage();
-                LogFile::channel("error")->error($errorMessage);
+                LogFile::channel("asset_check_update_error")->error($errorMessage);
                 return $errorMessage;
                 //return '审核通过错误，事务回滚';
             }
@@ -418,8 +466,19 @@ class AssetCheckController extends Controller
                 if (!$newlog->save())
                     throw new \Exception('事务中断6');
 
+                    $asset_check_data = array(
+                        'id' => $one->id,
+                        'userid' => $one->userid,
+                        'status'=> $one->status,
+                        'adminid' => $one->adminid,
+                        'comment' => $one->comment,
+                        'created_at' => $one->created_at,
+                        'updated_at' => $one->updated_at
+                    );
+                    $asset_check_json = json_encode($asset_check_data);
+    
                     DB::commit();
-                    LogFile::channel("destroy")->info("资产流水记录 刪除成功");
+                    LogFile::channel("asset_check_status")->info($asset_check_json);
 
                 } catch (\Exception $e) {
                     DB::rollback();
@@ -429,7 +488,7 @@ class AssetCheckController extends Controller
                      * $stackTrace = $e->getTraceAsString();
                      */
                     $errorMessage = $e->getMessage();
-                    LogFile::channel("error")->error($errorMessage);
+                    LogFile::channel("asset_check_status_error")->error($errorMessage);
                     return $errorMessage;
                     //return '审核通过错误，事务回滚';
                 }
