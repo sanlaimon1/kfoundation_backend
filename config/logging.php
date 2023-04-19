@@ -290,6 +290,149 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'blockip_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/blockip/blockip_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'blockip_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/blockip/blockip_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'blockip_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/blockip/blockip_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'blockip_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/blockip/blockip_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'category_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/category/category_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'currency_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/currency/currency_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
 
         'debug' => [
             'driver' => 'daily',

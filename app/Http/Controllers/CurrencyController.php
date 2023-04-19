@@ -139,15 +139,24 @@ class CurrencyController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-
+            $currency = array(
+                'id' => $newcurrency->id,
+                'new_price' => $newcurrency->new_price,
+                'open_price' => $newcurrency->open_price,
+                'min_price' => $newcurrency->min_price,
+                'max_price' => $newcurrency->max_price,
+                'add_time' => $newcurrency->add_time,
+                'sort' => $newcurrency->sort
+            );
+            $currency_json = json_encode($currency);
             DB::commit();
-            LogFile::channel("store")->info("币价管理 存儲成功");
+            LogFile::channel("currency_store")->info($currency_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("currency_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -266,14 +275,24 @@ class CurrencyController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $currency = array(
+                'id' => $newcurrency->id,
+                'new_price' => $newcurrency->new_price,
+                'open_price' => $newcurrency->open_price,
+                'min_price' => $newcurrency->min_price,
+                'max_price' => $newcurrency->max_price,
+                'add_time' => $newcurrency->add_time,
+                'sort' => $newcurrency->sort
+            );
+            $currency_json = json_encode($currency);
             DB::commit();
-            LogFile::channel("update")->info("币价管理 更新成功");
+            LogFile::channel("currency_update")->info($currency_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("currency_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -329,6 +348,16 @@ class CurrencyController extends Controller
         try
         {
             $currency = Currency::find($id);
+            $currency_data = array(
+                'id' => $currency->id,
+                'new_price' => $currency->new_price,
+                'open_price' => $currency->open_price,
+                'min_price' => $currency->min_price,
+                'max_price' => $currency->max_price,
+                'add_time' => $currency->add_time,
+                'sort' => $currency->sort
+            );
+            $currency_json = json_encode($currency);
             $currency->delete();
 
             $username = Auth::user()->username;
@@ -346,7 +375,7 @@ class CurrencyController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("destroy")->info("币价管理 刪除成功");
+            LogFile::channel("currency_destroy")->info($currency_json);
 
             $old_redis_currency = Redis::get("currency:homepage:md5");
 
@@ -375,7 +404,7 @@ class CurrencyController extends Controller
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("currency_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('currency.index');

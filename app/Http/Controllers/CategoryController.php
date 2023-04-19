@@ -118,15 +118,21 @@ class CategoryController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
+            $category_data = array(
+                'id' => $newcategory->id,
+                'cate_name' => $newcategory->cate_name,
+                'sort' => $newcategory->sort
 
+            );
+            $category_json = json_encode($category_data);
             DB::commit();
-            LogFile::channel("store")->info("文章分类 存儲成功");
+            LogFile::channel("category_store")->info($category_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("category_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -211,14 +217,21 @@ class CategoryController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断4');
 
+            $category_data = array(
+                'id' => $newcategory->id,
+                'cate_name' => $newcategory->cate_name,
+                'sort' => $newcategory->sort
+
+            );
+            $category_json = json_encode($category_data);
             DB::commit();
-            LogFile::channel("update")->info("文章分类 更新成功");
+            LogFile::channel("category_update")->info($category_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("category_update_error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('category.index');
@@ -252,6 +265,14 @@ class CategoryController extends Controller
             $category->enable = 0;
             if(!$category->save())
                 throw new \Exception('事务中断5');
+            
+            $category_data = array(
+                'id' => $category->id,
+                'cate_name' => $category->cate_name,
+                'sort' => $category->sort,
+                'enable' => $category->enable
+            );
+            $category_json = json_encode($category_data);
 
             $username = Auth::user()->username;
             $newlog = new Log();
@@ -268,13 +289,13 @@ class CategoryController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
-            LogFile::channel("destroy")->info("文章分类 刪除成功");
+            LogFile::channel("category_destroy")->info("文章分类 刪除成功");
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("category_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('category.index');
