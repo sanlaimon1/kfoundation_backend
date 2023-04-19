@@ -129,12 +129,23 @@ class RoleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $roles = array([
+                'id' => $role->rid,
+                'title' => $role->title,
+                'status' => $role->status,
+                'sort' => $role->sort,
+                'desc' => $role->desc,
+                'created_at' => $role->created_at,
+                'updated_at' => $role->updated_at
+            ]);
+
+            $role_json = json_encode($roles);
+            LogFile::channel("role_store")->info($role_json);
             DB::commit();
-            LogFile::channel("store")->info("访问权限管理 存儲成功");
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("role_store_error")->error($message);
             /**
              * $errorMessage = $e->getMessage();
              * $errorCode = $e->getCode();
@@ -238,12 +249,22 @@ class RoleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $roles = array([
+                'id' => $role->rid,
+                'title' => $role->title,
+                'status' => $role->status,
+                'sort' => $role->sort,
+                'desc' => $role->desc,
+                'created_at' => $role->created_at,
+                'updated_at' => $role->updated_at
+            ]);
+            $role_json = json_encode($roles);
             DB::commit();
-            LogFile::channel("update")->info("访问权限管理 更新成功");
+            LogFile::channel("role_update")->info($role_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("role_update_error")->error($message);
             /**
              * $errorMessage = $e->getMessage();
              * $errorCode = $e->getCode();
@@ -284,6 +305,16 @@ class RoleController extends Controller
             $id = (int)$id;
             $one = Role::find($id);
             $one->status = 0;
+            $roles = array([
+                'id' => $one->rid,
+                'title' => $one->title,
+                'status' => $one->status,
+                'sort' => $one->sort,
+                'desc' => $one->desc,
+                'created_at' => $one->created_at,
+                'updated_at' => $one->updated_at
+            ]);
+            $role_json = json_encode($roles);
 
             if (!$one->save())
                 throw new \Exception('事务中断1');
@@ -300,11 +331,11 @@ class RoleController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("destroy")->info("访问权限管理 刪除成功");
+            LogFile::channel("role_destroy")->info($role_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("role_destroy_error")->error($message);
             /**
              * $errorMessage = $e->getMessage();
              * $errorCode = $e->getCode();
