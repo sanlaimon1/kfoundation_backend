@@ -434,6 +434,277 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'customer_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_kick' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_kick.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_kick_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_kick_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_password1' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_password1.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_password1_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_password1_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_password2' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_password2.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'customer_password2_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/customer_password2_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_balance' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_balance.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_balance_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_balance_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_asset' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_asset.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_asset_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_asset_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_asset' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_asset.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_asset_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_asset_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_integration' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_integration.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_integration_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_integration_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_platform_coin' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_platform_coin.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'financial_platform_coin_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/financial_platform_coin_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_balance' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_balance.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_balance_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_balance_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_asset' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_asset.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_asset_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_asset_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_integration' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_integration.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_integration_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_integration_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_platform_coin' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_platform_coin.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'withdraw_financial_platform_coin_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/customer/withdraw_financial_platform_coin_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+
         'debug' => [
             'driver' => 'daily',
             'path' => storage_path('logs/debug.log'),
