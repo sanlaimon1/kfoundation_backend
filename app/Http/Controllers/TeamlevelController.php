@@ -139,6 +139,22 @@ class TeamlevelController extends Controller
             if(!$newteamlevel->save())
                 throw new \Exception('事务中断1');
 
+            $teamlevels = array(
+                'id' => $newteamlevel->id,
+                'level_name' => $level_name,
+                'icon' => $icon,
+                'spread_members_num' => $spread_members_num,
+                'spread_leaders_num' => $spread_leaders_num,
+                'accumulative_amount' => $accumulative_amount,
+                'team_award' => $team_award,
+                'is_given' => $is_given,
+                'award_amount' => $award_amount,
+                'default_level' => $default_level,
+                'status' => $status,
+            );
+
+            $teamlevel_json = json_encode($teamlevels);
+
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
@@ -151,11 +167,11 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("团队等级管理 存儲成功");
+            LogFile::channel("teamlevel_store")->info($teamlevel_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("teamlevel_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -262,6 +278,22 @@ class TeamlevelController extends Controller
 
             if(!$newteamlevel->save())
                 throw new \Exception('事务中断3');
+            
+            $teamlevels = array(
+                'id' => $id,
+                'level_name' => $level_name,
+                'icon' => $icon,
+                'spread_members_num' => $spread_members_num,
+                'spread_leaders_num' => $spread_leaders_num,
+                'accumulative_amount' => $accumulative_amount,
+                'team_award' => $team_award,
+                'is_given' => $is_given,
+                'award_amount' => $award_amount,
+                'default_level' => $default_level,
+                'status' => $status,
+            );
+
+            $teamlevel_json = json_encode($teamlevels);
 
             $username = Auth::user()->username;
             $newlog = new Log;
@@ -275,11 +307,11 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
-            LogFile::channel("update")->info("团队等级管理 更新成功");
+            LogFile::channel("teamlevel_update")->info($teamlevel_json);
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("teamlevel_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -310,6 +342,22 @@ class TeamlevelController extends Controller
         DB::beginTransaction();
         try {
             $teamlevel = Teamlevel::find($id);
+            $teamlevels = array(
+                'id' => $id,
+                'level_name' => $teamlevel->level_name,
+                'icon' => $teamlevel->icon,
+                'spread_members_num' => $teamlevel->spread_members_num,
+                'spread_leaders_num' => $teamlevel->spread_leaders_num,
+                'accumulative_amount' => $teamlevel->accumulative_amount,
+                'team_award' => $teamlevel->team_award,
+                'is_given' => $teamlevel->is_given,
+                'award_amount' => $teamlevel->award_amount,
+                'default_level' => $teamlevel->default_level,
+                'status' => $teamlevel->status,
+            );
+
+            $teamlevel_json = json_encode($teamlevels);
+
             if(!$teamlevel->delete())
                 throw new \Exception('事务中断5');
 
@@ -325,12 +373,12 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
-            LogFile::channel("destroy")->info("团队等级管理 刪除成功");
+            LogFile::channel("teamlevel_destroy")->info($teamlevel_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("teamlevel_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('teamlevel.index');

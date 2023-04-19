@@ -142,10 +142,17 @@ class WindowhomepageController extends Controller
             $log->parameters = $input_json;  // 请求参数
             $log->created_at = date('Y-m-d H:i:s');
 
+            $windowhomepage = array(
+                "id" => $id,
+                "config_value" => $config_value,
+            );
+
+            $windowhomepage_json = json_encode($windowhomepage);
+
             if(!$log->save())
                 throw new \Exception('事务中断2');
             DB::commit();
-            LogFile::channel("update")->info("文章列表 更新成功");
+            LogFile::channel("windowhomepage_update")->info($windowhomepage_json);
 
             $old_popup = Redis::get("popwindow:homepage:md5");
             $popup_content = Config::find(10)->config_value;
@@ -163,7 +170,7 @@ class WindowhomepageController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("windowhomepage_update_error")->error($message);
             //echo $e->getMessage();
             return 'error';
         }
