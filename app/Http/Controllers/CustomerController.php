@@ -192,19 +192,32 @@ class CustomerController extends Controller
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
-
+                
+                $customer = array(
+                    'id' => $customer->id,
+                    'phone' => $customer->phone,
+                    'realname' => $customer->realname,
+                    'invited_code' => $customer->invited_code,
+                    'is_allowed_code' => $customer->is_allowed_code,
+                    'identity' => $customer->identity,
+                    'is_sure' => $customer->is_sure,
+                    'level_id' => $customer->level_id,
+                    'team_id' => $customer->team_id,
+                    'password' => $customer->password,
+                    'password2' => $customer->password2,
+                    'salt' => $customer->salt,
+                    'idcard_front' => $customer->idcard_front,
+                    'idcard_back' => $customer->idcard_back,
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
-                LogFile::channel("store")->info("会员列表 存儲成功");
+                LogFile::channel("customer_store")->info($customer_json);
 
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
+
                 $errorMessage = $e->getMessage();
-                LogFile::channel("error")->error($errorMessage);
+                LogFile::channel("customer_store_error")->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -319,18 +332,30 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
 
+                $customer = array(
+                    'id' => $customer->id,
+                    'phone' => $customer->phone,
+                    'realname' => $customer->realname,
+                    'invited_code' => $customer->invited_code,
+                    'is_allowed_code' => $customer->is_allowed_code,
+                    'identity' => $customer->identity,
+                    'is_sure' => $customer->is_sure,
+                    'level_id' => $customer->level_id,
+                    'team_id' => $customer->team_id,
+                    'password' => $customer->password,
+                    'password2' => $customer->password2,
+                    'salt' => $customer->salt,
+                    'idcard_front' => $customer->idcard_front,
+                    'idcard_back' => $customer->idcard_back,
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
-                LogFile::channel("update")->info("会员列表 更新成功");
+                LogFile::channel("customer_update")->info("会员列表 更新成功");
 
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
-                LogFile::channel("error")->error($errorMessage);
+                LogFile::channel("customer_update_error")->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -381,14 +406,21 @@ class CustomerController extends Controller
                 if(!$log->save())
                     throw new \Exception('事务中断6');
 
+                $customer = array(
+                    'id' => $customer->id,
+                    'phone' => $customer->phone,
+                    'realname' => $customer->realname,
+                    'status' => $customer->status
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
-                LogFile::channel("destroy")->info("会员列表 刪除成功");
+                LogFile::channel("customer_destroy")->info($customer_json);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $errorMessage = $e->getMessage();
-                LogFile::channel("error")->error($errorMessage);
+                LogFile::channel("customer_destroy_error")->error($errorMessage);
                 return '修改错误，事务回滚';
             }
 
@@ -494,16 +526,19 @@ class CustomerController extends Controller
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if (!$newlog->save())
                     throw new \Exception('事务中断8');
-
+                $customer = array(
+                    'id' => $one->id,
+                    'phone' => $one->phone,
+                    'realname' => $one->realname,
+                    'access_token' => $one->access_token
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
+                LogFile::channel('customer_kick')->info($customer_json);
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('customer_kick_error')->error($errorMessage);
                 return $errorMessage;
                 //return '踢出错误，事务回滚';
             }
@@ -559,15 +594,19 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断8');
 
+                $customer = array(
+                    'id' => $customer->id,
+                    'phone' => $customer->phone,
+                    'realname' => $customer->realname,
+                    'password' => $customer->password
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
+                LogFile::channel('customer_password1')->info($customer_json);
             } catch (\Exception $e) {
-                DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
+                DB::rollback();              
                 $errorMessage = $e->getMessage();
+                LogFile::channel('customer_password1_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -617,15 +656,19 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断10');
 
+                $customer = array(
+                    'id' => $customer->id,
+                    'phone' => $customer->phone,
+                    'realname' => $customer->realname,
+                    'password2' => $customer->password2
+                );
+                $customer_json = json_encode($customer);
                 DB::commit();
+                LogFile::channel('customer_password2')->info($customer_json);
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('customer_password2_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -693,15 +736,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断12');
 
+                $financial_balance = array(
+                    'id' => $financial_balance->id,
+                    'userid' => $financial_balance->userid,
+                    'amount' => $financial_balance->amount,
+                    'balance' => $financial_balance->balance,
+                    'direction' => $financial_balance->direction,
+                    'financial_type' => $financial_balance->financial_type,
+                    'details' => $financial_balance->details,
+                    'after_balance' => $financial_balance->after_balance,
+                    'created_at' => $financial_balance->created_at,
+                );
+                $financial_balance_json = json_encode($financial_balance);
                 DB::commit();
+                LogFile::channel('financial_balance')->info($financial_balance_json);    
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('financial_balance_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -757,16 +809,24 @@ class CustomerController extends Controller
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if(!$newlog->save())
                     throw new \Exception('事务中断14');
-
-                DB::commit();
+                    $financial_asset = array(
+                        'id' => $financial_asset->id,
+                        'userid' => $financial_asset->userid,
+                        'amount' => $financial_asset->amount,
+                        'balance' => $financial_asset->balance,
+                        'direction' => $financial_asset->direction,
+                        'financial_type' => $financial_asset->financial_type,
+                        'details' => $financial_asset->details,
+                        'after_balance' => $financial_asset->after_balance,
+                        'created_at' => $financial_asset->created_at,
+                    );
+                    $financial_asset_json = json_encode($financial_asset);
+                    DB::commit();
+                    LogFile::channel('financial_asset')->info($financial_asset_json);   
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('financial_asset_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -824,15 +884,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断16');
 
+                $financial_integration = array(
+                    'id' => $financial_integration->id,
+                    'userid' => $financial_integration->userid,
+                    'amount' => $financial_integration->amount,
+                    'balance' => $financial_integration->balance,
+                    'direction' => $financial_integration->direction,
+                    'financial_type' => $financial_integration->financial_type,
+                    'details' => $financial_integration->details,
+                    'after_balance' => $financial_integration->after_balance,
+                    'created_at' => $financial_integration->created_at,
+                );
+                $financial_integration_json = json_encode($financial_integration);
                 DB::commit();
+                LogFile::channel('financial_integration')->info($financial_integration_json);  
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('financial_integration_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -890,15 +959,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断18');
 
+                $financial_platform_coin = array(
+                    'id' => $financial_platform_coin->id,
+                    'userid' => $financial_platform_coin->userid,
+                    'amount' => $financial_platform_coin->amount,
+                    'balance' => $financial_platform_coin->balance,
+                    'direction' => $financial_platform_coin->direction,
+                    'financial_type' => $financial_platform_coin->financial_type,
+                    'details' => $financial_platform_coin->details,
+                    'after_balance' => $financial_platform_coin->after_balance,
+                    'created_at' => $financial_platform_coin->created_at,
+                );
+                $financial_platform_coin_json = json_encode($financial_platform_coin);
                 DB::commit();
+                LogFile::channel('financial_platform_coin')->info($financial_platform_coin_json); 
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('financial_platform_coin_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -964,15 +1042,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断20');
 
+                $financial_balance = array(
+                    'id' => $financial_balance->id,
+                    'userid' => $financial_balance->userid,
+                    'amount' => $financial_balance->amount,
+                    'balance' => $financial_balance->balance,
+                    'direction' => $financial_balance->direction,
+                    'financial_type' => $financial_balance->financial_type,
+                    'details' => $financial_balance->details,
+                    'after_balance' => $financial_balance->after_balance,
+                    'created_at' => $financial_balance->created_at,
+                );
+                $financial_balance_json = json_encode($financial_balance);
                 DB::commit();
+                LogFile::channel('withdraw_financial_balance')->info($financial_balance_json);
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('withdraw_financial_balance_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -1030,15 +1117,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断22');
 
+                $financial_asset = array(
+                    'id' => $financial_asset->id,
+                    'userid' => $financial_asset->userid,
+                    'amount' => $financial_asset->amount,
+                    'balance' => $financial_asset->balance,
+                    'direction' => $financial_asset->direction,
+                    'financial_type' => $financial_asset->financial_type,
+                    'details' => $financial_asset->details,
+                    'after_balance' => $financial_asset->after_balance,
+                    'created_at' => $financial_asset->created_at,
+                );
+                $financial_asset_json = json_encode($financial_asset);
                 DB::commit();
+                LogFile::channel('withdraw_financial_asset')->info($financial_asset_json);
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('withdraw_financial_asset_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -1097,15 +1193,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断24');
 
+                $financial_integration = array(
+                    'id' => $financial_integration->id,
+                    'userid' => $financial_integration->userid,
+                    'amount' => $financial_integration->amount,
+                    'balance' => $financial_integration->balance,
+                    'direction' => $financial_integration->direction,
+                    'financial_type' => $financial_integration->financial_type,
+                    'details' => $financial_integration->details,
+                    'after_balance' => $financial_integration->after_balance,
+                    'created_at' => $financial_integration->created_at,
+                );
+                $financial_integration_json = json_encode($financial_integration);
                 DB::commit();
+                LogFile::channel('withdraw_financial_integration')->info($financial_integration_json);  
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('withdraw_financial_integration_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
@@ -1164,15 +1269,24 @@ class CustomerController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断26');
 
-                DB::commit();
+                    $financial_platform_coin = array(
+                        'id' => $financial_platform_coin->id,
+                        'userid' => $financial_platform_coin->userid,
+                        'amount' => $financial_platform_coin->amount,
+                        'balance' => $financial_platform_coin->balance,
+                        'direction' => $financial_platform_coin->direction,
+                        'financial_type' => $financial_platform_coin->financial_type,
+                        'details' => $financial_platform_coin->details,
+                        'after_balance' => $financial_platform_coin->after_balance,
+                        'created_at' => $financial_platform_coin->created_at,
+                    );
+                    $financial_platform_coin_json = json_encode($financial_platform_coin);
+                    DB::commit();
+                    LogFile::channel('withdraw_financial_platform_coin')->info($financial_platform_coin_json);  
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                * $errorCode = $e->getCode();
-                * $stackTrace = $e->getTraceAsString();
-                */
                 $errorMessage = $e->getMessage();
+                LogFile::channel('withdraw_financial_platform_coin_error')->error($errorMessage);
                 return $errorMessage;
                 //return '删除错误，事务回滚';
             }
