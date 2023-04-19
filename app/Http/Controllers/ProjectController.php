@@ -149,6 +149,7 @@ class ProjectController extends Controller
             "project_scale" => ['required', 'numeric', 'gte:0'],
             "status"  =>  "required|in:0,1",
             "sort" => "required|integer|gte:0",
+            "lang" => "required"
         ]);
 
         if($request->hasFile('litpic')){
@@ -159,6 +160,7 @@ class ProjectController extends Controller
             $litpic = '';
         }
         $detail = trim( htmlspecialchars( $request->detail ));
+        $lang = trim($request->get('lang'));
         $status = (int)$request->status;
         $sort = (int)$request->sort;
         DB::beginTransaction();
@@ -204,6 +206,7 @@ class ProjectController extends Controller
             $project->project_scale = $request->project_scale;
             $project->status = $status;
             $project->sort = $sort;
+            $project->lang = $lang;
             if(!$project->save())
             throw new \Exception('事务中断1');
 
@@ -280,7 +283,7 @@ class ProjectController extends Controller
                 $bind_project_name = $bind_project->project_name;
             }
         }
-            
+
         return view('project.show', compact('project','return_modes', 'bind_project_name', 'bind_projectid'));
     }
 
@@ -356,7 +359,9 @@ class ProjectController extends Controller
             "project_scale" => ['required', 'numeric', 'gte:0'],
             "status"  =>  "required|in:0,1",
             "sort" => "required|integer|gte:0",
+            "lang" => "required"
         ]);
+        $lang = trim($request->get('lang'));
         $status = (int)$request->status;
         $sort = (int)$request->sort;
         if($request->hasFile('litpic')){
@@ -394,6 +399,7 @@ class ProjectController extends Controller
             $project->project_scale = $request->project_scale;
             $project->status = $status;
             $project->sort = $sort;
+            $project->lang = $lang;
             $project->save();
             if(!$project->save())
             throw new \Exception('事务中断1');
@@ -443,7 +449,7 @@ class ProjectController extends Controller
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
-        
+
         return redirect()->route('project.index');
     }
 
@@ -599,7 +605,7 @@ class ProjectController extends Controller
             $arr = ['code'=>-2, 'message'=> '不能绑定自己的id'];
             return json_encode( $arr );
         }
-        
+
         DB::beginTransaction();
         try {
             $project = Project::find($id);
@@ -632,7 +638,7 @@ class ProjectController extends Controller
             return $errorMessage;
             //return '绑定错误，事务回滚';
         }
-        
+
         return redirect()->route('project.index');
     }
 }
