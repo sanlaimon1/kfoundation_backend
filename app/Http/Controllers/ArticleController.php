@@ -123,6 +123,7 @@ class ArticleController extends Controller
             'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             'sort' => ['required', 'integer', 'gt:0'],
             'shown' => 'required',
+            'lang' => 'required'
         ]);
 
         $litpic = '/images/default.png';
@@ -136,6 +137,7 @@ class ArticleController extends Controller
         $content = trim(htmlspecialchars($request->get('content')));
         $categoryid = trim($request->get('categoryid'));
         $sort = trim($request->sort);
+        $lang = trim($request->get('lang'));
         DB::beginTransaction();
         try {
             //code...
@@ -146,6 +148,7 @@ class ArticleController extends Controller
             $newarticle->sort  = $sort;
             $newarticle->litpic  = $litpic;
             $newarticle->shown = $request->shown;
+            $newarticle->lang = $lang;
             $newarticle->adminid = Auth::id();
 
             if (!$newarticle->save())
@@ -173,7 +176,7 @@ class ArticleController extends Controller
                 'adminid' => $newarticle->adminid,
                 'litpic' => $newarticle->litpic,
                 'sort' => $newarticle->sort,
-                'shown' => $newarticle->shown, 
+                'shown' => $newarticle->shown,
                 'lang' => $newarticle->lang,
                 'created_at' => $newarticle->created_at,
                 'updated_at' => $newarticle->updated_at
@@ -277,6 +280,7 @@ class ArticleController extends Controller
             'litpic.*' => 'required|sometimes|image|mimes:jpg,png,jpeg,bmp,webp',
             'sort' => ['required', 'integer', 'gt:0'],
             'shown' => 'required',
+            'lang' => 'required'
         ]);
 
         if ($request->hasFile('litpic')) {
@@ -291,6 +295,7 @@ class ArticleController extends Controller
         $content = trim(htmlspecialchars($request->get('content')));
         $categoryid = trim($request->get('categoryid'));
         $sort = trim($request->sort);
+        $lang = trim($request->get('lang'));
 
         DB::beginTransaction();
         try {
@@ -302,6 +307,7 @@ class ArticleController extends Controller
             $newarticle->litpic  = $litpic;
             $newarticle->categoryid = $categoryid;
             $newarticle->shown = $request->shown;
+            $newarticle->lang = $lang;
 
             if (!$newarticle->save())
                 throw new \Exception('事务中断3');
@@ -320,7 +326,7 @@ class ArticleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断4');
 
-            
+
             $articles = array(
                 'id' => $newarticle->id,
                 'title' => $newarticle->title,
@@ -329,7 +335,7 @@ class ArticleController extends Controller
                 'adminid' => $newarticle->adminid,
                 'litpic' => $newarticle->litpic,
                 'sort' => $newarticle->sort,
-                'shown' => $newarticle->shown, 
+                'shown' => $newarticle->shown,
                 'lang' => $newarticle->lang,
                 'created_at' => $newarticle->created_at,
                 'updated_at' => $newarticle->updated_at
@@ -373,7 +379,7 @@ class ArticleController extends Controller
             LogFile::channel("article_update_error")->error($message);
             return '添加错误，事务回滚';
         }
-        
+
         return redirect()->route('article.index');
     }
 
@@ -409,7 +415,7 @@ class ArticleController extends Controller
                 'adminid' => $article->adminid,
                 'litpic' => $article->litpic,
                 'sort' => $article->sort,
-                'shown' => $article->shown, 
+                'shown' => $article->shown,
                 'lang' => $article->lang,
                 'created_at' => $article->created_at,
                 'updated_at' => $article->updated_at
@@ -432,10 +438,10 @@ class ArticleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断6');
 
-           
+
             DB::commit();
             LogFile::channel('article_destroy')->info($article_json);
-           
+
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
                         ->orderBy('sort', 'asc')
@@ -461,19 +467,19 @@ class ArticleController extends Controller
                 Redis::set( "article:homepage:md5", md5($redis_article) );
             }
         } catch (\Exception $e) {
-            DB::rollBack();          
+            DB::rollBack();
             $message = $e->getMessage();
             LogFile::channel('article_destroy_error')->error($message);
             return '添加错误，事务回滚';
         }
-        
+
         return redirect()->route('article.index');
     }
 
     public function article_notice(Request $request)
     {
         if (!Redis::exists("notice:homepage:md5")) {
-           
+
             $notice = Article::select('id', 'title')
                         ->where('categoryid', '=', 4)
                         ->orderBy('sort','asc')
@@ -488,7 +494,7 @@ class ArticleController extends Controller
                 $array_notice[] = $data;
             };
             $redis_notice = json_encode($array_notice);
-            
+
             Redis::set("notice:homepage:string", $redis_notice);
             Redis::set("notice:homepage:md5", md5( $redis_notice ));
         }
