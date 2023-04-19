@@ -132,6 +132,24 @@ class TradeController extends Controller
             if(!$newtrade_goods->save())
                 throw new \Exception('事务中断1');
 
+            $trade = array(
+                'id' => $newtrade_goods->id,
+                'goods_name' => $goods_name,
+                'days' => $days,
+                'price' => $price,
+                'fee' => $fee,
+                'images' => $res_images,
+                'next_id' => $next_id,
+                'description' => $description,
+                'selling_price' => $selling_price,
+                'step' => $step,
+                'show'=> $show,
+                'is_over' => $is_over,
+                'created_at' => $newtrade_goods->created_at,
+            );
+
+            $trade_json = json_encode($trade);
+
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
@@ -147,12 +165,12 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("交易所管理 存儲成功");
+            LogFile::channel("trade_store")->info($trade_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("trade_store_error")->error($message);
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }
@@ -274,6 +292,24 @@ class TradeController extends Controller
             if(!$newtrade_goods->save())
                 throw new \Exception('事务中断1');
 
+            $trade = array(
+                'id' => $id,
+                'goods_name' => $goods_name,
+                'days' => $days,
+                'price' => $price,
+                'fee' => $fee,
+                'images' => $res_images,
+                'next_id' => $next_id,
+                'description' => $description,
+                'selling_price' => $selling_price,
+                'step' => $step,
+                'show'=> $show,
+                'is_over' => $is_over,
+                'created_at' => $newtrade_goods->created_at,
+            );
+
+            $trade_json = json_encode($trade);
+
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
@@ -289,13 +325,13 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("update")->info("交易所管理 更新成功");
+            LogFile::channel("trade_update")->info($trade_json);
 
         } catch (\Exception $e) {
             DB::rollBack();
             //echo $e->getMessage();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("trade_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -329,6 +365,24 @@ class TradeController extends Controller
         {
             $trade_goods = TradeGoods::find($id);
 
+            $trade = array(
+                'id' => $id,
+                'goods_name' => $trade_goods->goods_name,
+                'days' => $trade_goods->days,
+                'price' => $trade_goods->price,
+                'fee' => $trade_goods->fee,
+                'images' => $trade_goods->res_images,
+                'next_id' => $trade_goods->next_id,
+                'description' => $trade_goods->description,
+                'selling_price' => $trade_goods->selling_price,
+                'step' => $trade_goods->step,
+                'show'=> $trade_goods->show,
+                'is_over' => $trade_goods->is_over,
+                'created_at' => $trade_goods->created_at,
+            );
+
+            $trade_json = json_encode($trade);
+
             if(!$trade_goods->delete())
                 throw new \Exception('事务中断2');
 
@@ -347,12 +401,12 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("destroy")->info("交易所管理 刪除成功");
+            LogFile::channel("trade_destroy")->info($trade_json);
 
         }catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("trade_destroy_error")->error($message);
             //echo $e->getMessage();
             return '添加错误，事务回滚';
         }

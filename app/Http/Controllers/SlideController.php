@@ -128,6 +128,18 @@ class SlideController extends Controller
             if(!$slide->save())
             throw new \Exception('事务中断1');
 
+            $slides = array(
+                'id' => $slide->id,
+                'title' => $slide->title,
+                'picture_path' => $slide->picture_path,
+                'link' => $slide->link,
+                'type' => $slide->type,
+                'status' => $slide->status,
+                'sort' => $slide->sort,
+            );
+
+            $slide_json = json_encode($slide);
+
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();;
@@ -140,7 +152,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("系统图片设置 存儲成功");
+            LogFile::channel("slide_store")->info($slide_json);
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -162,7 +174,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("slide_store_error")->error($errorMessage);
             return $errorMessage;
         }
         return redirect()->route('slide.index');
@@ -243,6 +255,18 @@ class SlideController extends Controller
             if(!$slide->save())
                 throw new \Exception('事务中断3');
 
+            $slides = array(
+                'id' => $slide->id,
+                'title' => $slide->title,
+                'picture_path' => $slide->picture_path,
+                'link' => $slide->link,
+                'type' => $slide->type,
+                'status' => $slide->status,
+                'sort' => $slide->sort,
+            );
+
+            $slide_json = json_encode($slides);
+
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();;
@@ -255,7 +279,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
-            LogFile::channel("update")->info("系统图片设置 更新成功");
+            LogFile::channel("slide_update")->info($slide_json);
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -277,7 +301,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("slide_update_error")->error($errorMessage);
             return $errorMessage;
         }
         return redirect()->route('slide.index');
@@ -306,6 +330,16 @@ class SlideController extends Controller
         DB::beginTransaction();
         try {
             $one = Slide::find($id);
+            $slides = array(
+                'id' => $one->id,
+                'title' => $one->title,
+                'picture_path' => $one->picture_path,
+                'link' => $one->link,
+                'type' => $one->type,
+                'status' => $one->status,
+                'sort' => $one->sort,
+            );
+            $slide_json = json_encode($slides);
             if(!$one->delete())
                 throw new \Exception('事务中断5');
 
@@ -321,7 +355,7 @@ class SlideController extends Controller
                 throw new \Exception('事务中断6');
 
             DB::commit();
-            LogFile::channel("destroy")->info("系统图片设置 刪除成功");
+            LogFile::channel("slide_destroy")->info($slide_json);
 
             $static_url = config("app.static_url");
             $old_redis_slide = Redis::get("slider:homepage:md5");
@@ -342,7 +376,7 @@ class SlideController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("slide_destroy_error")->error($errorMessage);
             return $errorMessage;
         }
 

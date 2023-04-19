@@ -221,8 +221,45 @@ class ProjectController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $projects = array([
+                'id' => $project->id,
+                'project_name' => $project->project_name,
+                'cid' => $project->cid,
+                'guarantee' => $project->guarantee,
+                'risk' => $project->risk,
+                'usage' => $project->usage,
+                'status' => $project->status,
+                'return_mode' => $project->return_mode,
+                'amount' => $project->amount,
+                'is_given' => $project->is_given,
+                'team_rate' => $project->team_rate,
+                'like_rate' => $project->like_rate,
+                'project_scale' => $project->project_scale,
+                'benefit_rate' => $project->benefit_rate,
+                'fake_process' => $project->fake_process,
+                'days' => $project->days,
+                'min_invest' => $project->min_invest,
+                'max_invest' => $project->max_invest,
+                'desc' => $project->desc,
+                'is_homepage' => $project->is_homepage,
+                'is_recommend' => $project->is_recommend,
+                'level_id' => $project->level_id,
+                'litpic' => $project->litpic,
+                'details' => $project->details,
+                'enable' => $project->enable,
+                'created_at' => $project->created_at,
+                'updated_at' => $project->updated_at,
+                'increment_process' => $project->increment_process,
+                'sort' => $project->sort,
+                'weeks' => $project->weeks,
+                'months' => $project->months,
+                'bind_projectid' => $project->bind_projectid,
+                'lang' => $project->lang,
+            ]);
+
+            $project_json = json_encode($projects);
+            LogFile::channel("project_store")>info($project_json);
             DB::commit();
-            LogFile::channel("store")->info("项目添加成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -251,7 +288,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("project_store_error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
@@ -415,8 +452,45 @@ class ProjectController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $projects = array([
+                'id' => $project->id,
+                'project_name' => $project->project_name,
+                'cid' => $project->cid,
+                'guarantee' => $project->guarantee,
+                'risk' => $project->risk,
+                'usage' => $project->usage,
+                'status' => $project->status,
+                'return_mode' => $project->return_mode,
+                'amount' => $project->amount,
+                'is_given' => $project->is_given,
+                'team_rate' => $project->team_rate,
+                'like_rate' => $project->like_rate,
+                'project_scale' => $project->project_scale,
+                'benefit_rate' => $project->benefit_rate,
+                'fake_process' => $project->fake_process,
+                'days' => $project->days,
+                'min_invest' => $project->min_invest,
+                'max_invest' => $project->max_invest,
+                'desc' => $project->desc,
+                'is_homepage' => $project->is_homepage,
+                'is_recommend' => $project->is_recommend,
+                'level_id' => $project->level_id,
+                'litpic' => $project->litpic,
+                'details' => $project->details,
+                'enable' => $project->enable,
+                'created_at' => $project->created_at,
+                'updated_at' => $project->updated_at,
+                'increment_process' => $project->increment_process,
+                'sort' => $project->sort,
+                'weeks' => $project->weeks,
+                'months' => $project->months,
+                'bind_projectid' => $project->bind_projectid,
+                'lang' => $project->lang,
+            ]);
+
+            $project_json = json_encode($projects);
+            LogFile::channel("project_update")->info($project_json);
             DB::commit();
-            LogFile::channel("update")->info("项目更新成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -445,7 +519,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("project_update_error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
@@ -495,9 +569,16 @@ class ProjectController extends Controller
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-
+            $projects = array([
+                'id' => $one->id,
+                'project_name' => $one->project_name,
+                'enable' => $one->enable,
+                'created_at' => $one->created_at,
+                'updated_at' => $one->updated_at,
+            ]);
+            $project_json = json_encode($projects);
+            LogFile::channel("project_destroy")>info($project_json);
             DB::commit();
-            LogFile::channel("destroy")->info("项目列表 刪除成功");
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -528,7 +609,7 @@ class ProjectController extends Controller
              * $stackTrace = $e->getTraceAsString();
              */
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("project_destroy_error")->error($errorMessage);
             return $errorMessage;
             //return '删除错误，事务回滚';
         }
@@ -628,13 +709,21 @@ class ProjectController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断8-2');
 
+            $bind_projects = array([
+                'id' => $project->id,
+                'project_name' => $project->project_name,
+                'bind_projectid' => $project->bind_projectid,
+                'created_at' => $project->created_at,
+                'updated_at' => $project->updated_at,
+            ]);
+            $project_json = json_encode($bind_projects);
+            LogFile::channel("bind_project_update")>info($project_json);
             DB::commit();
-            LogFile::channel("update")->info("项目绑定成功");
 
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
-            LogFile::channel("error")->error($errorMessage);
+            LogFile::channel("bind_project_update_error")->error($errorMessage);
             return $errorMessage;
             //return '绑定错误，事务回滚';
         }

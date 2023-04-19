@@ -103,6 +103,20 @@ class WalletController extends Controller
         try {
             //code...
             $wallet = Wallet::find($id);
+            $wallets = array(
+                'id' => $id,
+                'userid' => $wallet->userid,
+                'payid' => $wallet->payid,
+                'address' => $wallet->address,
+                'qrcode' => $wallet->qrcode,
+                'created_at' => $wallet->created_at,
+                'origin' => $wallet->origin,
+                'realname' => $wallet->realname,
+                'bank_name' => $wallet->bank_name,
+                'account_branch' => $wallet->account_branch,
+            );
+
+            $wallet_json = json_encode($wallets);
             $customer_name = DB::table('customers')
                             ->where('customers.id','=',$wallet->userid)
                             ->select('realname')->first();
@@ -123,7 +137,7 @@ class WalletController extends Controller
             if(!$log->save())
                 throw new \Exception('事务中断2');
             DB::commit();
-            LogFile::channel("destroy")->info("用户钱包列表 刪除成功");
+            LogFile::channel("wallet_destroy")->info($wallet_json);
 
 
             $mywallets_string = $mywallets_dropdownlist_string = '';
@@ -157,7 +171,7 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("wallet_destroy_error")->error($message);
             //echo $e->getMessage();
             return 'error';
         }

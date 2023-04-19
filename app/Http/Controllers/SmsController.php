@@ -139,6 +139,13 @@ class SmsController extends Controller
             if(!$one_config->save())
                 throw new \Exception('事务中断1');
 
+            $sms = array(
+                'id' => $one_config->id,
+                'config_value' => $one_config->config_value,
+            );
+
+            $sms_json = json_encode($sms);
+
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();;
@@ -151,14 +158,14 @@ class SmsController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("update")->info("短信参数设置 更新成功");
+            LogFile::channel("sms_update")->info($sms_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             //$errorMessage = $e->getMessage();
             //return $errorMessage;
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sms_update_error")->error($message);
             return '修改错误，事务回滚';
         }
 

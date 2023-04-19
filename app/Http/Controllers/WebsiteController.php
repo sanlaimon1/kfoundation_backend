@@ -7,6 +7,7 @@ use App\Models\Config;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log as LogFile;
 
 class WebsiteController extends Controller
 {
@@ -190,6 +191,12 @@ class WebsiteController extends Controller
         $one_config = Config::find($id);
         $one_config->config_value = $config_value;
         $one_config->save();
+        $website = array(
+            'id' => $id,
+            "config_value" => $config_value,
+        );
+        $website_json = json_encode($website);
+        LogFile::channel("website_update")->info($website_json);
 
         // store string data of web_name/ is_kline/  in redis
         $static_url = config("app.static_url");

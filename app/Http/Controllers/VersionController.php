@@ -150,12 +150,18 @@ class VersionController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("update")->info("APP版本设置 更新成功");
+
+            $version = array(
+                "id" => $id,
+                "config_value" => $config_value,
+            );
+            $version_json = json_encode($version);
+            LogFile::channel("version_update")->info($version_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("version_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
