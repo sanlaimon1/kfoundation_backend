@@ -124,12 +124,22 @@
             @method('PATCH')
             <section class="row frame">
                 <div class="row">
-                    <div class="mb-3">
+                    <div class="mb-3 col-6">
                         <label for="title" class="form-label">标题</label>
                         @error('title')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <input type="text" class="form-control" id="title" name="title" placeholder="标题" value="{{$article->title}}">
+                    </div>
+                    <div class="mb-3 col-6">
+                        <label for="lang" class="form-label">语言</label>
+                        @error('lang')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="lang" name="lang" class="form-select" >
+                            <option value="cn" @if ($article->lang === 'cn') selected @endif>cn</option>
+                            <option value="en" @if ($article->lang === 'en') selected @endif>en</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row">
