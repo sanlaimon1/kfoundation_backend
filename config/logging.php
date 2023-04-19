@@ -146,27 +146,72 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
-        'store' => [
+        'agreement_update' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/store/store.log'),
+            'path' => storage_path('logs/agreement/agreement_update.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
             'max_files' => 10,
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
-        'update' => [
+        'agreement_error' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/update/update.log'),
+            'path' => storage_path('logs/agreement/agreement_update.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
             'max_files' => 10,
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
-        'destroy' => [
+        'article_store' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/destroy/destroy.log'),
+            'path' => storage_path('logs/article/article_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'article_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/article/article_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'article_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/article/article_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'article_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/article/article_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'article_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/article/article_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'article_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/article/article_destroy_error.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
             'max_files' => 10,

@@ -165,8 +165,22 @@ class ArticleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $articles = array(
+                'id' => $newarticle->id,
+                'title' => $newarticle->title,
+                'content' => $newarticle->content,
+                'categoryid' => $newarticle->categoryid,
+                'adminid' => $newarticle->adminid,
+                'litpic' => $newarticle->litpic,
+                'sort' => $newarticle->sort,
+                'shown' => $newarticle->shown, 
+                'lang' => $newarticle->lang,
+                'created_at' => $newarticle->created_at,
+                'updated_at' => $newarticle->updated_at
+            );
+            $article_json = json_encode($articles);
             DB::commit();
-            LogFile::channel("store")->info("文章列表 存儲成功");
+            LogFile::channel("article_store")->info($article_json);
 
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
@@ -196,7 +210,7 @@ class ArticleController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("article_store_error")->error($message);
             return '添加错误，事务回滚' . $e->getMessage();
         }
         return redirect()->route('article.index');
@@ -306,9 +320,25 @@ class ArticleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断4');
 
+            
+            $articles = array(
+                'id' => $newarticle->id,
+                'title' => $newarticle->title,
+                'content' => $newarticle->content,
+                'categoryid' => $newarticle->categoryid,
+                'adminid' => $newarticle->adminid,
+                'litpic' => $newarticle->litpic,
+                'sort' => $newarticle->sort,
+                'shown' => $newarticle->shown, 
+                'lang' => $newarticle->lang,
+                'created_at' => $newarticle->created_at,
+                'updated_at' => $newarticle->updated_at
+            );
+            $article_json = json_encode($articles);
+
             DB::commit();
 
-            LogFile::channel("update")->info("文章列表 更新成功");
+            LogFile::channel("article_update")->info($article_json);
 
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
@@ -340,7 +370,7 @@ class ArticleController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("article_update_error")->error($message);
             return '添加错误，事务回滚';
         }
         
@@ -371,6 +401,20 @@ class ArticleController extends Controller
         try {
             //code...
             $article = Article::find($id);
+            $articles = array(
+                'id' => $article->id,
+                'title' => $article->title,
+                'content' => $article->content,
+                'categoryid' => $article->categoryid,
+                'adminid' => $article->adminid,
+                'litpic' => $article->litpic,
+                'sort' => $article->sort,
+                'shown' => $article->shown, 
+                'lang' => $article->lang,
+                'created_at' => $article->created_at,
+                'updated_at' => $article->updated_at
+            );
+            $article_json = json_encode($articles);
             if (!$article->delete())
                 throw new \Exception('事务中断5');
 
@@ -388,12 +432,10 @@ class ArticleController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断6');
 
+           
             DB::commit();
-
-            $method = "destroy";
-            $message = "文章列表";
-            dispatch(new LogFile($method, $message));
-
+            LogFile::channel('article_destroy')->info($article_json);
+           
             $old_redis_article = Redis::get("article:homepage:md5");
             $article = Article::select('id', 'title', 'litpic')
                         ->orderBy('sort', 'asc')
@@ -419,11 +461,9 @@ class ArticleController extends Controller
                 Redis::set( "article:homepage:md5", md5($redis_article) );
             }
         } catch (\Exception $e) {
-            DB::rollBack();
-            $method = "error";
+            DB::rollBack();          
             $message = $e->getMessage();
-            dispatch(new LogFile($method, $message));
-            //echo $e->getMessage();
+            LogFile::channel('article_destroy_error')->error($message);
             return '添加错误，事务回滚';
         }
         

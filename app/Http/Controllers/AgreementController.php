@@ -104,8 +104,7 @@ class AgreementController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-
-
+        
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
@@ -146,13 +145,19 @@ class AgreementController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断4');
 
+            $config = array(
+                'cid' => $one_config->cid,
+                'config_name' => $one_config->config_name,
+                'config_value' => $one_config->config_value
+            );
+            $config_json = json_encode($config);
             DB::commit();
-            LogFile::channel("update")->info("合同设置 更新成功");
+            LogFile::channel("agreement_update")->info($config_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("agreement_error")->error($message);
 
             return '修改错误，事务回滚';
         }
