@@ -41,7 +41,7 @@ class PermissionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {  
+    {
         if (Redis::exists("permission:".Auth::id())){
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
@@ -69,10 +69,10 @@ class PermissionController extends Controller
                 $query->path_name = $request->path_name;
                 $query->role_id = $request->role_id;
                 $query->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->store ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
-    
+
                 if (!$query->save())
                     throw new \Exception('事务中断1');
-    
+
                 $one_role = Role::find($role_id);
                 $username = Auth::user()->username;
                 $newlog = new Log();
@@ -84,9 +84,15 @@ class PermissionController extends Controller
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if (!$newlog->save())
                     throw new \Exception('事务中断2');
-    
+                $permission_datas = array([
+                    'role_id' => $query->role_id,
+                    'path_name' => $query->path_name,
+                    'auth2' => $query->auth2,
+                ]);
+                $permission_datas_json = json_encode($permission_datas);
+                LogFile::channel("permission_datas_store")->info($permission_datas_json);
                 DB::commit();
-                LogFile::channel("store")->info("权限表 更新成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 /**
@@ -97,7 +103,7 @@ class PermissionController extends Controller
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("permission_datas_store_error")->error($message);
                 return '添加错误，事务回滚';
             }
         }
@@ -108,10 +114,10 @@ class PermissionController extends Controller
                 $permission->path_name = $request->path_name;
                 $permission->role_id = $request->role_id;
                 $permission->auth2 = ($request->index ?? 0) + ($request->create ?? 0) + ($request->store ?? 0) + ($request->show ?? 0) + ($request->edit ?? 0) + ($request->update ?? 0) + ($request->destory ?? 0);
-    
+
                 if (!$permission->save())
                     throw new \Exception('事务中断1');
-    
+
                 $one_role = Role::find($role_id);
                 $username = Auth::user()->username;
                 $newlog = new Log();
@@ -123,9 +129,16 @@ class PermissionController extends Controller
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if (!$newlog->save())
                     throw new \Exception('事务中断2');
-    
+
+                $permission_datas = array([
+                    'id' => $permission->id,
+                    'path_name' => $permission->path_name,
+                    'role_id' => $permission->role_id,
+                    'auth2' => $permission->auth2,
+                ]);
+                $permission_datas_json = json_encode($permission_datas);
+                LogFile::channel("permission_datas_store")->info($permission_datas_json);
                 DB::commit();
-                LogFile::channel("store")->info("权限表 存儲成功");
 
             } catch (\Exception $e) {
                 DB::rollback();
@@ -137,12 +150,10 @@ class PermissionController extends Controller
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("permission_datas_store_error")->error($message);
                 return '添加错误，事务回滚';
             }
         }
-
-        
 
         return redirect(route("role.index"));
     }
@@ -158,7 +169,7 @@ class PermissionController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Permission $permission)
-    { 
+    {
         $first_menus = config('data.main_menu');
         $roles = Role::all();
         return view('permission.edit', [
@@ -224,8 +235,10 @@ class PermissionController extends Controller
             if (!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $permission_datas_json = json_encode($permission);
+            LogFile::channel("permission_datas_destroy")->info( $permission_datas_json );
             DB::commit();
-            LogFile::channel("destroy")->info("权限表 刪除成功");
+
         } catch (\Exception $e) {
             DB::rollback();
             /**
@@ -236,7 +249,7 @@ class PermissionController extends Controller
             //$errorMessage = $e->getMessage();
             //return $errorMessage;
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("permission_datas_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
 

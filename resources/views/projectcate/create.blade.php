@@ -122,6 +122,18 @@
                         <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lang" class="form-label">语言</label>
+                        @error('lang')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="lang" name="lang" class="form-select" >
+                            <option value="cn">cn</option>
+                            <option value="en">en</option>
+                        </select>
+                    </div>
+                </div>
 
             </section>
 

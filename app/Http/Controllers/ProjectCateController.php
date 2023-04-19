@@ -44,7 +44,9 @@ class ProjectCateController extends Controller
             return "您没有权限访问这个路径";
         }
         $perPage = $request->input('perPage', 10);
-        $projectcates = ProjectCate::orderBy('sort', 'asc')->paginate($perPage);
+        $projectcates = ProjectCate::where('enable',1)
+                                    ->orderBy('sort', 'asc')
+                                    ->paginate($perPage);
 
         return view('projectcate.index', compact('projectcates'));
     }
@@ -74,7 +76,6 @@ class ProjectCateController extends Controller
             return json_encode( $arr );
         }
 
-
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
@@ -88,11 +89,13 @@ class ProjectCateController extends Controller
             'cate_name' => ['required', 'string', 'between:1,40'],
             'comment' => ['required','string','max:200'],
             'sort' => ['required', 'integer', 'gte:0'],
+            'lang' => 'required'
         ]);
 
         $category_name = trim($request->cate_name);
         $comment = trim($request->comment);
         $sort = trim($request->sort);
+        $lang = trim($request->lang);
         DB::beginTransaction();
         try {
             $newprojectcates = new ProjectCate();
@@ -100,6 +103,7 @@ class ProjectCateController extends Controller
             $newprojectcates->comment = $comment;
             $newprojectcates->created_at = date('Y-m-d H:i:s');
             $newprojectcates->sort = $sort;
+            $newprojectcates->lang = $lang;
             if(!$newprojectcates->save())
                 throw new \Exception('事务中断1');
 
@@ -114,18 +118,26 @@ class ProjectCateController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
 
+            $projectcates =array([
+                'id' => $newprojectcates->id,
+                'cate_name' => $newprojectcates->cate_name,
+                'created_at' => $newprojectcates->created_at,
+                'sort' => $newprojectcates->sort,
+                'comment' => $newprojectcates->comment,
+                'lang' => $newprojectcates->lang
+            ]);
+            $projectcate_json = json_encode($projectcates);
+            LogFile::channel("projectcate_store")->info($projectcate_json);
             DB::commit();
-            LogFile::channel("store")->info("项目分类 存儲成功");
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("projectcate_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
         return redirect()->route('projectcate.index');
-
 
     }
 
@@ -178,11 +190,13 @@ class ProjectCateController extends Controller
             'cate_name' => ['required', 'string', 'between:1,40'],
             'comment' => ['required','string','max:200'],
             'sort' => ['required', 'integer', 'gte:0'],
+            'lang' => 'required'
         ]);
 
         $category_name = trim($request->cate_name);
         $comment = trim($request->comment);
         $sort = trim($request->sort);
+        $lang = trim($request->lang);
 
         DB::beginTransaction();
         try {
@@ -190,6 +204,7 @@ class ProjectCateController extends Controller
             $oneprojectcate->cate_name = $category_name;
             $oneprojectcate->comment = $comment;
             $oneprojectcate->sort = $sort;
+            $oneprojectcate->lang = $lang;
             if(!$oneprojectcate->save())
                 throw new \Exception('事务中断3');
 
@@ -204,12 +219,23 @@ class ProjectCateController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断4');
 
+            $projectcates =array([
+                'id' => $oneprojectcate->id,
+                'cate_name' => $oneprojectcate->cate_name,
+                'created_at' => $oneprojectcate->created_at,
+                'sort' => $oneprojectcate->sort,
+                'comment' => $oneprojectcate->comment,
+                'lang' => $oneprojectcate->lang
+            ]);
+
+            $projectcate_json = json_encode($projectcates);
+            LogFile::channel("projectcate_update")->info($projectcate_json);
             DB::commit();
-            LogFile::channel("update")->info("项目分类 更新成功");
+
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("projectcate_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -242,7 +268,7 @@ class ProjectCateController extends Controller
         try {
             $one = ProjectCate::find($id);
             $one->enable = 0;
-    
+
             if(!$one->save())
                 throw new \Exception('事务中断5');
 
@@ -257,13 +283,21 @@ class ProjectCateController extends Controller
             if(!$newlog->save())
                 throw new \Exception('事务中断6');
 
+            $projectcates =array([
+                'id' => $one->id,
+                'cate_name' => $one->cate_name,
+                'created_at' => $one->created_at,
+                'enable' => $one->enable,
+            ]);
+
+            $projectcate_json = json_encode($projectcates);
+            LogFile::channel("projectcate_destroy")->info($projectcate_json);
             DB::commit();
-            LogFile::channel("destroy")->info("项目分类 刪除成功");
 
         } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("projectcate_destroy_error")->error($message);
             return '添加错误，事务回滚';
         }
         return redirect()->route('projectcate.index');
