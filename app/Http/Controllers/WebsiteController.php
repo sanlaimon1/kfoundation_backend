@@ -8,6 +8,7 @@ use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log as LogFile;
+use Illuminate\Support\Facades\DB;
 
 class WebsiteController extends Controller
 {
@@ -186,76 +187,87 @@ class WebsiteController extends Controller
             $config_value = trim( htmlspecialchars( $request->get('config_value') ));
         }
 
-        $id = (int)$id;
-        //查询一条数据
-        $one_config = Config::find($id);
-        $one_config->config_value = $config_value;
-        $one_config->save();
-        $website = array(
-            'id' => $id,
-            "config_value" => $config_value,
-        );
-        $website_json = json_encode($website);
-        LogFile::channel("website_update")->info($website_json);
+        DB::beginTransaction();
+        try {
+            $id = (int)$id;
+            //查询一条数据
+            $one_config = Config::find($id);
+            $one_config->config_value = $config_value;
+            $website = array(
+                'id' => $one_config->id,
+                "config_value" => $one_config->config_value,
+            );
+            $website_json = json_encode($website);
+            if(!$one_config->save())
+                throw new \Exception('事务中断2');
+            DB::commit();
+            
+            LogFile::channel("website_update")->info($website_json);
 
-        // store string data of web_name/ is_kline/  in redis
-        $static_url = config("app.static_url");
-        $web_name = '';
+            // store string data of web_name/ is_kline/  in redis
+            $static_url = config("app.static_url");
+            $web_name = '';
 
-        if(Redis::get('web_name') == Config::find(1)->config_value) {
-            $web_name = Redis::get('web_name');
-        } else {
-            $web_name = Config::find(1)->config_value;
-            Redis::set('web_name', $web_name);
+            if(Redis::get('web_name') == Config::find(1)->config_value) {
+                $web_name = Redis::get('web_name');
+            } else {
+                $web_name = Config::find(1)->config_value;
+                Redis::set('web_name', $web_name);
+            }
+
+            $is_kline = '';
+            if(Redis::get('is_kline') == Config::find(7)->config_value) {
+                $is_kline = Redis::get('is_kline');
+            } else {
+                $is_kline = Config::find(7)->config_value;
+                Redis::set('is_kline', $is_kline);
+            }
+
+            $customer_service = '';
+            if(Redis::get('customer_service') == Config::find(3)->config_value) {
+                $customer_service = Redis::get('customer_service');
+            } else {
+                $customer_service = Config::find(3)->config_value;
+                Redis::set('customer_service', $customer_service);
+            }
+
+            $home_video = '';
+            if(Redis::get('home_video') == $static_url . Config::find(9)->config_value) {
+                $home_video = Redis::get('home_video');
+            } else {
+                $home_video = $static_url . Config::find(9)->config_value;
+                Redis::set('home_video', $home_video);
+            }
+
+            $logo = '';
+            if(Redis::get('logo') == $static_url . Config::find(8)->config_value) {
+                $logo = Redis::get('logo');
+            } else {
+                $logo = $static_url . Config::find(8)->config_value;
+                Redis::set('logo', $logo);
+            }
+
+            $data = [
+                "web_name" => $web_name,
+                "customer_service" => $customer_service,
+                "logo" => $logo,
+                "home_video" => $home_video,
+                "is_kline" => $is_kline,
+            ];
+
+            if($id == 8 || $id == 9){
+                return redirect()->route('website.index');
+            }else{
+                $arr = ['code'=>1, 'message'=>'保存成功'];
+                return response()->json( $arr );
+            }
+        }catch (\Exception $e) {
+            DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("website_update_error")->error($message);
+            //echo $e->getMessage();
+            return 'error';
         }
-
-        $is_kline = '';
-        if(Redis::get('is_kline') == Config::find(7)->config_value) {
-            $is_kline = Redis::get('is_kline');
-        } else {
-            $is_kline = Config::find(7)->config_value;
-            Redis::set('is_kline', $is_kline);
-        }
-
-        $customer_service = '';
-        if(Redis::get('customer_service') == Config::find(3)->config_value) {
-            $customer_service = Redis::get('customer_service');
-        } else {
-            $customer_service = Config::find(3)->config_value;
-            Redis::set('customer_service', $customer_service);
-        }
-
-        $home_video = '';
-        if(Redis::get('home_video') == $static_url . Config::find(9)->config_value) {
-            $home_video = Redis::get('home_video');
-        } else {
-            $home_video = $static_url . Config::find(9)->config_value;
-            Redis::set('home_video', $home_video);
-        }
-
-        $logo = '';
-        if(Redis::get('logo') == $static_url . Config::find(8)->config_value) {
-            $logo = Redis::get('logo');
-        } else {
-            $logo = $static_url . Config::find(8)->config_value;
-            Redis::set('logo', $logo);
-        }
-
-        $data = [
-            "web_name" => $web_name,
-            "customer_service" => $customer_service,
-            "logo" => $logo,
-            "home_video" => $home_video,
-            "is_kline" => $is_kline,
-        ];
-
-        if($id == 8 || $id == 9){
-            return redirect()->route('website.index');
-        }else{
-            $arr = ['code'=>1, 'message'=>'保存成功'];
-            return response()->json( $arr );
-        }
-
     }
 
     /**

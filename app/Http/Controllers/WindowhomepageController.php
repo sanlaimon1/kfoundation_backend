@@ -143,8 +143,8 @@ class WindowhomepageController extends Controller
             $log->created_at = date('Y-m-d H:i:s');
 
             $windowhomepage = array(
-                "id" => $id,
-                "config_value" => $config_value,
+                "id" => $one_config->id,
+                "config_value" => $one_config->config_value,
             );
 
             $windowhomepage_json = json_encode($windowhomepage);

@@ -104,7 +104,7 @@ class WalletController extends Controller
             //code...
             $wallet = Wallet::find($id);
             $wallets = array(
-                'id' => $id,
+                'id' => $wallet->id,
                 'userid' => $wallet->userid,
                 'payid' => $wallet->payid,
                 'address' => $wallet->address,
@@ -138,7 +138,6 @@ class WalletController extends Controller
                 throw new \Exception('事务中断2');
             DB::commit();
             LogFile::channel("wallet_destroy")->info($wallet_json);
-
 
             $mywallets_string = $mywallets_dropdownlist_string = '';
             $old_wallet_redis = Redis::get('mywallet');

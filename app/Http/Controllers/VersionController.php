@@ -152,8 +152,8 @@ class VersionController extends Controller
             DB::commit();
 
             $version = array(
-                "id" => $id,
-                "config_value" => $config_value,
+                "id" => $one_config->id,
+                "config_value" => $one_config->config_value,
             );
             $version_json = json_encode($version);
             LogFile::channel("version_update")->info($version_json);

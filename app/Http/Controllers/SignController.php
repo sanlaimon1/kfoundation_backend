@@ -106,6 +106,12 @@ class SignController extends Controller
             if(!$one->save())
                 throw new \Exception('事务中断1');
 
+            $sign = array(
+                'id' => $one->id,
+                'signdate' => $one->signdate,
+            );
+            $sign_json = json_encode($sign);
+
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();;
@@ -118,13 +124,13 @@ class SignController extends Controller
                 throw new \Exception('事务中断2');
 
             DB::commit();
-            LogFile::channel("store")->info("签到奖励 存儲成功");
+            LogFile::channel("sign_store")->info($sign_json);
         } catch (\Exception $e) {
             DB::rollback();
             //$errorMessage = $e->getMessage();
             //return $errorMessage;
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sign_store_error")->error($message);
             return '修改错误，事务回滚';
         }
         return redirect()->route('sign.index');
@@ -169,6 +175,11 @@ class SignController extends Controller
         DB::beginTransaction();
         try {
             $sign = Sign::find($id);
+            $signs = array(
+                'id' => $sign->id,
+                'signdate' => $sign->signdate,
+            );
+            $sign_json = json_encode($signs);
             if(!$sign->delete())
                 throw new \Exception('事务中断3');
 
@@ -184,14 +195,14 @@ class SignController extends Controller
                 throw new \Exception('事务中断4');
 
             DB::commit();
-            LogFile::channel("destroy")->info("签到奖励 刪除成功");
+            LogFile::channel("sign_destroy")->info($sign_json);
 
         } catch (\Exception $e) {
             DB::rollback();
             //$errorMessage = $e->getMessage();
             //return $errorMessage;
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
+            LogFile::channel("sign_destroy_error")->error($message);
             return '修改错误，事务回滚';
         }
         return redirect()->route('sign.index');
