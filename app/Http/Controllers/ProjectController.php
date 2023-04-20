@@ -718,7 +718,7 @@ class ProjectController extends Controller
             ]);
             $project_json = json_encode($bind_projects);           
             DB::commit();
-            LogFile::channel("bind_project_update")>info($project_json);
+            LogFile::channel("bind_project_update")->info($project_json);
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
