@@ -157,13 +157,6 @@ class InboxController extends Controller
                 DB::rollback();
                 $message = $e->getMessage();
                 LogFile::channel("inbox_store_error")->error($message);
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                //$errorMessage = $e->getMessage();
-                //return $errorMessage;
                 return '添加错误，事务回滚';
             }
 
@@ -263,20 +256,13 @@ class InboxController extends Controller
                     'is_top' => $mail->is_top,
                 ]);
                 $mail_json = json_encode($mails);
-                LogFile::channel("inbox_update")->info($mail_json);
                 DB::commit();
+                LogFile::channel("inbox_update")->info($mail_json);
 
             } catch (\Exception $e) {
                 DB::rollback();
                 $message = $e->getMessage();
                 LogFile::channel("inbox_update_error")->error($message);
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                //$errorMessage = $e->getMessage();
-                //return $errorMessage;
                 return '修改错误，事务回滚';
             }
 
@@ -337,8 +323,6 @@ class InboxController extends Controller
                 DB::rollback();
                 $message = $e->getMessage();
                 LogFile::channel("inbox_destroy_error")->error($message);
-                //$errorMessage = $e->getMessage();
-                //return $errorMessage;
                 return '修改错误，事务回滚';
             }
             return redirect()->route('inbox.index');
