@@ -1425,6 +1425,97 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'order3_status1' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/order/order3_status1.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'order3_status1_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/order/order3_status1_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'order3_status2' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/order/order3_status2.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'order3_status2_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/order/order3_status2_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'life_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/life/life_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+
         'debug' => [
             'driver' => 'daily',
             'path' => storage_path('logs/debug.log'),

@@ -137,14 +137,14 @@ class LifeController extends Controller
                     'inputs' => $newlife->inputs,
                 ]);
                 $life_json_datas = json_encode($life_datas);
-                LogFile::channel("life_store")->info($life_json_datas);
                 DB::commit();
+                LogFile::channel("life_store")->info($life_json_datas);
+
 
             }  catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
                 LogFile::channel("life_store_error")->error($message);
-                //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
 
@@ -249,14 +249,13 @@ class LifeController extends Controller
                     'inputs' => $newlife->inputs,
                 ]);
                 $life_json_datas = json_encode($life_datas);
-                LogFile::channel("life_update")->info($life_json_datas);
                 DB::commit();
+                LogFile::channel("life_update")->info($life_json_datas);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
                 LogFile::channel("life_update_error")->error($message);
-                //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
             return redirect()->route('life.index');
@@ -291,9 +290,9 @@ class LifeController extends Controller
                 $life_json_datas = json_encode($life_datas);
                 if(!$life->delete())
                     throw new \Exception('事务中断1');
-                LogFile::channel("life_destroy")->info($life_json_datas);
-
+                
                 DB::commit();
+                LogFile::channel("life_destroy")->info($life_json_datas);
 
             } catch (\Exception $e) {
                 DB::rollBack();

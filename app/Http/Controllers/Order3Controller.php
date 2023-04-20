@@ -114,14 +114,14 @@ class Order3Controller extends Controller
                     'updated_at' => $order3->updated_at,
                 ]);
                 $order3_datas_json = json_encode($order3_datas);
-                LogFile::channel("order3_update")->info($order3_datas_json);
                 DB::commit();
+                LogFile::channel("order3_status1")->info($order3_datas_json);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("order3_update_error")->error($message);
+                LogFile::channel("order3_status1_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -175,14 +175,14 @@ class Order3Controller extends Controller
                     'updated_at' => $order3->updated_at,
                 ]);
                 $order3_datas_json = json_encode($order3_datas);
-                LogFile::channel("order3_update")->info($order3_datas_json);
+                LogFile::channel("order3_status2")->info($order3_datas_json);
                 DB::commit();
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("order3_update_error")->error($message);
+                LogFile::channel("order3_status2_error")->error($message);
                 return 'error';
             }
 
