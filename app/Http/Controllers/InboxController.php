@@ -150,8 +150,8 @@ class InboxController extends Controller
                     'is_top' => $mail->is_top,
                 ]);
                 $mail_json = json_encode($mails);
-                LogFile::channel("inbox_store")->info($mail_json);
                 DB::commit();
+                LogFile::channel("inbox_store")->info($mail_json);
 
             } catch (\Exception $e) {
                 DB::rollback();
