@@ -143,14 +143,14 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-4">
+                    <div class="mb-3 col-6">
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <label for="sort" class="form-label">排序</label>
                         <input type="number" name="sort" class="form-control" id="sort" value="{{ $goods->sort }}" placeholder="排序" />                    
                     </div>
-                    <div class="mb-3 col-4">
+                    {{-- <div class="mb-3 col-4">
                         <label for="enable" class="form-label">状态</label>
                         @error('enable')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -159,8 +159,8 @@
                             <option value="1">启用</option>
                             <option value="0">禁用</option>
                         </select>
-                    </div>
-                    <div class="mb-3 col-4">
+                    </div> --}}
+                    <div class="mb-3 col-6">
                         <label for="comment" class="form-label">备注</label>
                         @error('comment')
                         <div class="alert alert-danger">{{ $message }}</div>
