@@ -95,13 +95,6 @@ class PermissionController extends Controller
 
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                //$errorMessage = $e->getMessage();
-                //return $errorMessage;
                 $message = $e->getMessage();
                 LogFile::channel("permission_datas_store_error")->error($message);
                 return '添加错误，事务回滚';
@@ -142,13 +135,6 @@ class PermissionController extends Controller
 
             } catch (\Exception $e) {
                 DB::rollback();
-                /**
-                 * $errorMessage = $e->getMessage();
-                 * $errorCode = $e->getCode();
-                 * $stackTrace = $e->getTraceAsString();
-                 */
-                //$errorMessage = $e->getMessage();
-                //return $errorMessage;
                 $message = $e->getMessage();
                 LogFile::channel("permission_datas_store_error")->error($message);
                 return '添加错误，事务回滚';
