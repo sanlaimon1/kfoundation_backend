@@ -250,9 +250,8 @@ class PaymentController extends Controller
                     'min_pay' => $one->min_pay,
                 ]);
                 $payment_datas_json = json_encode($payment_datas);
-                LogFile::channel("payment_update")->info($payment_datas_json);
                 DB::commit();
-
+                LogFile::channel("payment_update")->info($payment_datas_json);
 
                 // $old_payment_redis = Redis::get("payments");
                 // $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
@@ -345,8 +344,8 @@ class PaymentController extends Controller
                     'min_pay' => $one->min_pay,
                 ]);
                 $payment_datas_json = json_encode($payment_datas);
-                LogFile::channel("payment_update")->info($payment_datas_json);
                 DB::commit();
+                LogFile::channel("payment_update")->info($payment_datas_json);
 
                 $old_payment_redis = Redis::get("payments");
                 $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
