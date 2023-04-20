@@ -140,13 +140,23 @@ class InboxController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断2');
 
+                $mails = array([
+                    'id' => $mail->id,
+                    'title' => $mail->title,
+                    'content' => $mail->content,
+                    'created_at' => $mail->created_at,
+                    'sort' => $mail->sort,
+                    'user_phone' => $mail->user_phone,
+                    'is_top' => $mail->is_top,
+                ]);
+                $mail_json = json_encode($mails);
+                LogFile::channel("inbox_store")->info($mail_json);
                 DB::commit();
-                LogFile::channel("store")->info("站内信列表 存儲成功");
 
             } catch (\Exception $e) {
                 DB::rollback();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("inbox_store_error")->error($message);
                 /**
                  * $errorMessage = $e->getMessage();
                  * $errorCode = $e->getCode();
@@ -243,12 +253,23 @@ class InboxController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
 
+                $mails = array([
+                    'id' => $mail->id,
+                    'title' => $mail->title,
+                    'content' => $mail->content,
+                    'created_at' => $mail->created_at,
+                    'sort' => $mail->sort,
+                    'user_phone' => $mail->user_phone,
+                    'is_top' => $mail->is_top,
+                ]);
+                $mail_json = json_encode($mails);
+                LogFile::channel("inbox_update")->info($mail_json);
                 DB::commit();
-                LogFile::channel("update")->info("站内信列表 更新成功");
+
             } catch (\Exception $e) {
                 DB::rollback();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("inbox_update_error")->error($message);
                 /**
                  * $errorMessage = $e->getMessage();
                  * $errorCode = $e->getCode();
@@ -287,6 +308,15 @@ class InboxController extends Controller
             DB::beginTransaction();
             try {
                 $one = Inbox::find($id);
+
+                $mails = array([
+                    'id' => $one->id,
+                    'title' => $one->title,
+                    'content' => $one->content,
+                    'created_at' => $one->created_at,
+                ]);
+                $mail_json = json_encode($mails);
+
                 if(!$one->delete())
                     throw new \Exception('事务中断5');
 
@@ -302,11 +332,11 @@ class InboxController extends Controller
                     throw new \Exception('事务中断6');
 
                 DB::commit();
-                LogFile::channel("destroy")->info("站内信列表 刪除成功");
+                LogFile::channel("inbox_destroy")->info($mail_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("inbox_destroy_error")->error($message);
                 //$errorMessage = $e->getMessage();
                 //return $errorMessage;
                 return '修改错误，事务回滚';
