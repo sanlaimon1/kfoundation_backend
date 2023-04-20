@@ -107,14 +107,21 @@ class Order3Controller extends Controller
                 if(!$log->save())
                     throw new \Exception('事务中断2');
 
+                $order3_datas = array([
+                    'id' => $order3->id,
+                    'status' => $order3->status,
+                    'created_at' => $order3->created_at,
+                    'updated_at' => $order3->updated_at,
+                ]);
+                $order3_datas_json = json_encode($order3_datas);
+                LogFile::channel("order3_update")->info($order3_datas_json);
                 DB::commit();
-                LogFile::channel("update")->info("生活服务订单管理 更新成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("order3_update_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -131,7 +138,7 @@ class Order3Controller extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -152,7 +159,7 @@ class Order3Controller extends Controller
                 $log->adminid = $myself->id;
                 $log->action = '管理员'. $myself->username. '拒绝生活缴费的订单' .$order3->id;
                 $log->ip = $this->getUserIP();
-                $log->route = 'order3.show';
+                $log->route = 'order3.update';
                 $input = $request->all();
                 $input_json = json_encode( $input );
                 $log->parameters = $input_json;  // 请求参数
@@ -161,14 +168,21 @@ class Order3Controller extends Controller
                 if(!$log->save())
                     throw new \Exception('事务中断4');
 
+                $order3_datas = array([
+                    'id' => $order3->id,
+                    'status' => $order3->status,
+                    'created_at' => $order3->created_at,
+                    'updated_at' => $order3->updated_at,
+                ]);
+                $order3_datas_json = json_encode($order3_datas);
+                LogFile::channel("order3_update")->info($order3_datas_json);
                 DB::commit();
-                LogFile::channel("update")->info("生活服务订单管理 更新成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("order3_update_error")->error($message);
                 return 'error';
             }
 

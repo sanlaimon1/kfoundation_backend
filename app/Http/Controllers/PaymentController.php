@@ -58,7 +58,7 @@ class PaymentController extends Controller
             $payments = [];
             foreach($list_payment as $one_payment) {
                 $payments[$one_payment->pid] = [
-                                'pname'=>$one_payment->payment_name, 
+                                'pname'=>$one_payment->payment_name,
                                 'min'=>$one_payment->min_pay,
                                 'rate'=>$one_payment->rate,
                                 'logo'=>$static_url . $one_payment->logo,
@@ -235,8 +235,24 @@ class PaymentController extends Controller
                 if(!$log->save())
                     throw new \Exception('事务中断2');
 
+                $payment_datas = array([
+                    'id' => $one->pid,
+                    'show' => $one->show,
+                    'sort' => $one->sort,
+                    'ptype' => $one->ptype,
+                    'rate' => $one->rate,
+                    'mark' => $one->mark,
+                    'logo' => $one->logo,
+                    'give' => $one->give,
+                    'description' => $one->description,
+                    'extra' => $one->extra,
+                    'payment_name' => $one->payment_name,
+                    'min_pay' => $one->min_pay,
+                ]);
+                $payment_datas_json = json_encode($payment_datas);
+                LogFile::channel("payment_update")->info($payment_datas_json);
                 DB::commit();
-                LogFile::channel("update")->info("支付设置 更新成功");
+
 
                 // $old_payment_redis = Redis::get("payments");
                 // $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
@@ -246,7 +262,7 @@ class PaymentController extends Controller
                 // $payments = [];
                 // foreach($list_payment as $one_payment) {
                 //     $payments[$one_payment->pid] = [
-                //                     'pname'=>$one_payment->payment_name, 
+                //                     'pname'=>$one_payment->payment_name,
                 //                     'min'=>$one_payment->min_pay,
                 //                     'rate'=>$one_payment->rate,
                 //                     'logo'=>$static_url . $one_payment->logo,
@@ -262,7 +278,7 @@ class PaymentController extends Controller
                 DB::rollBack();
                 echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("payment_update_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -314,8 +330,23 @@ class PaymentController extends Controller
                 if(!$log->save())
                     throw new \Exception('事务中断4');
 
+                $payment_datas = array([
+                    'id' => $one->pid,
+                    'show' => $one->show,
+                    'sort' => $one->sort,
+                    'ptype' => $one->ptype,
+                    'rate' => $one->rate,
+                    'mark' => $one->mark,
+                    'logo' => $one->logo,
+                    'give' => $one->give,
+                    'description' => $one->description,
+                    'extra' => $one->extra,
+                    'payment_name' => $one->payment_name,
+                    'min_pay' => $one->min_pay,
+                ]);
+                $payment_datas_json = json_encode($payment_datas);
+                LogFile::channel("payment_update")->info($payment_datas_json);
                 DB::commit();
-                LogFile::channel("update")->info("支付设置 更新成功");
 
                 $old_payment_redis = Redis::get("payments");
                 $list_payment = Payment::select(['pid','payment_name','min_pay','rate','logo'])
@@ -325,7 +356,7 @@ class PaymentController extends Controller
                 $payments = [];
                 foreach($list_payment as $one_payment) {
                     $payments[$one_payment->pid] = [
-                                    'pname'=>$one_payment->payment_name, 
+                                    'pname'=>$one_payment->payment_name,
                                     'min'=>$one_payment->min_pay,
                                     'rate'=>$one_payment->rate,
                                     'logo'=>$static_url . $one_payment->logo,
@@ -340,11 +371,11 @@ class PaymentController extends Controller
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("payment_update_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
-            
+
         } else {
             return '未知类型';
         }

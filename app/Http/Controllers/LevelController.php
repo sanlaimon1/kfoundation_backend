@@ -137,13 +137,27 @@ class LevelController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断2');
 
+                $level_datas = array([
+                    'level_id' => $newlevel->level_id,
+                    'level_name' => $newlevel->level_name,
+                    'accumulative_amount' => $newlevel->accumulative_amount,
+                    'interest' => $newlevel->interest,
+                    'personal_charge' => $newlevel->personal_charge,
+                    'level1_award' => $newlevel->level1_award,
+                    'level2_award' => $newlevel->level2_award,
+                    'level3_award' => $newlevel->level3_award,
+                    'min_coin' => $newlevel->min_coin,
+                    'max_coin' => $newlevel->max_coin,
+                ]);
+
+                $level_json_datas = json_encode($level_datas);
+                LogFile::channel("level_store")->info($level_json_datas);
                 DB::commit();
-                LogFile::channel("store")->info("会员等级管理 存儲成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("level_store_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
@@ -248,13 +262,27 @@ class LevelController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
 
+                $level_datas = array([
+                    'level_id' => $newlevel->level_id,
+                    'level_name' => $newlevel->level_name,
+                    'accumulative_amount' => $newlevel->accumulative_amount,
+                    'interest' => $newlevel->interest,
+                    'personal_charge' => $newlevel->personal_charge,
+                    'level1_award' => $newlevel->level1_award,
+                    'level2_award' => $newlevel->level2_award,
+                    'level3_award' => $newlevel->level3_award,
+                    'min_coin' => $newlevel->min_coin,
+                    'max_coin' => $newlevel->max_coin,
+                ]);
+
+                $level_json_datas = json_encode($level_datas);
+                LogFile::channel("level_update")->info($level_json_datas);
                 DB::commit();
-                LogFile::channel("update")->info("会员等级管理 更新成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("level_update_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
@@ -274,7 +302,7 @@ class LevelController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -285,6 +313,13 @@ class LevelController extends Controller
             try {
                 //code...
                 $level = Level::find($id);
+
+                $level_datas = array([
+                    'level_id' => $level->level_id,
+                    'level_name' => $level->level_name
+                ]);
+                $level_json_datas = json_encode($level_datas);
+
                 if(!$level->delete())
                     throw new \Exception('事务中断5');
 
@@ -303,12 +338,12 @@ class LevelController extends Controller
                     throw new \Exception('事务中断6');
 
                 DB::commit();
-                LogFile::channel("destroy")->info("会员等级管理 刪除成功");
+                LogFile::channel("level_destroy")->info($level_json_datas);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("level_destroy_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }

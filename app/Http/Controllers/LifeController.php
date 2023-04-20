@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Life;
+use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log as LogFile;
@@ -113,13 +114,36 @@ class LifeController extends Controller
                 if(!$newlife->save())
                     throw new \Exception('事务中断1');
 
+                $username = Auth::user()->username;
+                $log = new Log();
+                $log->adminid = Auth::id();
+                $log->action = '管理员'. $username. ' 创建商品';
+                $log->ip =  $request->ip();
+                $log->route = 'life.store';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
+
+                if(!$log->save())
+                    throw new \Exception('事务中断4');
+
+                $life_datas = array([
+                    'id' => $newlife->id,
+                    'production_name' => $newlife->production_name,
+                    'sort' => $newlife->sort,
+                    'picture' => $newlife->picture,
+                    'extra' => $newlife->extra,
+                    'inputs' => $newlife->inputs,
+                ]);
+                $life_json_datas = json_encode($life_datas);
+                LogFile::channel("life_store")->info($life_json_datas);
                 DB::commit();
-                LogFile::channel("store")->info("充值缴费 存儲成功");
 
             }  catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("life_store_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
@@ -163,7 +187,7 @@ class LifeController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -201,14 +225,37 @@ class LifeController extends Controller
                 $newlife->inputs = $inputs;
                 if(!$newlife->save())
                     throw new \Exception('事务中断1');
-                
+
+                $username = Auth::user()->username;
+                $log = new Log();
+                $log->adminid = Auth::id();
+                $log->action = '管理员'. $username. ' 修改商品';
+                $log->ip =  $request->ip();
+                $log->route = 'life.update';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
+
+                if(!$log->save())
+                    throw new \Exception('事务中断4');
+
+                $life_datas = array([
+                    'id' => $newlife->id,
+                    'production_name' => $newlife->production_name,
+                    'sort' => $newlife->sort,
+                    'picture' => $newlife->picture,
+                    'extra' => $newlife->extra,
+                    'inputs' => $newlife->inputs,
+                ]);
+                $life_json_datas = json_encode($life_datas);
+                LogFile::channel("life_update")->info($life_json_datas);
                 DB::commit();
-                LogFile::channel("update")->info("充值缴费 更新成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("life_update_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
@@ -227,7 +274,7 @@ class LifeController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -237,15 +284,21 @@ class LifeController extends Controller
             DB::beginTransaction();
             try {
                 $life = Life::find($id);
+                $life_datas = array([
+                    'id' => $life->id,
+                    'production_name' => $life->production_name,
+                ]);
+                $life_json_datas = json_encode($life_datas);
                 if(!$life->delete())
                     throw new \Exception('事务中断1');
+                LogFile::channel("life_destroy")->info($life_json_datas);
+
                 DB::commit();
-                LogFile::channel("destroy")->info("充值缴费 刪除成功");
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("life_destroy_error")->error($message);
                 //echo $e->getMessage();
                 return '添加错误，事务回滚';
             }
