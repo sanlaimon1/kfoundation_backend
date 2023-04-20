@@ -141,7 +141,7 @@ class PermissionController extends Controller
             }
         }
 
-        return redirect(route("permission.index"));
+        return redirect(route("role.index"));
     }
 
     /**
