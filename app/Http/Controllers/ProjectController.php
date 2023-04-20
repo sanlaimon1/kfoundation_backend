@@ -258,8 +258,8 @@ class ProjectController extends Controller
             ]);
 
             $project_json = json_encode($projects);
-            LogFile::channel("project_store")>info($project_json);
             DB::commit();
+            LogFile::channel("project_store")->info($project_json);
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -488,9 +488,9 @@ class ProjectController extends Controller
                 'lang' => $project->lang,
             ]);
 
-            $project_json = json_encode($projects);
-            LogFile::channel("project_update")->info($project_json);
+            $project_json = json_encode($projects);            
             DB::commit();
+            LogFile::channel("project_update")->info($project_json);
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -576,9 +576,9 @@ class ProjectController extends Controller
                 'created_at' => $one->created_at,
                 'updated_at' => $one->updated_at,
             ]);
-            $project_json = json_encode($projects);
-            LogFile::channel("project_destroy")>info($project_json);
+            $project_json = json_encode($projects);            
             DB::commit();
+            LogFile::channel("project_destroy")->info($project_json);
 
             $old_redis_project = Redis::get("project:homepage:md5");
             $project = Project::select('id', 'project_name', 'return_mode', 'days', 'weeks', 'months')
@@ -716,10 +716,9 @@ class ProjectController extends Controller
                 'created_at' => $project->created_at,
                 'updated_at' => $project->updated_at,
             ]);
-            $project_json = json_encode($bind_projects);
-            LogFile::channel("bind_project_update")>info($project_json);
+            $project_json = json_encode($bind_projects);           
             DB::commit();
-
+            LogFile::channel("bind_project_update")>info($project_json);
         } catch (\Exception $e) {
             DB::rollback();
             $errorMessage = $e->getMessage();
