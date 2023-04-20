@@ -240,7 +240,7 @@ class SlideController extends Controller
             // $webp_path = $this->convertImgToWebp($picture_path);
 
         }else{
-            $picture_path = $request->picture_path;
+            $picture_path = $request->old_picture_path;
         }
 
         DB::beginTransaction();

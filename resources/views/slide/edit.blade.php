@@ -144,7 +144,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <img id="show_picture_path" src="{{$slide->picture_path}}" width="120" height="120" />
-                        
+                        <input type="hidden" name="old_picture_path" value="{{$slide->picture_path}}">
                         <input type="file" id="picture_path" name="picture_path" hidden/>
                         <label class="choose_picture_path" for="picture_path">选择</label>
                     </div>

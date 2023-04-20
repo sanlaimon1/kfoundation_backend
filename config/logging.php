@@ -1100,6 +1100,60 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'slide_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'slide_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'slide_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'slide_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'slide_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'slide_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slide/slide_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
         'debug' => [
             'driver' => 'daily',
             'path' => storage_path('logs/debug.log'),
