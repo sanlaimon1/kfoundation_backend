@@ -10,7 +10,7 @@ use App\Models\Permission;
 use App\Models\Log;
 use App\Models\Customer;
 use App\Models\FinancialProductions;
-
+use Illuminate\Support\Facades\Log as LogFile;
 
 class FinancialProductionController extends Controller
 {
@@ -149,13 +149,31 @@ class FinancialProductionController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-
+            $financial_production = array(
+                'id' => $newFinancialProduct->id,
+                'production_name' => $newFinancialProduct->production_name,
+                'userid' => $newFinancialProduct->userid,
+                'buy_price' => $newFinancialProduct->buy_price,
+                'sell_price' => $newFinancialProduct->sell_price,
+                'days' => $newFinancialProduct->days,
+                'status' => $newFinancialProduct->status,
+                'description' => $newFinancialProduct->description,
+                'fee' => $newFinancialProduct->fee,
+                'max_times' => $newFinancialProduct->max_times,
+                'fake_process' => $newFinancialProduct->fake_process,
+                'increment_process' => $newFinancialProduct->increment_process,
+                'lang' => $newFinancialProduct->lang,
+                'picture' => $newFinancialProduct->picture,
+                'created_at' => $newFinancialProduct->created_at,
+                'updated_at' => $newFinancialProduct->updated_at,
+            );
+            $financial_production_json = json_encode($financial_production);
             DB::commit();
+            LogFile::channel('financial_produstion_store')->info($financial_production_json);
         }catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage();
-            LogFile::channel("error")->error($message);
-            //echo $e->getMessage();
+            LogFile::channel("financial_produstion_store_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -288,10 +306,32 @@ class FinancialProductionController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-
+            
+            $financial_production = array(
+                'id' => $onefinancial_product->id,
+                'production_name' => $onefinancial_product->production_name,
+                'userid' => $onefinancial_product->userid,
+                'buy_price' => $onefinancial_product->buy_price,
+                'sell_price' => $onefinancial_product->sell_price,
+                'days' => $onefinancial_product->days,
+                'status' => $onefinancial_product->status,
+                'description' => $onefinancial_product->description,
+                'fee' => $onefinancial_product->fee,
+                'max_times' => $onefinancial_product->max_times,
+                'fake_process' => $onefinancial_product->fake_process,
+                'increment_process' => $onefinancial_product->increment_process,
+                'lang' => $onefinancial_product->lang,
+                'picture' => $onefinancial_product->picture,
+                'created_at' => $onefinancial_product->created_at,
+                'updated_at' => $onefinancial_product->updated_at,
+            );
+            $financial_production_json = json_encode($financial_production);
             DB::commit();
+            LogFile::channel('financial_produstion_update')->info($financial_production_json);
         }catch (\Exception $e) {
             DB::rollBack();
+            $message = $e->getMessage();
+            LogFile::channel("financial_produstion_update_error")->error($message);
             return '添加错误，事务回滚';
         }
 
@@ -340,11 +380,18 @@ class FinancialProductionController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-
+            $financial_production = array(
+                'id' => $financial_production->id,
+                'production_name' => $financial_production->production_name,
+                'status' => $financial_production->status
+            ); 
+            $financial_production_json = json_encode($financial_production);
             DB::commit();
-
+            LogFile::channel('financial_produstion_destroy')->info($financial_production_json);
         }catch (\Exception $e) {
             DB::rollBack();
+            $errorMessage = $e->getMessage();
+            LogFile::channel('financial_produstion_destroy_error')->error($errorMessage);
             return '添加错误，事务回滚';
         }
 

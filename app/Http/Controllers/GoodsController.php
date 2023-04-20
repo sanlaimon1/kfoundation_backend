@@ -104,7 +104,7 @@ class GoodsController extends Controller
                 'store_num' => ['required', 'integer', 'gte:0'],
                 'count_exchange' => ['required', 'integer', 'gte:0'],
                 'sort' => ['required',  'integer', 'gte:0'],
-                'enable' => ['required', 'integer', 'in:0,1'],
+                // 'enable' => ['required', 'integer', 'in:0,1'],
                 'comment' => ['required', 'string',  'max:100'],
             ]);
 
@@ -114,7 +114,7 @@ class GoodsController extends Controller
             $store_num = trim( $request->get('store_num') );
             $count_exchange = trim( $request->get('count_exchange') );
             $sort = trim( $request->get('sort') );
-            $enable = trim( $request->get('enable') );
+            // $enable = trim( $request->get('enable') );
             $comment = trim( $request->get('comment') );
 
             $score = (int)$score;
@@ -139,7 +139,7 @@ class GoodsController extends Controller
                 $newgood->store_num = $store_num;
                 $newgood->count_exchange = $count_exchange;
                 $newgood->sort = $sort;
-                $newgood->enable = $enable;
+                // $newgood->enable = $enable;
                 $newgood->comment = $comment;
 
                 if(!$newgood->save())
@@ -158,15 +158,27 @@ class GoodsController extends Controller
 
                 if(!$newlog->save())
                     throw new \Exception('事务中断2');
-
+                $goods = array(
+                    'id' => $newgood->id,
+                    'goods_name' => $newgood->goods_name,
+                    'litpic' => $newgood->litpic,
+                    'score' => $newgood->score,
+                    'level_id' => $newgood->level_id,
+                    'store_num' => $newgood->store_num,
+                    'count_exchange' => $newgood->count_exchange,
+                    'sort' => $newgood->sort,
+                    'enable' => $newgood->enable,
+                    'comment' => $newgood->comment
+                );
+                $goods_json = json_encode($goods);
                 DB::commit();
-                LogFile::channel("store")->info("商品管理 存儲成功");
+                LogFile::channel("goods_store")->info($goods_json);
 
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("goods_store_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -235,7 +247,7 @@ class GoodsController extends Controller
                 'store_num' => ['required', 'integer', 'gte:0'],
                 'count_exchange' => ['required', 'integer', 'gte:0'],
                 'sort' => ['required',  'integer', 'gte:0'],
-                'enable' => ['required', 'integer', 'in:0,1'],
+                // 'enable' => ['required', 'integer', 'in:0,1'],
                 'comment' => ['required', 'string',  'max:100'],
             ]);
 
@@ -245,7 +257,7 @@ class GoodsController extends Controller
             $store_num = trim( $request->get('store_num') );
             $count_exchange = trim( $request->get('count_exchange') );
             $sort = trim( $request->get('sort') );
-            $enable = trim( $request->get('enable') );
+            // $enable = trim( $request->get('enable') );
             $comment = trim( $request->get('comment') );
 
             $score = (int)$score;
@@ -272,7 +284,7 @@ class GoodsController extends Controller
                 $newgood->store_num = $store_num;
                 $newgood->count_exchange = $count_exchange;
                 $newgood->sort = $sort;
-                $newgood->enable = $enable;
+                // $newgood->enable = $enable;
                 $newgood->comment = $comment;
 
                 if(!$newgood->save())
@@ -292,14 +304,26 @@ class GoodsController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
 
+                $goods = array(
+                    'id' => $newgood->id,
+                    'goods_name' => $newgood->goods_name,
+                    'litpic' => $newgood->litpic,
+                    'score' => $newgood->score,
+                    'level_id' => $newgood->level_id,
+                    'store_num' => $newgood->store_num,
+                    'count_exchange' => $newgood->count_exchange,
+                    'sort' => $newgood->sort,
+                    'enable' => $newgood->enable,
+                    'comment' => $newgood->comment
+                );
+                $goods_json = json_encode($goods);
                 DB::commit();
-                LogFile::channel("update")->info("商品管理 更新成功");
-
+                LogFile::channel("goods_update")->info($goods_json);
             } catch (\Exception $e) {
                 DB::rollBack();
                 //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("goods_update_error")->error($message);
                 return '添加错误，事务回滚';
             }
 
@@ -351,14 +375,19 @@ class GoodsController extends Controller
                 if(!$newlog->save())
                     throw new \Exception('事务中断6');
 
+                $goods = array(
+                    'id' => $one->id,
+                    'goods_name' => $one->goods_name,
+                    'enable' => $one->enable,
+                );
+                $goods_json = json_encode($goods);
                 DB::commit();
-                LogFile::channel("destroy")->info("商品管理 刪除成功");
+                LogFile::channel("goods_destroy")->info($goods_json);
 
             } catch (\Exception $e) {
                 DB::rollBack();
-                //echo $e->getMessage();
                 $message = $e->getMessage();
-                LogFile::channel("error")->error($message);
+                LogFile::channel("goods_destroy_error")->error($message);
                 return '添加错误，事务回滚';
             }
             return redirect()->route('goods.index');
