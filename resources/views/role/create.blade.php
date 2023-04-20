@@ -56,7 +56,7 @@
                 </div>
                 <div class="form-group mt-4">
                     <label for="soft">排序</label>
-                    <input type="text" class="form-control" name="soft" id="soft" placeholder="排序">
+                    <input type="number" class="form-control" name="soft" id="soft" placeholder="排序">
                     @error('soft')
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
