@@ -812,6 +812,294 @@ return [
             'max_size' => 1024 * 1024 * 10, // 10MB
         ],
 
+        'windowhomepage_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/windowhomepage/windowhomepage_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'windowhomepage_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/windowhomepage/windowhomepage_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'website_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/website/website_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'website_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/website/website_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'wallet_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/wallet/wallet_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'wallet_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/wallet/wallet_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'version_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/version/version_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'version_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/version/version_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'trade_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/trade/trade_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'teamlevel_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/teamlevel/teamlevel_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_store' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_store.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_store_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_store_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_password_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_password_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_password_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_password_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_destroy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_destroy.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sysuser_destroy_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sysuser/sysuser_destroy_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sms_update' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sms/sms_update.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
+        'sms_update_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sms/sms_update_error.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'max_files' => 10,
+            'max_size' => 1024 * 1024 * 10, // 10MB
+        ],
+
         'debug' => [
             'driver' => 'daily',
             'path' => storage_path('logs/debug.log'),
