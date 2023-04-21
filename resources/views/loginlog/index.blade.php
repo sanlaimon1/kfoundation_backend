@@ -61,19 +61,19 @@
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($logs as $one)
+                @foreach ($log_datas as $one)
                 <tr>
-                    <td>{{ $one->id }}</td>
-                    <td>{{ $one->customer->phone }}</td>
-                    <td>{{ $one->action }}</td>
-                    <td>{{ $one->ip }}</td>
-                    <td>{{ $one->state }}</td>
-                    <td>{{ $one->province }}</td>
-                    <td>{{ $one->city }}</td>
-                    <td>{{ $one->isp }}</td>
-                    <td>{{ $one->created_at }}</td>
+                    <td>{{ $one['id'] }}</td>
+                    <td>{{ $one['phone'] }}</td>
+                    <td>{{ $one['action'] }}</td>
+                    <td>{{ $one['ip'] }}</td>
+                    <td>{{ $one['state'] }}</td>
+                    <td>{{ $one['province'] }}</td>
+                    <td>{{ $one['city'] }}</td>
+                    <td>{{ $one['isp'] }}</td>
+                    <td>{{ $one['created_at'] }}</td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('loginlog.show', ['loginlog'=>$one->id]) }}">查看请求数据</a>
+                        <a class="btn btn-primary" href="{{ route('loginlog.show', ['loginlog'=>$one['id']]) }}">查看请求数据</a>
                     </td>
                 </tr>
                 @endforeach

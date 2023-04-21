@@ -25,7 +25,33 @@ class LoginLogController extends Controller
         $perPage = $request->input('perPage', 10);
         $logs = LoginLog::orderBy('created_at', 'desc')->paginate($perPage);
 
-        return view('loginlog.index', compact('logs'));
+        //rebuild datas
+        $log_datas = [];
+        foreach($logs as $one_log)
+        {
+            $action = $one_log->action;
+            $res = json_decode($action, true);
+            //如果是json正常解析
+            if(json_last_error()==JSON_ERROR_NONE)
+            {
+                $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
+                $type = array_key_exists('type', $res) ? $res['type'] : '';
+                $action = __($type, ['phone'=>$phone]);
+            }
+            $log_datas[] = [
+                'id'=>$one_log->id,
+                'phone'=>$one_log->customer->phone,
+                'action'=>$action,
+                'ip'=>$one_log->ip,
+                'state'=>$one_log->state,
+                'province'=>$one_log->province,
+                'city'=>$one_log->city,
+                'isp'=>$one_log->isp,
+                'created_at'=>$one_log->created_at,
+            ];
+        }
+
+        return view('loginlog.index', compact('logs','log_datas'));
     }
 
     /**
