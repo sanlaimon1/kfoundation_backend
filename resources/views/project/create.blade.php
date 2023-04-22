@@ -268,8 +268,8 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <select id="lang" name="lang" class="form-select" >
-                            <option value="cn">cn</option>
-                            <option value="en">en</option>
+                            <option value="cn">简体中文</option>
+                            <option value="en">English</option>
                         </select>
                     </div>
                 </div>

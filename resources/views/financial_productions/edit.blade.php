@@ -230,8 +230,8 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <select id="lang" name="lang" class="form-select" >
-                            <option value="cn" @if ($financial_product->lang === 'cn') selected @endif>cn</option>
-                            <option value="en" @if ($financial_product->lang === 'en') selected @endif>en</option>
+                            <option value="cn" @if ($financial_product->lang === 'cn') selected @endif>简体中文</option>
+                            <option value="en" @if ($financial_product->lang === 'en') selected @endif>English</option>
                         </select>
 
                     </div>
