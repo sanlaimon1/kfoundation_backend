@@ -45,12 +45,39 @@ class FinancialAssetController extends Controller
 
         $perPage = $request->input('perPage', 20);
         $records = FinancialAsset::orderBy('created_at', 'desc')->paginate($perPage);
-
+        //rebuild datas
+        $record_datas = [];
+        foreach($records as $record)
+        {
+            $detail = $record->details;
+            $res = json_decode($detail, true);
+            //如果是json正常解析
+            if(json_last_error()==JSON_ERROR_NONE)
+            {
+                $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
+                $pid = array_key_exists('pid',$res) ? $res['pid'] : '';
+                $project_name = array_key_exists('project_name', $res) ? $res['project_name'] : '';
+                $type = array_key_exists('type', $res) ? $res['type'] : '';
+                $action = __($type, ['phone'=>$phone, 'pid' => $pid, 'project_name' => $project_name]);
+            }
+            $record_datas[] = [
+                'id' => $record->id,
+                'userid' => $record->userid,
+                'amount' => $record->amount,
+                'balance' => $record->balance,
+                'direction' => $record->direction,
+                'financial_type' => $record->financial_type,
+                'created_at' => $record->created_at,
+                'details' => $action,
+                'extra' => $record->extra,
+                'after_balance' => $record->after_balance
+            ];
+         }
         $types = config('types.asset_financial_type');
 
         $title = '资产流水记录';
 
-        return view( 'financialasset.index', compact('records', 'types', 'title') );
+        return view( 'financialasset.index', compact('record_datas', 'types', 'title') );
     }
 
     public function asset_search(Request $request)

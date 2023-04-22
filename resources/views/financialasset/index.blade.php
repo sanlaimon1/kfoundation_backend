@@ -80,29 +80,30 @@
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($records as $one)
+                @foreach ($record_datas as $one)
+               
                 <tr>
-                    <td>{{ $one->id }}</td>
-                    <td>{{ $one->customer->phone }}</td>
-                    <td>{{ $types[ $one->financial_type ]}}</td>
+                    <td>{{ $one['id'] }}</td>
+                    <td></td>
+                    <td>{{ $types[ $one['financial_type'] ]}}</td>
                     <td>
-                        {{ $one->balance }}
+                        {{ $one['balance'] }}
                     </td>
                     <td>
-                        @if($one->direction==1)
-                        <span style="color:green;">+{{ $one->amount }}</span>
-                        @elseif($one->direction==-1)
-                        <span style="color:red;">-{{ $one->amount }}</span>
+                        @if($one['direction'] == 1)
+                        <span style="color:green;">+{{ $one['amount'] }}</span>
+                        @elseif($one['direction'] == -1)
+                        <span style="color:red;">-{{ $one['amount'] }}</span>
                         @else
                         方向错误
                         @endif
                     </td>
-                    <td>{{ $one->after_balance }}</td>
-                    <td>{{ $one->created_at }}</td>
+                    <td>{{ $one['after_balance'] }}</td>
+                    <td>{{ $one['created_at'] }}</td>
                     <td>
-                        {{ $one->details }}
-                        @if($one->financial_type==3)
-                        <a href="{{ route('charge.show',[ 'charge'=>json_decode($one->extra, true)['charge_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['charge_id'] }}</a>
+                        {{ $one['details'] }}
+                        @if($one['financial_type'] == 3)
+                        <a href="{{ route('charge.show',[ 'charge'=>json_decode($one['extra'], true)['charge_id'] ]) }}">申请记录编号 {{ json_decode($one['extra'], true)['charge_id'] }}</a>
                         @endif
                     </td>
                 </tr>
@@ -121,24 +122,24 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="container-fluid">
+        {{-- <div class="container-fluid">
             <div class="box1 p-2">
                 <nav aria-label="page">
-                    <strong>总数: {{ $records->total() }}</strong>  <br /> {{ $records->links() }}
+                    <strong>总数: {{ $record_datas->total() }}</strong>  <br /> {{ $record_datas->links() }}
                 </nav>
             </div>
             <div class="box2 p-2">
             <form method="get" action="{{ route('asset.index') }}">
                 <label for="perPage">每页显示：</label>
                 <select id="perPage" name="perPage" class="p-2 m-2 text-primary rounded" onchange="this.form.submit()" >
-                    <option value="20" {{ $records->perPage() == 20 ? 'selected' : '' }}>20</option>
-                    <option value="50" {{ $records->perPage() == 50 ? 'selected' : '' }}>50</option>
-                    <option value="100" {{ $records->perPage() == 100 ? 'selected' : '' }}>100</option>
-                    <option value="200" {{ $records->perPage() == 200 ? 'selected' : '' }}>200</option>
+                    <option value="20" {{ $record_datas->perPage() == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ $record_datas->perPage() == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $record_datas->perPage() == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ $record_datas->perPage() == 200 ? 'selected' : '' }}>200</option>
                 </select>
             </form>
             </div>
-        </div>
+        </div> --}}
 
     </div>
 
