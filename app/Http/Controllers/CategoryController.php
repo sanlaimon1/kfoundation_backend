@@ -76,7 +76,7 @@ class CategoryController extends Controller
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-        
+
         $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -88,9 +88,11 @@ class CategoryController extends Controller
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
             'sort' => ['required', 'integer', 'gt:0'],
+            'lang' => 'required'
         ]);
 
         $category_name = trim($request->cate_name);
+        $lang = trim($request->get('lang'));
         $sort = trim($request->sort);
 
         $sort = (int)$sort;
@@ -101,6 +103,7 @@ class CategoryController extends Controller
             $newcategory = new Category();
             $newcategory->cate_name = $category_name;
             $newcategory->sort = $sort;
+            $newcategory->lang = $lang;
 
             if(!$newcategory->save())
                 throw new \Exception('事务中断1');
@@ -121,7 +124,8 @@ class CategoryController extends Controller
             $category_data = array(
                 'id' => $newcategory->id,
                 'cate_name' => $newcategory->cate_name,
-                'sort' => $newcategory->sort
+                'sort' => $newcategory->sort,
+                'lang' => $newcategory->lang
 
             );
             $category_json = json_encode($category_data);
@@ -187,9 +191,11 @@ class CategoryController extends Controller
         $request->validate([
             'cate_name' => ['required', 'string', 'between:1,40'],
             'sort' => ['required', 'integer', 'gt:0'],
+            'lang' => 'required'
         ]);
 
         $category_name = trim($request->cate_name);
+        $lang = trim($request->get('lang'));
         $sort = trim($request->sort);
 
         $sort = (int)$sort;
@@ -200,6 +206,7 @@ class CategoryController extends Controller
             $newcategory = Category::find($id);
             $newcategory->cate_name = $category_name;
             $newcategory->sort = $sort;
+            $newcategory->lang  = $lang;
             if(!$newcategory->save())
                 throw new \Exception('事务中断3');
 
@@ -220,7 +227,8 @@ class CategoryController extends Controller
             $category_data = array(
                 'id' => $newcategory->id,
                 'cate_name' => $newcategory->cate_name,
-                'sort' => $newcategory->sort
+                'sort' => $newcategory->sort,
+                'lang' => $newcategory->lang
 
             );
             $category_json = json_encode($category_data);
@@ -265,7 +273,7 @@ class CategoryController extends Controller
             $category->enable = 0;
             if(!$category->save())
                 throw new \Exception('事务中断5');
-            
+
             $category_data = array(
                 'id' => $category->id,
                 'cate_name' => $category->cate_name,

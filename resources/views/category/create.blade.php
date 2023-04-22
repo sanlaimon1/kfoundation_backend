@@ -42,7 +42,7 @@
                 $('.loading').show();
                 var dataid = $(this).attr('data');
                 var config_value_string = $('#item-' + dataid).val();
-                
+
                 $.ajax({
                     type: "patch",
                     url: '/website/' + dataid,
@@ -91,7 +91,7 @@
                 <li class="breadcrumb-item active" aria-current="page">创建文章分类</li>
             </ol>
         </nav>
-        
+
         <form action="{{ route('category.store') }}" method="post">
             {{ csrf_field() }}
             <section class="row frame">
@@ -113,12 +113,24 @@
                         <input type="number" class="form-control" id="sort" name="sort" placeholder="排序" value="">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="mb-3">
+                    <label for="lang" class="form-label">语言</label>
+                        @error('lang')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                        <select id="lang" name="lang" class="form-select" >
+                            <option value="cn">简体中文</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
 
             </section>
 
             <button type="submit" class="btn btn-primary" style="margin-top:1rem; float:right;">添加</button>
         </form>
-        
+
     </div>
     @include('loading')
     @include('modal')
