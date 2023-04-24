@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Log as LogFile;
 class AwardController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/award";
 
@@ -53,12 +53,12 @@ class AwardController extends Controller
             $item_cate[ $one->award_name ] = $one;
         }
 
-        $registration_award = $item_cate['registration_award'];  
-        $realname_award = $item_cate['realname_award'];  
-        $everyday_award = $item_cate['everyday_award'];  
-        $first_invest = $item_cate['first_invest'];  
-        $balance_benefit = $item_cate['balance_benefit'];  
-        $balance_min = $item_cate['balance_min'];  
+        $registration_award = $item_cate['registration_award'];
+        $realname_award = $item_cate['realname_award'];
+        $everyday_award = $item_cate['everyday_award'];
+        $first_invest = $item_cate['first_invest'];
+        $balance_benefit = $item_cate['balance_benefit'];
+        $balance_min = $item_cate['balance_min'];
         $balance_max = $item_cate['balance_max'];
         $reinvest = $item_cate['reinvest'];
         $machine_days = $item_cate['machine_days'];
@@ -116,7 +116,7 @@ class AwardController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -141,14 +141,16 @@ class AwardController extends Controller
                 $one = Award::find($id);
                 $one->award_value = $award_value;
                 $one->save();
-                
+
                 if(!$one->save())
                     throw new \Exception('事务中断1');
 
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员'. $username. ' 修改站内信';
+                $update_action = ['username' => $username, 'type' => 'log.update_action'];
+                $action = json_encode($update_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'award.update';
                 $input = $request->all();

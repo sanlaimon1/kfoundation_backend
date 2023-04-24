@@ -111,7 +111,9 @@ class CategoryController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 添加站内信';
+            $store_action = ['username' => $username, 'type' => 'log.store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'category.store';
             $input = $request->all();
@@ -213,7 +215,9 @@ class CategoryController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 修改站内信';
+            $update_action = ['username' => $username, 'type' => 'log.update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'category.update';
             $input = $request->all();
@@ -285,7 +289,9 @@ class CategoryController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. ' 删除站内信';
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'category.destroy';
             $input = $request->all();

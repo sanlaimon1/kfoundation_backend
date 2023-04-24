@@ -152,7 +152,9 @@ class BalanceCheckController extends Controller
             //添加管理员日志
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的申请 审核通过';
+            $update_action = ['username' => $username, 'userphone' => $one->customer->phone, 'amount' => $one->amount, 'type' => 'log.balanceCheck_approve_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'withdrawal.update';
             $newlog->parameters = json_encode($request->all());
@@ -281,7 +283,9 @@ class BalanceCheckController extends Controller
             //添加管理员日志
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
+            $update_action = ['username' => $username, 'userphone' => $one->customer->phone, 'amount' => $one->amount, 'type' => 'log.balanceCheck_reject_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'withdrawal.destroy';
             $newlog->parameters = json_encode($request->all());

@@ -129,7 +129,9 @@ class CurrencyController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '创建新币价';
+            $store_action = ['username' => $username, 'type' => 'log.currency_store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'currency.store';
             $input = $request->all();
@@ -264,7 +266,9 @@ class CurrencyController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '修改币价管理';
+            $update_action = ['username' => $username, 'type' => 'log.currency_update_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'currency.update';
             $input = $request->all();
@@ -363,7 +367,9 @@ class CurrencyController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除币价管理';
+            $delete_action = ['username' => $username, 'type' => 'log.currency_delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'currency.destroy';
             $input = $request->all();

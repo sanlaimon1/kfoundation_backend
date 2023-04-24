@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Log as LogFile;
 class AgreementController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/agreement";
 
@@ -42,7 +42,7 @@ class AgreementController extends Controller
      */
     public function index()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
@@ -59,7 +59,7 @@ class AgreementController extends Controller
         }
 
         $agreement = $item_cate5['agreement'];  //合同模板
-        
+
         return view('config.agreement', compact('agreement') );
     }
 
@@ -104,11 +104,11 @@ class AgreementController extends Controller
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
             return json_encode( $arr );
         }
-        
+
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -136,8 +136,10 @@ class AgreementController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->adminid = Auth::id();
+            $update_action = ['username' => $username, 'type' => 'log.update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'agreement.update';
             $newlog->parameters = json_encode( $request->all() );

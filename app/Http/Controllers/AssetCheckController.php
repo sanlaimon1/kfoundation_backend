@@ -147,7 +147,7 @@ class AssetCheckController extends Controller
             DB::beginTransaction();
             try {
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-                
+
                 //更改订单状态
                 $one = AssetCheck::find($id);
                 if($one->status!=0)
@@ -162,7 +162,7 @@ class AssetCheckController extends Controller
                 $one->is_help = 1;
                 if (!$one->save())
                     throw new \Exception('事务中断1');
-                
+
                 $asset_check_data = array(
                     'id' => $one->id,
                     'userid' => $one->userid,
@@ -184,7 +184,7 @@ class AssetCheckController extends Controller
                 $one_user->asset = $asset + $one->amount;
                 if (!$one_user->save())
                     throw new \Exception('事务中断2');
-                
+
                 //添加财务记录
                 $username = Auth::user()->username;
                 $newfinance = new FinancialAsset;
@@ -201,7 +201,7 @@ class AssetCheckController extends Controller
 
                 if (!$newfinance->save())
                     throw new \Exception('事务中断3');
-                
+
                 $financial_asset = array(
                     'id' => $newfinance->id,
                     'userid' => $newfinance->userid,
@@ -218,7 +218,9 @@ class AssetCheckController extends Controller
                 //添加管理员日志
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
+                $update_action = ['username' => $username, 'userphone' => $one->customer->phone, 'amount' => $one->amount, 'type' => 'log.assetcheck_approve_action'];
+                $action = json_encode($update_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.update';
                 $newlog->parameters = json_encode($request->all());
@@ -228,7 +230,7 @@ class AssetCheckController extends Controller
 
                 //10, 维护团队总充值字段的数据 就是本人总提现
             $one_extra = CustomerExtra::where('userid', $userid)->first();
-           
+
             $one_extra->charge = $one_extra->charge + $one->amount;
             if (!$one_extra->save())
                 throw new \Exception('事务中断5');
@@ -275,7 +277,7 @@ class AssetCheckController extends Controller
             $spread_members_num = $higher_team->spread_members_num;  //直推会员数量限制
             $spread_leaders_num = $higher_team->spread_leaders_num;  //直推会员里跟自己同级的
             $accumulative_amount = $higher_team->accumulative_amount;   //累计奖金界限
-           
+
             if( ($team_members>$spread_members_num) && ($sub_leaders>$spread_leaders_num) && ($charge_total>$accumulative_amount) )
             {
                 $one_user->team_id = $higher_team->tid;
@@ -289,7 +291,7 @@ class AssetCheckController extends Controller
                 $team_award = $current_team->team_award;
                 $award_amount = round($one->amount * $team_award / 100, 2);
                 $after_balance = $one_user->balance + $award_amount;
-                
+
                 //添加余额流水记录  系统团队奖励
                 $one_financial_balance = new FinancialBalance();
                 $one_financial_balance->userid = $one_user->id;
@@ -302,12 +304,12 @@ class AssetCheckController extends Controller
                 $one_financial_balance->after_balance = $after_balance;
                 if( !$one_financial_balance->save() )
                     throw new \Exception('事务中断9');
-                
+
                 $one_user->balance = $after_balance;
                 if( !$one_user->save() )
                     throw new \Exception('事务中断10');
             }
-            
+
             $customer = array(
                 'id' => $one_user->id,
                 'phone' => $one_user->phone,
@@ -332,7 +334,7 @@ class AssetCheckController extends Controller
             $charge_total2 = $parent_team_extra->charge_total;
             //获得高一级的团队信息
             $higher_team2 = Teamlevel::where( 'tid', '>=', $parent_user->team_id )->orderBy('tid', 'asc')->first();
-           
+
             //直推会员得达到15个，直推的会员里得有2个以上的会员跟自己团队级别相同，累计充值金额得达到对应的等级
             $spread_members_num2 = $higher_team2->spread_members_num;  //直推会员数量限制
             $spread_leaders_num2 = $higher_team2->spread_leaders_num;  //直推会员里跟自己同级的
@@ -363,7 +365,7 @@ class AssetCheckController extends Controller
                 $one_financial_balance2->after_balance = $after_balance2;
                 if( !$one_financial_balance2->save() )
                     throw new \Exception('事务中断13');
-                
+
                 $parent_user->balance = $after_balance2;
                 if( !$parent_user->save() )
                     throw new \Exception('事务中断14');
@@ -376,7 +378,7 @@ class AssetCheckController extends Controller
             if($level_ids !== '0')
             {
                 $level_ids = ltrim ($level_ids,'0');    //取消开头的 0
-                $level_ids = ltrim ($level_ids,',');    //取消开头的 , 
+                $level_ids = ltrim ($level_ids,',');    //取消开头的 ,
                 //更新上级附加表  执行sql
                 $affected_rows = DB::update('update team_extra set charge_total=charge_total+' . $one->amount . ' where userid in ( ' . $level_ids . ' )');
                 if($affected_rows<0) {
@@ -394,7 +396,7 @@ class AssetCheckController extends Controller
 
             );
             $asset_check_json = json_encode($asset_check_update);
-            DB::commit(); 
+            DB::commit();
             LogFile::channel("asset_check_update")->info($asset_check_json);
 
             } catch (\Exception $e) {
@@ -458,7 +460,9 @@ class AssetCheckController extends Controller
                 //添加管理员日志
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . '对用户' . $one->customer->phone . '的' . $one->amount . '金额的资产充值申请 审核拒绝';
+                $update_action = ['username' => $username, 'userphone' => $one->customer->phone, 'amount' => $one->amount, 'type' => 'log.assetcheck_reject_action'];
+                $action = json_encode($update_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.destory';
                 $newlog->parameters = json_encode($request->all());
@@ -476,7 +480,7 @@ class AssetCheckController extends Controller
                         'updated_at' => $one->updated_at
                     );
                     $asset_check_json = json_encode($asset_check_data);
-    
+
                     DB::commit();
                     LogFile::channel("asset_check_status")->info($asset_check_json);
 
@@ -512,7 +516,7 @@ class AssetCheckController extends Controller
             $start_date = '';
             $end_date = '';
         }
-        
+
 
         if($fid != null && $customer != null && $financial_type != null && $date_string != null && $is_help != null)
         {

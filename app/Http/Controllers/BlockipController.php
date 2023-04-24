@@ -99,7 +99,9 @@ class BlockipController extends Controller
             $myself = Auth::user();
             $log = new Log();
             $log->adminid = $myself->id;
-            $log->action = $myself->username . '修改屏蔽IP' ;
+            $store_action = ['username' => $myself->username, 'type' => 'log.store_blockip_action'];
+            $action = json_encode($store_action);
+            $log->action = $action;
             $log->ip = $request->ip();     // IP地址
             $log->route = 'blockip.store';
             $input = $request->all();
@@ -190,7 +192,9 @@ class BlockipController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除'. $ipaddress;
+            $delete_action = ['username' => $username, 'ipaddress' => $ipaddress, 'type' => 'log.delete_blockip_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'blockip.destroy';
             $input = $request->all();
