@@ -100,7 +100,7 @@
                     <td>{{ $one['created_at'] }}</td>
                     <td>
                         {{ $one['details'] }}
-                        @if($one['financial_type']==2)
+                        @if($one['financial_type'] == 2)
                         <a href="{{ route('withdrawal.show',[ 'withdrawal'=>json_decode($one['extra'], true)['withdrawal_id'] ]) }}">申请记录编号 {{ json_decode($one['extra'], true)['withdrawal_id'] }}</a>
                         @endif
                     </td>

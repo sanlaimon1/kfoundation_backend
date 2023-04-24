@@ -14,7 +14,7 @@ return [
     'setCard_detail'=>'User :PHONE  Get rewards for real-name authentication :amount',
     'costapply_balance_detail' => 'User :PHONE apply for withdrawal :money ',
     'costapply_balance_pass_detail' => 'User :PHONE apply for withdrawal :money automatically approved',
-    'transfer2plat_detail' => 'User: PHONE turn to user :TPHONE platform currency :amount ',
+    'transfer2plat_detail' => 'User :PHONE turn to user :TPHONE platform currency :amount ',
     'sign_platformcoin_detail' => 'User :PHONE at :created_at sign in to get the system sign in reward platform currency :platform_coin',
     'sign_integration_detail' => 'User :PHONE at :created_at sign in to get system sign in points :platform_coin',
     'DB2balance_detail' => 'User :PHONE will :amount the platform currency is converted into :addmoney balance',

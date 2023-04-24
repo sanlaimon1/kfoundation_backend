@@ -75,29 +75,29 @@
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($records as $one)
+                @foreach ($record_datas as $one)
                 <tr>
-                    <td>{{ $one->id }}</td>
-                    <td>{{ $one->customer->phone }}</td>
-                    <td>{{ $types[ $one->financial_type ]}}</td>
+                    <td>{{ $one['id'] }}</td>
+                    <td>{{ $one['phone'] }}</td>
+                    <td>{{ $types[ $one['financial_type'] ]}}</td>
                     <td>
-                        {{ $one->balance }}
+                        {{ $one['balance'] }}
                     </td>
                     <td>
-                        @if($one->direction==1)
-                        <span style="color:green;">+{{ $one->amount }}</span>
-                        @elseif($one->direction==-1)
-                        <span style="color:red;">-{{ $one->amount }}</span>
+                        @if($one['direction'] == 1)
+                        <span style="color:green;">+{{ $one['amount'] }}</span>
+                        @elseif($one['direction']==-1)
+                        <span style="color:red;">-{{ $one['amount'] }}</span>
                         @else
                         方向错误
                         @endif
                     </td>
-                    <td>{{ $one->after_balance }}</td>
-                    <td>{{ $one->created_at }}</td>
+                    <td>{{ $one['after_balance'] }}</td>
+                    <td>{{ $one['created_at'] }}</td>
                     <td>
-                        {{ $one->details }}
-                        @if($one->financial_type==2)
-                        <a href="{{ route('withdrawal.show',[ 'withdrawal'=>json_decode($one->extra, true)['withdrawal_id'] ]) }}">申请记录编号 {{ json_decode($one->extra, true)['withdrawal_id'] }}</a>
+                        {{ $one['details'] }}
+                        @if($one['financial_type']==2)
+                        <a href="{{ route('withdrawal.show',[ 'withdrawal'=>json_decode($one['extra'], true)['withdrawal_id'] ]) }}">申请记录编号 {{ json_decode($one['extra'], true)['withdrawal_id'] }}</a>
                         @endif
                     </td>
                 </tr>
