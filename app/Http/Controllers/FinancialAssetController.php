@@ -57,9 +57,10 @@ class FinancialAssetController extends Controller
                 $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
                 $pid = array_key_exists('pid',$res) ? $res['pid'] : '';
                 $project_name = array_key_exists('project_name', $res) ? $res['project_name'] : '';
+                $amount = array_key_exists('amount', $res) ? $res['amount'] : '';
                 $itemid = array_key_exists('itemid',$res) ? $res['itemid'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone' => $phone, 'pid' => $pid, 'project_name' => $project_name, 'itemid' => $itemid]);
+                $action = __($type, ['phone' => $phone, 'pid' => $pid, 'project_name' => $project_name, 'itemid' => $itemid, 'amount' => $amount]);
             }
             $record_datas[] = [
                 'id' => $record->id,
@@ -74,7 +75,7 @@ class FinancialAssetController extends Controller
                 'extra' => $record->extra,
                 'after_balance' => $record->after_balance
             ];
-         }
+        }
         $types = config('types.asset_financial_type');
 
         $title = '资产流水记录';

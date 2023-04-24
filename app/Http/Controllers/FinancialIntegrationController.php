@@ -44,12 +44,39 @@ class FinancialIntegrationController extends Controller
 
         $perPage = $request->input('perPage', 20);
         $records = FinancialIntegration::orderBy('created_at', 'desc')->paginate($perPage);
-
+        foreach($records as $record)
+        {
+            $detail = $record->details;
+            $res = json_decode($detail, true);
+            //如果是json正常解析
+            if(json_last_error()==JSON_ERROR_NONE)
+            {
+                $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
+                $created_at = array_key_exists('created_at', $res) ? $res['created_at'] : '';
+                $score = array_key_exists('score', $res) ? $res['score'] : '';
+                $platform_coin = array_key_exists('platform_coin',$res) ? $res['platform_coin'] : '';
+                $type = array_key_exists('type', $res) ? $res['type'] : '';
+                $action = __($type, ['phone' => $phone, 'score' => $score, 'created_at' => $created_at, 'platform_coin' => $platform_coin]);
+            }
+            $record_datas[] = [
+                'id' => $record->id,
+                'userid' => $record->userid,
+                'phone' => $record->customer->phone,
+                'amount' => $record->amount,
+                'balance' => $record->balance,
+                'direction' => $record->direction,
+                'financial_type' => $record->financial_type,
+                'created_at' => $record->created_at,
+                'details' => $action,
+                'extra' => $record->extra,
+                'after_balance' => $record->after_balance
+            ];
+        }
         $types = config('types.integration_financial_type');
 
         $title = '积分流水记录';
 
-        return view( 'financialintegration.index', compact('records', 'types','title') );
+        return view( 'financialintegration.index', compact('record_datas','records', 'types','title') );
     }
 
     public function integration_search(Request $request)
