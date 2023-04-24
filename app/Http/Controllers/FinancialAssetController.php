@@ -57,12 +57,14 @@ class FinancialAssetController extends Controller
                 $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
                 $pid = array_key_exists('pid',$res) ? $res['pid'] : '';
                 $project_name = array_key_exists('project_name', $res) ? $res['project_name'] : '';
+                $itemid = array_key_exists('itemid',$res) ? $res['itemid'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone'=>$phone, 'pid' => $pid, 'project_name' => $project_name]);
+                $action = __($type, ['phone' => $phone, 'pid' => $pid, 'project_name' => $project_name, 'itemid' => $itemid]);
             }
             $record_datas[] = [
                 'id' => $record->id,
                 'userid' => $record->userid,
+                'phone' => $record->customer->phone,
                 'amount' => $record->amount,
                 'balance' => $record->balance,
                 'direction' => $record->direction,
@@ -76,8 +78,9 @@ class FinancialAssetController extends Controller
         $types = config('types.asset_financial_type');
 
         $title = '资产流水记录';
+        
 
-        return view( 'financialasset.index', compact('record_datas', 'types', 'title') );
+        return view( 'financialasset.index', compact('record_datas','records', 'types', 'title') );
     }
 
     public function asset_search(Request $request)

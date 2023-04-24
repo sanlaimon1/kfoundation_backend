@@ -43,12 +43,46 @@ class FinancialBalanceController extends Controller
 
         $perPage = $request->input('perPage', 20);
         $records = FinancialBalance::orderBy('created_at', 'desc')->paginate($perPage);
+        foreach($records as $record)
+        {
+            $detail = $record->details;
+            $res = json_decode($detail, true);
+            //如果是json正常解析
+            if(json_last_error()==JSON_ERROR_NONE)
+            {
+                $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
+                $itemid = array_key_exists('itemid',$res) ? $res['itemid'] : '';
+                $project_name = array_key_exists('project_name', $res) ? $res['project_name'] : '';
+                $production_name = array_key_exists('production_name', $res) ? $res['production_name'] : '';
+                $total = array_key_exists('total',$res) ? $res['total'] : '';
+                $this_fee = array_key_exists('this_fee', $res) ? $res['this_fee'] : '';
+                $money = array_key_exists('money', $res) ? $res['money'] : '';
+                $amount = array_key_exists('amount', $res) ? $res['amount'] : '';
+                $addmoney = array_key_exists('addmoney', $res) ? $res['addmoney'] : '';
+                $type = array_key_exists('type', $res) ? $res['type'] : '';
+                $action = __($type, ['phone' => $phone, 'itemid' => $itemid, 'project_name' => $project_name,'production_name' => $production_name,'total' => $total, 'this_fee' => $this_fee, 'money' => $money, 'amount' => $amount, 'addmoney' => $addmoney
+                ]);
+            }
+            $record_datas[] = [
+                'id' => $record->id,
+                'userid' => $record->userid,
+                'phone' => $record->customer->phone,
+                'amount' => $record->amount,
+                'balance' => $record->balance,
+                'direction' => $record->direction,
+                'financial_type' => $record->financial_type,
+                'created_at' => $record->created_at,
+                'details' => $action,
+                'extra' => $record->extra,
+                'after_balance' => $record->after_balance
+            ];
+        }
 
         $types = config('types.balance_financial_type');
 
         $title = '余额流水记录';
 
-        return view( 'financialbalance.index', compact('records', 'types', 'title') );
+        return view( 'financialbalance.index', compact('record_datas','records', 'types', 'title') );
     }
 
     public function balance_search(Request $request)
