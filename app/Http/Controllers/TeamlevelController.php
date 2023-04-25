@@ -156,9 +156,11 @@ class TeamlevelController extends Controller
             $teamlevel_json = json_encode($teamlevels);
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.teamlevel_store'];
+
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->action = json_encode($log_action);//'管理员' . $username . ' 添加站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'teamlevel.store';
             $newlog->parameters = json_encode( $request->all() );

@@ -38,5 +38,16 @@ return [
     'permission_store_action' => '管理员  :username  为角色  :roletitle  添加权限',
     'project_store_action' => '管理员  :username  添加项目  :projectname',
     'project_update_action' => '管理员  :username  修改项目  :projectname',
+    'whpage_update_config' => '管理员  :username  修改站内信',
+    'wallet_delete' => '管理员  :username  删除用户 :realname 的钱包',
+    'version_config_update' => '管理员  :username  修改站内信',
+    'tradegoods_store' => '管理员  :username  创建交易所',
+    'tradegoods_update' => '管理员  :username  修改交易所',
+    'tradegoods_delete' => '管理员  :username  删除交易所',
+    'teamlevel_store' => '管理员  :username  添加站内信',
+
+    
+
+    
 
 ];
