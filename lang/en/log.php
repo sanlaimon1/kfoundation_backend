@@ -26,7 +26,16 @@ return [
     'withdraw_balance_log' => 'Administrator :username store financial balances',
     'withdraw_asset_log' => 'Administrator  :username  for clients  :phone  assets :amount',
     'withdraw_integration_log' => 'Administrator  :username  for clients  :phone  points under the points  :amount',
-    'withdraw_platform_coin_log' => 'Administrator  :username store withdrawal financial platform currency',    
+    'withdraw_platform_coin_log' => 'Administrator  :username store withdrawal financial platform currency',
+    'fproduction_store_action' => 'Administrator  :username  create an exchange commodity',
+    'fproduction_update_action' => 'Administrator  :username  modify exchange commodity',
+    'fproduction_delete_action' => 'Administrator  :username  delete xchange commodity',
+    'life_store_action' => 'Administrator  :username  create product',
+    'life_update_action' => 'Administrator  :username  modify product',
+    'life_delete_action' => 'Administrator  :username  delete product',
+    'order3_status1_action' => 'Administrator  :username  orders paid through life  :order3id',
+    'order3_status2_action' => 'Administrator  :username  refusal of orders for payment of living expenses  :order3id',
+    'permission_store_action' => 'Administrator  :username  for the role  :roletitle  add permissions',
 
 
 

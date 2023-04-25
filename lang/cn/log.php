@@ -25,7 +25,16 @@ return [
     'charge_platform_coin_log' => '管理员 :username 存儲金融平台幣',
     'withdraw_balance_log' => '管理员 :username 存儲財務餘額',
     'withdraw_asset_log' => '管理员  :username  为客户  :phone  的资产下分  :amount',
-    'withdraw_integration_log' => '管理员  :username  为客户  :phone  的积分下分  :amount',    
-    'withdraw_platform_coin_log' => '管理员  :username 商店取款金融平台幣',   
-    
+    'withdraw_integration_log' => '管理员  :username  为客户  :phone  的积分下分  :amount',
+    'withdraw_platform_coin_log' => '管理员  :username 商店取款金融平台幣',
+    'fproduction_store_action' => '管理员  :username  创建交易所商品',
+    'fproduction_update_action' => '管理员  :username  修改交易所商品',
+    'fproduction_delete_action' => '管理员  :username  删除交易所商品',
+    'life_store_action' => '管理员  :username  创建商品',
+    'life_update_action' => '管理员  :username  修改商品',
+    'life_delete_action' => '管理员  :username  删除产品',
+    'order3_status1_action' => '管理员  :username  通过生活缴费的订单  :order3id',
+    'order3_status2_action' => '管理员  :username  拒绝生活缴费的订单  :order3id',
+    'permission_store_action' => '管理员  :username  为角色  :roletitle  添加权限',
+
 ];
