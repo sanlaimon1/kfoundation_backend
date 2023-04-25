@@ -141,7 +141,7 @@ class SysUsersController extends Controller
 
             if(!$newadmin->save())
                 throw new \Exception('事务中断1');
-            
+
             $newadmins = array(
                 'id' => $newadmin->id,
                 'username' => $newadmin->username,
@@ -156,7 +156,9 @@ class SysUsersController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $store_action = ['username' => $username, 'type' => 'log.store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'sysusers.store';
             $newlog->parameters = json_encode( $request->all() );
@@ -277,7 +279,7 @@ class SysUsersController extends Controller
 
             if(!$one->save())
                 throw new \Exception('事务中断3');
-            
+
             $admin = array(
                 'id' => $one->id,
                 'desc' => $one->desc,
@@ -290,7 +292,9 @@ class SysUsersController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $update_action = ['username' => $username, 'type' => 'log.update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'sysusers.update';
             $newlog->parameters = json_encode( $request->all() );
@@ -367,7 +371,9 @@ class SysUsersController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 修改站内信';
+                $update_action = ['username' => $username, 'type' => 'log.update_pass_action'];
+                $action = json_encode($update_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'sysusers.update_pass';
                 $newlog->parameters = json_encode( $request->all() );
@@ -420,7 +426,7 @@ class SysUsersController extends Controller
             $one->is_deleted = 1;
             if(!$one->save())
                 throw new \Exception('事务中断7');
-            
+
             $sysuser = array(
                 'id' => $one->id,
                 'is_deleted' => $one->is_deleted,
@@ -431,7 +437,9 @@ class SysUsersController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'sysusers.destroy';
             $newlog->parameters = json_encode( $request->all() );

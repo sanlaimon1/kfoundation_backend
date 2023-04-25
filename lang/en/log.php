@@ -47,6 +47,7 @@ return [
     'teamlevel_store' => 'Administrator  :username  add a station message',
     'project_delete_action' => 'Administrator  :username  delete item  :id   :projectname',
     'bindProject_update_action' => 'Administrator  :username  binding project  :bindid   :bindprojectname  to  :projectname',
+    'update_pass_action' => 'Administrator  :username  add a station message',
 
 
 
