@@ -46,9 +46,46 @@ class LogController extends Controller
         $perPage = $request->input('perPage', 10);
         $logs = Log::orderBy('created_at','desc')->paginate($perPage);
 
+        foreach ($logs as $log) {
+            $action = $log->action;
+            $res = json_decode($action, true);
+            //如果是json正常解析
+            if(json_last_error()==JSON_ERROR_NONE) {
+                $username = array_key_exists('username',$res) ? $res['username'] : '';
+                $userphone = array_key_exists('userphone',$res) ? $res['userphone'] : '';
+                $amount = array_key_exists('amount',$res) ? $res['amount'] : ''; 
+                $ipaddress = array_key_exists('ipaddress',$res) ? $res['ipaddress'] : '';
+                $customer_name = array_key_exists('customer_name',$res) ? $res['customer_name'] : '';
+                $phone = array_key_exists('phone', $res) ? $res['phone'] : '';
+                $order3id = array_key_exists('order3id', $res) ? $res['order3id'] : '';
+                $roletitle = array_key_exists('roletitle', $res) ? $res['roletitle'] : '';
+                $projectname = array_key_exists('projectname', $res) ? $res['projectname'] : '';
+                $realname = array_key_exists('realname', $res) ? $res['realname'] : '';
+                $id = array_key_exists('id', $res) ? $res['id'] : '';
+                $bindid = array_key_exists('bindid', $res) ? $res['bindid'] : '';
+                $bindprojectname = array_key_exists('bindprojectname', $res) ? $res['bindprojectname'] : '';
+                $type = array_key_exists('type', $res) ? $res['type'] : '';
+
+                $action = __($type, ['username' => $username, 'userphone' => $userphone,'amount' => $amount, 'ipaddress' => $ipaddress,
+                            'customer_name' => $customer_name, 'phone' => $phone, 'order3id' => $order3id,
+                            'roletitle' => $roletitle, 'projectname' => $projectname, 'realname' => $realname, 
+                            'id' => $id, 'bindid' => $bindid, 'bindprojectname' => $bindprojectname]);
+            }
+            
+            $record_logs[] = [
+                'id' => $log->id,
+                'adminid' => $log->adminid,
+                'admin_username' => $log->oneadmin->username,
+                'action' => $action,
+                'ip' => $log->ip,
+                'route' => $log->route,
+                'parameters' => $log->parameters,
+                'created_at' => $log->created_at
+            ];
+        }
         $managers = Admin::all();
 
-        return view( 'log.index', compact('logs','managers') );
+        return view( 'log.index', compact('record_logs','logs','managers') );
     }
 
     /**

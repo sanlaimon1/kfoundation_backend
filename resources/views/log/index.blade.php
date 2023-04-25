@@ -62,16 +62,16 @@
                 </tr>
             </thead>
             <tbody id="search_data">
-                @foreach ($logs as $one)
+                @foreach ($record_logs as $one)
                 <tr>
-                    <td>{{ $one->id }}</td>
-                    <td>{{ $one->oneadmin->username }}</td>
-                    <td>{{ $one->action }}</td>
-                    <td>{{ $one->ip }}</td>
-                    <td>{{ $one->route }}</td>
-                    <td>{{ $one->created_at }}</td>
+                    <td>{{ $one['id'] }}</td>
+                    <td>{{ $one['admin_username'] }}</td>
+                    <td>{{ $one['action'] }}</td>
+                    <td>{{ $one['ip'] }}</td>
+                    <td>{{ $one['route'] }}</td>
+                    <td>{{ $one['created_at'] }}</td>
                     <td>
-                        <a class="btn btn-primary" href="{{ route('log.show', ['log'=>$one->id]) }}">查看请求数据</a>
+                        <a class="btn btn-primary" href="{{ route('log.show', ['log'=>$one['id']]) }}">查看请求数据</a>
                     </td>
                 </tr>
                 @endforeach
