@@ -13,6 +13,13 @@ return [
     'currency_store_action' => '管理员 :username 创建新币价',
     'currency_update_action' => '管理员 :username 修改币价管理',
     'currency_delete_action' => '管理员 :username  删除币价管理',
+    'customer_store_action' => '管理员  :username  存储条目',
+    'customer_update_action' => '管理员  :username  更新客户数据',
+    'customer_delete_action' => '管理员  :username   冻结用户  :customer_name ',
+    'customer_kick_action' => '管理员  :username  对用户  :phone  踢出',
+    'customer_pwd1_action' => '管理员  :username  存儲密碼1',
+    'customer_pwd2_action' => '管理员  :username  存儲密碼2',
+    'customer_charge_fbalance_action' => '管理员  :username  为客户  :phone  的余额上分  :amount',
 
 
 

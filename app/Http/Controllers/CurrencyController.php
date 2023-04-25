@@ -267,7 +267,7 @@ class CurrencyController extends Controller
             $newlog = new Log();
             $newlog->adminid = Auth::id();
             $update_action = ['username' => $username, 'type' => 'log.currency_update_action'];
-            $action = json_encode($store_action);
+            $action = json_encode($update_action);
             $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'currency.update';
@@ -415,4 +415,30 @@ class CurrencyController extends Controller
         }
         return redirect()->route('currency.index');
     }
+    public function getUserIP()
+    {
+        if (getenv('HTTP_CLIENT_IP')){
+            $ip = getenv('HTTP_CLIENT_IP');
+        }
+        if (getenv('HTTP_X_REAL_IP'))
+        {
+            $ip = getenv('HTTP_X_REAL_IP');
+        }
+            else if (getenv('HTTP_X_FORWARDED_FOR'))
+            {
+                $ip = getenv('HTTP_X_FORWARDED_FOR');
+                $ips = explode(',', $ip);
+                $ip = $ips[0];
+            }
+            else if (getenv('REMOTE_ADDR'))
+            {
+                $ip = getenv('REMOTE_ADDR');
+            }
+            else
+            {
+                $ip = '0.0.0.0';
+            }
+            return $ip;
+    }
+
 }

@@ -185,14 +185,16 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存储条目 ';
+                $store_action = ['username' => $username, 'type' => 'log.customer_store_action'];
+                $action = json_encode($store_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'customer.store';
                 $newlog->parameters = json_encode( $request->all() );
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if(!$newlog->save())
                     throw new \Exception('事务中断4');
-                
+
                 $customer = array(
                     'id' => $customer->id,
                     'phone' => $customer->phone,
@@ -324,9 +326,11 @@ class CustomerController extends Controller
                 $myself = Auth::user();
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $myself->username . ' 更新客户数据';
+                $update_action = ['username' => $myself->username, 'type' => 'log.customer_update_action'];
+                $action = json_encode($update_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
-                $newlog->route = 'customer.store';
+                $newlog->route = 'customer.update';
                 $newlog->parameters = json_encode( $request->all() );
                 $newlog->created_at = date('Y-m-d H:i:s');
                 if(!$newlog->save())
@@ -395,7 +399,9 @@ class CustomerController extends Controller
                 $myself = Auth::user();
                 $log = new Log();
                 $log->adminid = $myself->id;
-                $log->action = '管理员'. $myself->username. '冻结用户' .$customer->realname;
+                $delete_action = ['username' => $myself->username, 'customer_name' => $customer->realname, 'type' => 'log.customer_delete_action'];
+                $action = json_encode($delete_action);
+                $log->action = $action;
                 $log->ip = $request->ip();
                 $log->route = 'customer.destroy';
                 $input = $request->all();
@@ -519,7 +525,9 @@ class CustomerController extends Controller
                 //添加管理员日志
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . Auth::user()->username . '对用户' . $one->phone . ' 踢出';
+                $kick_action = ['username' => Auth::user()->username, 'phone' => $one->phone, 'type' => 'log.customer_kick_action'];
+                $action = json_encode($kick_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'customer.kick';
                 $newlog->parameters = json_encode($request->all());
@@ -586,7 +594,9 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存儲密碼1 ';
+                $pwd1_action = ['username' => $username, 'type' => 'log.customer_pwd1_action'];
+                $action = json_encode($pwd1_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'customer.password1';
                 $newlog->parameters = json_encode( $request->all() );
@@ -604,7 +614,7 @@ class CustomerController extends Controller
                 DB::commit();
                 LogFile::channel('customer_password1')->info($customer_json);
             } catch (\Exception $e) {
-                DB::rollback();              
+                DB::rollback();
                 $errorMessage = $e->getMessage();
                 LogFile::channel('customer_password1_error')->error($errorMessage);
                 return $errorMessage;
@@ -648,7 +658,9 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存儲密碼2 ';
+                $pwd2_action = ['username' => $username, 'type' => 'log.customer_pwd2_action'];
+                $action = json_encode($pwd2_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'customer.password2';
                 $newlog->parameters = json_encode( $request->all() );
@@ -728,7 +740,10 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = $detail;
+                $charge_action = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'log.customer_charge_fbalance_action'];
+                $action = json_encode($charge_action);
+                $newlog->action = $action;
+                dd($newlog->action);
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.financial_balance';
                 $newlog->parameters = json_encode( $request->all() );
@@ -749,7 +764,7 @@ class CustomerController extends Controller
                 );
                 $financial_balance_json = json_encode($financial_balance);
                 DB::commit();
-                LogFile::channel('financial_balance')->info($financial_balance_json);    
+                LogFile::channel('financial_balance')->info($financial_balance_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
@@ -822,7 +837,7 @@ class CustomerController extends Controller
                     );
                     $financial_asset_json = json_encode($financial_asset);
                     DB::commit();
-                    LogFile::channel('financial_asset')->info($financial_asset_json);   
+                    LogFile::channel('financial_asset')->info($financial_asset_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
@@ -897,7 +912,7 @@ class CustomerController extends Controller
                 );
                 $financial_integration_json = json_encode($financial_integration);
                 DB::commit();
-                LogFile::channel('financial_integration')->info($financial_integration_json);  
+                LogFile::channel('financial_integration')->info($financial_integration_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
@@ -972,7 +987,7 @@ class CustomerController extends Controller
                 );
                 $financial_platform_coin_json = json_encode($financial_platform_coin);
                 DB::commit();
-                LogFile::channel('financial_platform_coin')->info($financial_platform_coin_json); 
+                LogFile::channel('financial_platform_coin')->info($financial_platform_coin_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
@@ -1206,7 +1221,7 @@ class CustomerController extends Controller
                 );
                 $financial_integration_json = json_encode($financial_integration);
                 DB::commit();
-                LogFile::channel('withdraw_financial_integration')->info($financial_integration_json);  
+                LogFile::channel('withdraw_financial_integration')->info($financial_integration_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
@@ -1282,7 +1297,7 @@ class CustomerController extends Controller
                     );
                     $financial_platform_coin_json = json_encode($financial_platform_coin);
                     DB::commit();
-                    LogFile::channel('withdraw_financial_platform_coin')->info($financial_platform_coin_json);  
+                    LogFile::channel('withdraw_financial_platform_coin')->info($financial_platform_coin_json);
             } catch (\Exception $e) {
                 DB::rollback();
                 $errorMessage = $e->getMessage();
