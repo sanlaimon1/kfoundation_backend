@@ -30,5 +30,6 @@ return [
     'withdraw_asset' => '管理员: :username 为客户 :phone 的资产下分 :amount',
     'withdraw_integration' => '管理员: :username 为客户 :phone 的积分下分 :amount',
     'withdraw_platform_coin' => '管理员: :username 为客户 :phone 的平台币下分 :amount',    
+    'balanceCheck_balance' => '管理员: :username 为客户 :phone 金额的余额提现申请 审核拒绝 :amount',
 
 ];

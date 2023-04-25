@@ -262,9 +262,12 @@ class BalanceCheckController extends Controller
             $one_user->balance = $balance + $one->amount;
             if (!$one_user->save())
                 throw new \Exception('事务中断2');
-
-            //添加财务记录
+             
             $username = Auth::user()->username;
+            //添加财务记录
+            //'管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
+            $detail = ['username' => $username, 'phone' => $one_user->phone, 'amount' => $one->amount, 'type' => 'finance.balanceCheck_balance'];
+           
             $newfinance = new FinancialBalance;
             $newfinance->userid = $userid;
             $newfinance->amount = $one->amount;
@@ -272,7 +275,7 @@ class BalanceCheckController extends Controller
             $newfinance->direction = 1;    //加余额
             $newfinance->financial_type = 2;  //提现
             $newfinance->created_at = date('Y-m-d H:i:s');
-            $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的余额提现申请 审核拒绝';
+            $newfinance->details = json_encode($detail);
             $order_arr = ['withdrawal_id' => $id];
             $newfinance->extra = json_encode($order_arr);  //{"withdrawal_id": 1}
             $newfinance->after_balance = $one_user->balance;

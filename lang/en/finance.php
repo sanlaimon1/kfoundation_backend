@@ -29,5 +29,7 @@ return [
     'withdraw_balance' => 'Administrator: :username for clients :phone assets :amount',
     'withdraw_asset' => 'Administrator: :username for clients :phone assets :amount',
     'withdraw_integration' => 'Administrator: :username for clients :phone Points under the points :amount',
-    'withdraw_platform_coin' => 'Administrator: :username for clients :phone platform token :amount',    
+    'withdraw_platform_coin' => 'Administrator: :username for clients :phone platform token :amount',   
+    'balanceCheck_balance' => 'Administrator: :username for clients :phone Amount of balance withdrawal application audit rejected :amount',
+     
 ];
