@@ -20,7 +20,12 @@ return [
     'customer_pwd1_action' => '管理员  :username  存儲密碼1',
     'customer_pwd2_action' => '管理员  :username  存儲密碼2',
     'customer_charge_fbalance_action' => '管理员  :username  为客户  :phone  的余额上分  :amount',
-
-
-
+    'charge_balance_log' => '管理员 :username 儲存金融資產',
+    'charge_integration_log' => '管理员 :username 門店財務整合',
+    'charge_platform_coin_log' => '管理员 :username 存儲金融平台幣',
+    'withdraw_balance_log' => '管理员 :username 存儲財務餘額',
+    'withdraw_asset_log' => '管理员  :username  为客户  :phone  的资产下分  :amount',
+    'withdraw_integration_log' => '管理员  :username  为客户  :phone  的积分下分  :amount',    
+    'withdraw_platform_coin_log' => '管理员  :username 商店取款金融平台幣',   
+    
 ];
