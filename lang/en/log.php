@@ -37,8 +37,14 @@ return [
     'order3_status2_action' => 'Administrator  :username  refusal of orders for payment of living expenses  :order3id',
     'permission_store_action' => 'Administrator  :username  for the role  :roletitle  add permissions',
     'project_store_action' => 'Administrator  :username  add item  :projectname',
-    'project_update_action' => 'Administrator  :username  modify item  :projectname',
-
+    'project_update_action' => 'Administrator  :username modify item  :projectname',
+    'whpage_update_config' => 'Administrator  :username modify the station message',
+    'wallet_delete' => 'Administrator  :username  delete users :realname wallet',
+    'version_config_update' => 'Administrator  :username  modify the station message',
+    'tradegoods_store' => 'Administrator  :username  create an exchange',
+    'tradegoods_update' => 'Administrator  :username modify exchange',
+    'tradegoods_delete' => 'Administrator  :username  delete exchange',
+    'teamlevel_store' => 'Administrator  :username  add a station message',
 
 
 

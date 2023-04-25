@@ -139,9 +139,10 @@ class VersionController extends Controller
                 throw new \Exception('事务中断1');
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.version_config_update'];
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->action =  json_encode($log_action);//'管理员' . $username . ' 修改站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'version.update';
             $newlog->parameters = json_encode( $request->all() );

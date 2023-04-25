@@ -132,9 +132,10 @@ class WindowhomepageController extends Controller
                 throw new \Exception('事务中断1');
 
             $myself = Auth::user();
+            $log_action = ['username' => $myself->username, 'type' => 'log.whpage_update_config'];
             $log = new Log();
             $log->adminid = $myself->id;
-            $log->action = '管理员'. $myself->username. ' 修改站内信';
+            $log->action = json_encode($log_action); //'管理员'. $myself->username. ' 修改站内信';
             $log->ip = $request->ip();
             $log->route = 'windowhomepage.update';
             $input = $request->all();

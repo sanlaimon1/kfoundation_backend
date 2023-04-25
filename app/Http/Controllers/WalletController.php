@@ -124,9 +124,10 @@ class WalletController extends Controller
                 throw new \Exception('事务中断1');
 
             $myself = Auth::user();
+            $log_action = ['username' => $myself->username, 'realname' => $customer_name->realname, 'type' => 'log.wallet_delete'];
             $log = new Log();
             $log->adminid = $myself->id;
-            $log->action = '管理员'. $myself->username. '删除用户' .$customer_name->realname. '的钱包';
+            $log->action = json_encode($log_action); //'管理员'. $myself->username. '删除用户' .$customer_name->realname. '的钱包';
             $log->ip = $this->getUserIP();
             $log->route = 'wallet.destroy';
             $input = $request->all();

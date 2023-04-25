@@ -151,9 +151,10 @@ class TradeController extends Controller
             $trade_json = json_encode($trade);
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.tradegoods_store'];
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '创建交易所';
+            $newlog->action =  json_encode($log_action);//'管理员'. $username. '创建交易所';
             $newlog->ip = $request->ip();
             $newlog->route = 'trade_goods.store';
             $input = $request->all();
@@ -311,9 +312,10 @@ class TradeController extends Controller
             $trade_json = json_encode($trade);
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.tradegoods_update'];
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '修改交易所';
+            $newlog->action = json_encode($log_action); //'管理员'. $username. '修改交易所';
             $newlog->ip = $request->ip();
             $newlog->route = 'trade_goods.update';
             $input = $request->all();
@@ -387,9 +389,10 @@ class TradeController extends Controller
                 throw new \Exception('事务中断2');
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.tradegoods_delete'];
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除交易所';
+            $newlog->action = json_encode($log_action); //'管理员'. $username. '删除交易所';
             $newlog->ip = $request->ip();
             $newlog->route = 'trade_goods.delete';
             $input = $request->all();
