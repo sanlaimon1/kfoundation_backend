@@ -45,6 +45,8 @@ return [
     'tradegoods_update' => '管理员  :username  修改交易所',
     'tradegoods_delete' => '管理员  :username  删除交易所',
     'teamlevel_store' => '管理员  :username  添加站内信',
+    'teamlevel_update' => '管理员  :username  修改站内信',
+    'teamlevel_delete' => '管理员  :username  删除站内信',
     'project_delete_action' => '管理员  :username  删除项目  :id   :projectname',
     'bindProject_update_action' => '管理员  :username  绑定项目  :bindid   :bindprojectname  到  :projectname',
     'update_pass_action' => '管理员  :username 添加站内信',

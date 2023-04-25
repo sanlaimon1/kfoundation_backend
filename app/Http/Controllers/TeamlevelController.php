@@ -298,9 +298,10 @@ class TeamlevelController extends Controller
             $teamlevel_json = json_encode($teamlevels);
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.teamlevel_update'];
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->action = json_encode($log_action); //'管理员' . $username . ' 修改站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'teamlevel.update';
             $newlog->parameters = json_encode( $request->all() );
@@ -364,9 +365,10 @@ class TeamlevelController extends Controller
                 throw new \Exception('事务中断5');
 
             $username = Auth::user()->username;
+            $log_action = ['username' => $username, 'type' => 'log.teamlevel_delete'];
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 删除站内信';
+            $newlog->action = json_encode($log_action); //'管理员' . $username . ' 删除站内信';
             $newlog->ip = $request->ip();
             $newlog->route = 'teamlevel.destroy';
             $newlog->parameters = json_encode( $request->all() );

@@ -45,6 +45,8 @@ return [
     'tradegoods_update' => 'Administrator  :username modify exchange',
     'tradegoods_delete' => 'Administrator  :username  delete exchange',
     'teamlevel_store' => 'Administrator  :username  add a station message',
+    'teamlevel_update' => 'Administrator  :username  modify the station message',
+    'teamlevel_delete' => 'Administrator  :username  delete message',
     'project_delete_action' => 'Administrator  :username  delete item  :id   :projectname',
     'bindProject_update_action' => 'Administrator  :username  binding project  :bindid   :bindprojectname  to  :projectname',
     'update_pass_action' => 'Administrator  :username  add a station message',
