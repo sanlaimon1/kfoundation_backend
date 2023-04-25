@@ -718,7 +718,9 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
+                // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
+                $detail =  ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'finance.charge_blalance'];
+                
                 $balance = $customer->balance + $amount;
 
                 $financial_balance = new FinancialBalance();
@@ -727,7 +729,7 @@ class CustomerController extends Controller
                 $financial_balance->balance = $customer->balance;
                 $financial_balance->direction = 1;
                 $financial_balance->financial_type = 5;
-                $financial_balance->details = $detail;
+                $financial_balance->details = json_encode($detail);
                 $financial_balance->after_balance = $balance;
                 $financial_balance->created_at = date('Y-m-d H:i:s');
                 if(!$financial_balance->save())
@@ -737,7 +739,6 @@ class CustomerController extends Controller
                 if(!$customer->save())
                 throw new \Exception('事务中断11');
 
-                $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
                 $charge_action = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'log.customer_charge_fbalance_action'];
@@ -795,7 +796,9 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
+                // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产上分" .  $amount;
+                $detail =  ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'finance.charge_asset'];
+
                 $balance = $customer->balance + $amount;
                 $financial_asset = new FinancialAsset();
                 $financial_asset->userid = $customer->id;
@@ -803,7 +806,7 @@ class CustomerController extends Controller
                 $financial_asset->balance = $customer->balance;
                 $financial_asset->direction = 1;
                 $financial_asset->financial_type = 5;
-                $financial_asset->details = $detail;
+                $financial_asset->details = json_encode($detail);
                 $financial_asset->after_balance = $balance;
                 $financial_asset->created_at = date('Y-m-d H:i:s');
                 if(!$financial_asset->save())
@@ -816,7 +819,8 @@ class CustomerController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 儲存金融資產 ';
+                $log_action = ['username' => $username,'type' => 'log.charge_balance_log'];
+                $newlog->action = json_encode($log_action); //'管理员' . $username . ' 儲存金融資產 ';
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.financial_asset';
                 $newlog->parameters = json_encode( $request->all() );
@@ -869,7 +873,9 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+                // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分上分" .  $amount;
+                $detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'finance.charge_integration'];
+
                 $balance = $customer->balance + $amount;
                 $financial_integration = new FinancialIntegration();
                 $financial_integration->userid = $customer->id;
@@ -877,7 +883,7 @@ class CustomerController extends Controller
                 $financial_integration->balance = $customer->balance;
                 $financial_integration->direction = 1;
                 $financial_integration->financial_type = 5;
-                $financial_integration->details = $detail;
+                $financial_integration->details = json_encode($detail);
                 $financial_integration->after_balance = $balance;
                 $financial_integration->created_at = date('Y-m-d H:i:s');
                 if(!$financial_integration->save())
@@ -886,11 +892,12 @@ class CustomerController extends Controller
                 $customer->balance = $balance;
                 if(!$customer->save())
                 throw new \Exception('事务中断15');
-
+                
                 $username = Auth::user()->username;
+                $log_action = ['username' => $username, 'type' => 'log.charge_integration_log'];
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 門店財務整合 ';
+                $newlog->action = json_encode($log_action); //'管理员' . $username . ' 門店財務整合 ';
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.financial_integration';
                 $newlog->parameters = json_encode( $request->all() );
@@ -944,7 +951,9 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+                // $detail = "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币上分" .  $amount;
+                $detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'finance.charge_platform_coin'];
+
                 $balance = $customer->balance + $amount;
                 $financial_platform_coin = new FinancialPlatformCoin();
                 $financial_platform_coin->userid = $customer->id;
@@ -952,7 +961,7 @@ class CustomerController extends Controller
                 $financial_platform_coin->balance = $customer->balance;
                 $financial_platform_coin->direction = 1;
                 $financial_platform_coin->financial_type = 5;
-                $financial_platform_coin->details = $detail;
+                $financial_platform_coin->details = json_encode($detail);
                 $financial_platform_coin->after_balance = $balance;
                 $financial_platform_coin->created_at = date('Y-m-d H:i:s');
                 if(!$financial_platform_coin->save())
@@ -963,9 +972,11 @@ class CustomerController extends Controller
                 throw new \Exception('事务中断17');
 
                 $username = Auth::user()->username;
+                $log_action = ['username' => $username,'type' => 'log.charge_platform_coin_log'];
+
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存儲金融平台幣 ';
+                $newlog->action = json_encode($log_action); //'管理员' . $username . ' 存儲金融平台幣 ';
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.financial_platform_coin';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1027,7 +1038,8 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
+                // $detail =   "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上下分" .  $amount;
+                $detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'finance.withdraw_balance'];
                 $balance = $customer->balance - $amount;
                 $financial_balance = new FinancialBalance();
                 $financial_balance->userid = $customer->id;
@@ -1035,7 +1047,7 @@ class CustomerController extends Controller
                 $financial_balance->balance = $customer->balance;
                 $financial_balance->direction = -1;
                 $financial_balance->financial_type = 6;
-                $financial_balance->details = $detail;
+                $financial_balance->details = json_encode($detail);
                 $financial_balance->after_balance = $balance;
                 $financial_balance->created_at = date('Y-m-d H:i:s');
                 if(!$financial_balance->save())
@@ -1046,9 +1058,10 @@ class CustomerController extends Controller
                 throw new \Exception('事务中断19');
 
                 $username = Auth::user()->username;
+                $log_action = ['username' => $username, 'type' => 'log.withdraw_balance_log'];
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 存儲財務餘額 ';
+                $newlog->action = json_encode($log_action); //'管理员' . $username . ' 存儲財務餘額 ';
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_balance';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1102,7 +1115,8 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
+                // $detail =     "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的资产下分" .  $amount;
+                $detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'finance.withdraw_asset'];
                 $balance = $customer->balance - $amount;
                 $financial_asset = new FinancialAsset();
                 $financial_asset->userid = $customer->id;
@@ -1110,7 +1124,7 @@ class CustomerController extends Controller
                 $financial_asset->balance = $customer->balance;
                 $financial_asset->direction = -1;
                 $financial_asset->financial_type = 6;
-                $financial_asset->details = $detail;
+                $financial_asset->details = json_encode($detail);
                 $financial_asset->after_balance = $balance;
                 $financial_asset->created_at = date('Y-m-d H:i:s');
                 if(!$financial_asset->save())
@@ -1120,10 +1134,11 @@ class CustomerController extends Controller
                 if(!$customer->save())
                 throw new \Exception('事务中断21');
 
-                $username = Auth::user()->username;
+                $log_detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'log.withdraw_asset_log'];
+
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = $detail;
+                $newlog->action = json_encode($log_detail);
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_asset';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1177,7 +1192,9 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
+                // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的积分下分" .  $amount;
+                $detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'finance.withdraw_integration'];
+
                 $balance = $customer->balance - $amount;
 
                 $financial_integration = new FinancialIntegration();
@@ -1186,7 +1203,7 @@ class CustomerController extends Controller
                 $financial_integration->balance = $customer->balance;
                 $financial_integration->direction = -1;
                 $financial_integration->financial_type = 6;
-                $financial_integration->details = $detail;
+                $financial_integration->details = json_encode($detail);
                 $financial_integration->after_balance = $balance;
                 $financial_integration->created_at = date('Y-m-d H:i:s');
                 if(!$financial_integration->save())
@@ -1195,11 +1212,11 @@ class CustomerController extends Controller
                 $customer->balance = $balance;
                 if(!$customer->save())
                 throw new \Exception('事务中断23');
+                $log_detail = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount , 'type' => 'log.withdraw_integration_log'];
 
-                $username = Auth::user()->username;
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = $detail;
+                $newlog->action = json_encode($log_detail);
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_integration';
                 $newlog->parameters = json_encode( $request->all() );
@@ -1253,7 +1270,8 @@ class CustomerController extends Controller
             try{
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
-                $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+                // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的平台币下分" .  $amount;
+                $detail = ['username' => Auth::user()->name, 'phone' => $customer->phone, 'amount', 'type' => 'finance.withdraw_platform_coin'];
                 $balance = $customer->balance - $amount;
 
                 $financial_platform_coin = new FinancialPlatformCoin();
@@ -1262,7 +1280,7 @@ class CustomerController extends Controller
                 $financial_platform_coin->balance = $customer->balance;
                 $financial_platform_coin->direction = -1;
                 $financial_platform_coin->financial_type = 6;
-                $financial_platform_coin->details = $detail;
+                $financial_platform_coin->details = json_encode($detail);
                 $financial_platform_coin->after_balance = $balance;
                 $financial_platform_coin->created_at = date('Y-m-d H:i:s');
                 if(!$financial_platform_coin->save())
@@ -1273,9 +1291,10 @@ class CustomerController extends Controller
                 throw new \Exception('事务中断25');
 
                 $username = Auth::user()->username;
+                $log_action = ['username' => $username, 'type' => 'log.withdraw_platform_coin_log'];
                 $newlog = new Log;
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . ' 商店取款金融平台幣 ';
+                $newlog->action = json_encode($log_action); //'管理员' . $username . ' 商店取款金融平台幣 ';
                 $newlog->ip = $request->ip();
                 $newlog->route = 'withdraw.financial_platform_coin';
                 $newlog->parameters = json_encode( $request->all() );

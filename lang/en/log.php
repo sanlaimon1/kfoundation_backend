@@ -20,6 +20,15 @@ return [
     'customer_pwd1_action' => 'Administrator  :username  store password 1',
     'customer_pwd2_action' => 'Administrator  :username  store password 2',
     'customer_charge_fbalance_action' => 'Administrator  :username  for clients  :phone  score on the balance  :amount',
+    'charge_balance_log' => 'Administrator :username storage of financial assets',
+    'charge_integration_log' => 'Administrator :username store financial integration',
+    'charge_platform_coin_log' => 'Administrator :username store financial platform currency',
+    'withdraw_balance_log' => 'Administrator :username store financial balances',
+    'withdraw_asset_log' => 'Administrator  :username  for clients  :phone  assets :amount',
+    'withdraw_integration_log' => 'Administrator  :username  for clients  :phone  points under the points  :amount',
+    'withdraw_platform_coin_log' => 'Administrator  :username store withdrawal financial platform currency',    
+
+
 
 
 ];

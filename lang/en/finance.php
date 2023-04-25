@@ -21,6 +21,12 @@ return [
     'transfertoAsset_detail' => 'User :PHONE will :AMOUNT balance converted into assets ',
     'rechargeapply_detail' => 'User :PHONE automatic recharge :AMOUNT',
     'assetcheck_update_asset' => 'Administrator :username to users :phone of :amount Amount of asset recharge application approved',
-    'asset_check_balance' => 'Get team top-up rewards :award_amount'
-
+    'asset_check_balance' => 'Get team top-up rewards :award_amount',
+    'charge_blalance' => 'Administrator: :username for clients :phone score on the balance :amount',
+    'charge_asset' => 'Administrator: :username for clients :phone assets :amount',
+    'charge_integration' => 'Administrator: :username for clients :phone Points up points :amount',
+    'charge_platform_coin' => 'Administrator: :username for clients :phone platform currency points :amount',
+    'withdraw_asset' => 'Administrator: :username for clients :phone assets :amount',
+    'withdraw_integration' => 'Administrator: :username for clients :phone Points under the points :amount',
+    'withdraw_platform_coin' => 'Administrator: :username for clients :phone platform token :amount',    
 ];
