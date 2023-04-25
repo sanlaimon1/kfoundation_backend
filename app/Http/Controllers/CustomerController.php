@@ -743,7 +743,6 @@ class CustomerController extends Controller
                 $charge_action = ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'log.customer_charge_fbalance_action'];
                 $action = json_encode($charge_action);
                 $newlog->action = $action;
-                dd($newlog->action);
                 $newlog->ip = $request->ip();
                 $newlog->route = 'charge.financial_balance';
                 $newlog->parameters = json_encode( $request->all() );
