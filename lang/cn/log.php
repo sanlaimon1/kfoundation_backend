@@ -36,5 +36,7 @@ return [
     'order3_status1_action' => '管理员  :username  通过生活缴费的订单  :order3id',
     'order3_status2_action' => '管理员  :username  拒绝生活缴费的订单  :order3id',
     'permission_store_action' => '管理员  :username  为角色  :roletitle  添加权限',
+    'project_store_action' => '管理员  :username  添加项目  :projectname',
+    'project_update_action' => '管理员  :username  修改项目  :projectname',
 
 ];

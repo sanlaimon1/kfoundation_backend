@@ -213,7 +213,9 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 添加项目:' . $project->project_name;
+            $store_action = ['username' => $username, 'projectname' => $project->project_name, 'type' => 'log.project_store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.store';
             $newlog->parameters = json_encode( $request->all() );
@@ -444,6 +446,7 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
+            $update_action = ['username' => $username, 'projectname' => $project->project_name, 'type' => 'log.project_update_action'];
             $newlog->action ='管理员' . $username . ' 修改项目:' . $project->project_name;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.update';
@@ -488,7 +491,7 @@ class ProjectController extends Controller
                 'lang' => $project->lang,
             ]);
 
-            $project_json = json_encode($projects);            
+            $project_json = json_encode($projects);
             DB::commit();
             LogFile::channel("project_update")->info($project_json);
 
@@ -576,7 +579,7 @@ class ProjectController extends Controller
                 'created_at' => $one->created_at,
                 'updated_at' => $one->updated_at,
             ]);
-            $project_json = json_encode($projects);            
+            $project_json = json_encode($projects);
             DB::commit();
             LogFile::channel("project_destroy")->info($project_json);
 
@@ -716,7 +719,7 @@ class ProjectController extends Controller
                 'created_at' => $project->created_at,
                 'updated_at' => $project->updated_at,
             ]);
-            $project_json = json_encode($bind_projects);           
+            $project_json = json_encode($bind_projects);
             DB::commit();
             LogFile::channel("bind_project_update")->info($project_json);
         } catch (\Exception $e) {
