@@ -141,6 +141,7 @@ class GoodsController extends Controller
                 $newgood->sort = $sort;
                 // $newgood->enable = $enable;
                 $newgood->comment = $comment;
+                $newgood->created_at = date('Y-m-d H:i:s');
 
                 if(!$newgood->save())
                     throw new \Exception('事务中断1');
@@ -148,7 +149,9 @@ class GoodsController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员'. $username. ' 添加站内信';
+                $store_action = ['username' => $username, 'type' => 'log.store_action'];
+                $action = json_encode($store_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'goods.store';
                 $input = $request->all();
@@ -231,7 +234,7 @@ class GoodsController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -286,6 +289,7 @@ class GoodsController extends Controller
                 $newgood->sort = $sort;
                 // $newgood->enable = $enable;
                 $newgood->comment = $comment;
+                $newgood->updated_at = date('Y-m-d H:i:s');
 
                 if(!$newgood->save())
                     throw new \Exception('事务中断3');
@@ -293,7 +297,9 @@ class GoodsController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员'. $username. ' 修改站内信';
+                $updated_action = ['username' => $username, 'type' => 'log.update_action'];
+                $action = json_encode($updated_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'goods.update';
                 $input = $request->all();
@@ -343,7 +349,7 @@ class GoodsController extends Controller
 
             Redis::set("permission:".Auth::id(), time());
             Redis::expire("permission:".Auth::id(), config('app.redis_second'));
-            
+
             $role_id = Auth::user()->rid;
             $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
@@ -364,7 +370,9 @@ class GoodsController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员'. $username. ' 删除站内信';
+                $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+                $action = json_encode($delete_action);
+                $newlog->action = $action;
                 $newlog->ip = $request->ip();
                 $newlog->route = 'goods.destroy';
                 $input = $request->all();

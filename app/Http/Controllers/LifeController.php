@@ -117,7 +117,9 @@ class LifeController extends Controller
                 $username = Auth::user()->username;
                 $log = new Log();
                 $log->adminid = Auth::id();
-                $log->action = '管理员'. $username. ' 创建商品';
+                $store_action = ['username' => $username, 'type' => 'log.life_store_action'];
+                $action = json_encode($store_action);
+                $log->action = $action;
                 $log->ip =  $request->ip();
                 $log->route = 'life.store';
                 $input = $request->all();
@@ -229,7 +231,9 @@ class LifeController extends Controller
                 $username = Auth::user()->username;
                 $log = new Log();
                 $log->adminid = Auth::id();
-                $log->action = '管理员'. $username. ' 修改商品';
+                $update_action = ['username' => $username, 'type' => 'log.life_update_action'];
+                $action = json_encode($update_action);
+                $log->action = $action;
                 $log->ip =  $request->ip();
                 $log->route = 'life.update';
                 $input = $request->all();
@@ -264,7 +268,7 @@ class LifeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id,Request $request)
     {
         if (Redis::exists("permission:".Auth::id())){
             $arr = ['code'=>-1, 'message'=> config('app.redis_second'). '秒内不能重复提交'];
@@ -290,7 +294,21 @@ class LifeController extends Controller
                 $life_json_datas = json_encode($life_datas);
                 if(!$life->delete())
                     throw new \Exception('事务中断1');
-                
+
+                $username = Auth::user()->username;
+                $log = new Log();
+                $log->adminid = Auth::id();
+                $update_action = ['username' => $username, 'type' => 'log.life_delete_action'];
+                $action = json_encode($update_action);
+                $log->action = $action;
+                $log->ip =  $request->ip();
+                $log->route = 'life.delete';
+                $input = $request->all();
+                $input_json = json_encode( $input );
+                $log->parameters = $input_json;  // 请求参数
+                $log->created_at = date('Y-m-d H:i:s');
+                if(!$log->save())
+                    throw new \Exception('事务中断2');
                 DB::commit();
                 LogFile::channel("life_destroy")->info($life_json_datas);
 

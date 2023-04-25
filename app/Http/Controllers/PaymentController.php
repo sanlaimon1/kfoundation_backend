@@ -224,7 +224,9 @@ class PaymentController extends Controller
                 $username = Auth::user()->username;
                 $log = new Log();
                 $log->adminid = Auth::id();
-                $log->action = '管理员'. $username. ' 修改站内信';
+                $update_action = ['username' => $username, 'type' => 'log.update_action'];
+                $action = json_encode($update_action);
+                $log->action = $action;
                 $log->ip =  $request->ip();
                 $log->route = 'payment.update';
                 $input = $request->all();
@@ -318,7 +320,9 @@ class PaymentController extends Controller
                 $username = Auth::user()->username;
                 $log = new Log();
                 $log->adminid = Auth::id();
-                $log->action = '管理员'. $username. ' 修改站内信';
+                $update_action = ['username' => $username, 'type' => 'log.update_action'];
+                $action = json_encode($update_action);
+                $log->action = $action;
                 $log->ip =  $request->ip();
                 $log->route = 'payment.update';
                 $input = $request->all();

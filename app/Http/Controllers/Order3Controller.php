@@ -96,9 +96,11 @@ class Order3Controller extends Controller
                 $myself = Auth::user();
                 $log = new Log();
                 $log->adminid = $myself->id;
-                $log->action = '管理员'. $myself->username. '通过生活缴费的订单' .$order3->id;
+                $order3_status1_action = ['username' => $myself->username, 'order3id' => $order3->id, 'type' => 'log.order3_status1_action'];
+                $action = json_encode($order3_status1_action);
+                $log->action = $action;
                 $log->ip = $this->getUserIP();
-                $log->route = 'order3.edit';
+                $log->route = 'order3.change_status1';
                 $input = $request->all();
                 $input_json = json_encode( $input );
                 $log->parameters = $input_json;  // 请求参数
@@ -157,9 +159,11 @@ class Order3Controller extends Controller
                 $myself = Auth::user();
                 $log = new Log();
                 $log->adminid = $myself->id;
-                $log->action = '管理员'. $myself->username. '拒绝生活缴费的订单' .$order3->id;
+                $order3_status2_action = ['username' => $myself->username, 'order3id' => $order3->id, 'type' => 'log.order3_status2_action'];
+                $action = json_encode($order3_status2_action);
+                $log->action = $action;
                 $log->ip = $this->getUserIP();
-                $log->route = 'order3.update';
+                $log->route = 'order3.change_status2';
                 $input = $request->all();
                 $input_json = json_encode( $input );
                 $log->parameters = $input_json;  // 请求参数

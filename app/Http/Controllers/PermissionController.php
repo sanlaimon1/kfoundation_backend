@@ -77,7 +77,9 @@ class PermissionController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();
-                $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
+                $store_action = ['username' => $username, 'roletitle' => $one_role->title, 'type' => 'log.permission_store_action'];
+                $action = json_encode($store_action);
+                $newlog->action = $action;
                 $newlog->ip = "127.0.0.1";
                 $newlog->route = 'permission.update';
                 $newlog->parameters = json_encode($request->all());
@@ -115,7 +117,9 @@ class PermissionController extends Controller
                 $username = Auth::user()->username;
                 $newlog = new Log();
                 $newlog->adminid = Auth::id();;
-                $newlog->action = '管理员' . $username . '为角色 ' . $one_role->title . ' 添加权限';
+                $store_action = ['username' => $username, 'roletitle' => $one_role->title, 'type' => 'log.permission_store_action'];
+                $action = json_encode($store_action);
+                $newlog->action = $action;
                 $newlog->ip = "127.0.0.1";
                 $newlog->route = 'permission.store';
                 $newlog->parameters = json_encode($request->all());
@@ -212,10 +216,12 @@ class PermissionController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log();
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = "127.0.0.1";
-            $newlog->route = 'permission.store';
+            $newlog->route = 'permission.delete';
             $newlog->parameters = "delete parameter";
             $newlog->created_at = date('Y-m-d H:i:s');
             if (!$newlog->save())

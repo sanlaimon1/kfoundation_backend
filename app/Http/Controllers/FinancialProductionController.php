@@ -139,7 +139,9 @@ class FinancialProductionController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '创建交易所商品';
+            $store_action = ['username' => $username, 'type' => 'log.fproduction_store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'financial_productions.store';
             $input = $request->all();
@@ -296,7 +298,9 @@ class FinancialProductionController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '修改交易所商品';
+            $update_action = ['username' => $username, 'type' => 'log.fproduction_update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'financial_productions.update';
             $input = $request->all();
@@ -306,7 +310,7 @@ class FinancialProductionController extends Controller
 
             if(!$newlog->save())
                 throw new \Exception('事务中断2');
-            
+
             $financial_production = array(
                 'id' => $onefinancial_product->id,
                 'production_name' => $onefinancial_product->production_name,
@@ -370,7 +374,9 @@ class FinancialProductionController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log();
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员'. $username. '删除交易所商品';
+            $delete_action = ['username' => $username, 'type' => 'log.fproduction_delete_action' ];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'financial_production.delete';
             $input = $request->all();
@@ -384,7 +390,7 @@ class FinancialProductionController extends Controller
                 'id' => $financial_production->id,
                 'production_name' => $financial_production->production_name,
                 'status' => $financial_production->status
-            ); 
+            );
             $financial_production_json = json_encode($financial_production);
             DB::commit();
             LogFile::channel('financial_produstion_destroy')->info($financial_production_json);
