@@ -55,8 +55,10 @@ class FinancialPlatformCoinController extends Controller
                 $created_at = array_key_exists('created_at', $res) ? $res['created_at'] : '';
                 $amount = array_key_exists('amount', $res) ? $res['amount'] : '';
                 $addmoney = array_key_exists('addmoney',$res) ? $res['addmoney'] : '';
+                $username = array_key_exists('username',$res) ? $res['username'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone' => $phone, 'tphone' => $tphone, 'created_at' => $created_at, 'amount' => $amount, 'addmoney' => $addmoney]);
+                $action = __($type, ['phone' => $phone, 'tphone' => $tphone, 'created_at' => $created_at,
+                            'amount' => $amount, 'addmoney' => $addmoney, 'username' => $username]);
             }
             $record_datas[] = [
                 'id' => $record->id,

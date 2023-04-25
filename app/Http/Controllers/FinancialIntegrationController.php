@@ -55,8 +55,11 @@ class FinancialIntegrationController extends Controller
                 $created_at = array_key_exists('created_at', $res) ? $res['created_at'] : '';
                 $score = array_key_exists('score', $res) ? $res['score'] : '';
                 $platform_coin = array_key_exists('platform_coin',$res) ? $res['platform_coin'] : '';
+                $amount = array_key_exists('amount',$res) ? $res['amount'] : '';
+                $username = array_key_exists('username',$res) ? $res['username'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone' => $phone, 'score' => $score, 'created_at' => $created_at, 'platform_coin' => $platform_coin]);
+                $action = __($type, ['phone' => $phone, 'score' => $score, 'created_at' => $created_at,
+                             'platform_coin' => $platform_coin, 'amount' => $amount, 'username' => $username]);
             }
             $record_datas[] = [
                 'id' => $record->id,
