@@ -114,8 +114,10 @@ class SignController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $store_action = ['username' => $username, 'type' => 'log.store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'sign.store';
             $newlog->parameters = json_encode( $request->all() );
@@ -165,7 +167,7 @@ class SignController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
+        if (Redis::exists("permission:".Auth::id()))
         return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
@@ -185,8 +187,10 @@ class SignController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'sign.destroy';
             $newlog->parameters = json_encode( $request->all() );

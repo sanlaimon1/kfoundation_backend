@@ -447,7 +447,8 @@ class ProjectController extends Controller
             $newlog = new Log;
             $newlog->adminid = Auth::id();
             $update_action = ['username' => $username, 'projectname' => $project->project_name, 'type' => 'log.project_update_action'];
-            $newlog->action ='管理员' . $username . ' 修改项目:' . $project->project_name;
+            $action = json_encode($update_action);
+            $newlog->action =$action;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.update';
             $newlog->parameters = json_encode( $request->all() );
@@ -565,7 +566,9 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action = '管理员' . $username . ' 删除项目 ' . $id . ' ' . $one->project_name;
+            $delete_action = ['username' => $username, 'id' => $id, 'projectname' => $one->project_name, 'type' => 'log.project_delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'project.destroy';
             $newlog->parameters = json_encode( $request->all() );
@@ -704,7 +707,9 @@ class ProjectController extends Controller
             $username = Auth::user()->username;
             $newlog = new Log;
             $newlog->adminid = Auth::id();
-            $newlog->action ='管理员' . $username . ' 绑定项目' . $bindid . ' ' . $bind_project->project_name . ' 到 ' . $project->project_name;
+            $update_bind_action = ['username' => $username, 'bindid' => $bindid, 'bindprojectname' => $bind_project->project_name, 'projectname' => $project->project_name, 'type' => 'log.bindProject_update_action'];
+            $action = json_encode($update_bind_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'bind.update';
             $newlog->parameters = json_encode( $request->all() );

@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Log as LogFile;
 class SlideController extends Controller
 {
 
-    /* 
+    /*
     index   1
     create  2
     store   4
     show    8
     edit    16
     update  32
-    destory 64  
+    destory 64
     */
     private $path_name = "/slide";
 
@@ -35,7 +35,7 @@ class SlideController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 1) ){
@@ -68,7 +68,7 @@ class SlideController extends Controller
      */
     public function create()
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 2) ){
@@ -92,7 +92,7 @@ class SlideController extends Controller
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 4) ){
@@ -142,8 +142,10 @@ class SlideController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $store_action = ['username' => $username, 'type' => 'log.store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
             $newlog->route = 'slide.store';
             $newlog->parameters = json_encode( $request->all() );
@@ -193,13 +195,13 @@ class SlideController extends Controller
      */
     public function edit(string $id)
     {
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 16) ){
             return "您没有权限访问这个路径";
         }
-        
+
         $slide = Slide::find($id);
 
         return view('slide.edit', compact('slide'));
@@ -210,13 +212,13 @@ class SlideController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Redis::exists("permission:".Auth::id())) 
+        if (Redis::exists("permission:".Auth::id()))
         return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 32) ){
@@ -231,7 +233,7 @@ class SlideController extends Controller
             'status' => ['required', 'integer', 'in:0,1'],
             'sort' => ['required', 'integer', 'gt:0'],
         ]);
-        
+
         if($request->hasFile('picture_path')){
             $picture_path = time().'.'.$request->picture_path->extension();
             $request->picture_path->move(public_path('/images/webpimg/'),$picture_path);
@@ -269,10 +271,12 @@ class SlideController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->adminid = Auth::id();
+            $update_action = ['username' => $username, 'type' => 'log.update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
-            $newlog->route = 'inbox.update';
+            $newlog->route = 'slide.update';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())
@@ -312,13 +316,13 @@ class SlideController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        if (Redis::exists("permission:".Auth::id())) 
+        if (Redis::exists("permission:".Auth::id()))
         return "10秒内不能重复提交";
 
         Redis::set("permission:".Auth::id(), time());
         Redis::expire("permission:".Auth::id(), config('app.redis_second'));
 
-        $role_id = Auth::user()->rid;        
+        $role_id = Auth::user()->rid;
         $permission = Permission::where("path_name" , "=", $this->path_name)->where("role_id", "=", $role_id)->first();
 
         if( !(($permission->auth2 ?? 0) & 64) ){
@@ -345,10 +349,12 @@ class SlideController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log;
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 修改站内信';
+            $newlog->adminid = Auth::id();
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = $request->ip();
-            $newlog->route = 'inbox.destroy';
+            $newlog->route = 'slide.destroy';
             $newlog->parameters = json_encode( $request->all() );
             $newlog->created_at = date('Y-m-d H:i:s');
             if(!$newlog->save())

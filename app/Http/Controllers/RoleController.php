@@ -120,8 +120,10 @@ class RoleController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log();
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $store_action = ['username' => $username, 'type' => 'log.store_action'];
+            $action = json_encode($store_action);
+            $newlog->action = $action;
             $newlog->ip = "127.0.0.1";
             $newlog->route = 'role.store';
             $newlog->parameters = json_encode($request->all());
@@ -240,8 +242,10 @@ class RoleController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log();
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $update_action = ['username' => $username, 'type' => 'log.update_action'];
+            $action = json_encode($update_action);
+            $newlog->action = $action;
             $newlog->ip = "127.0.0.1";
             $newlog->route = 'role.update';
             $newlog->parameters = json_encode($request->all());
@@ -321,8 +325,10 @@ class RoleController extends Controller
 
             $username = Auth::user()->username;
             $newlog = new Log();
-            $newlog->adminid = Auth::id();;
-            $newlog->action = '管理员' . $username . ' 添加站内信';
+            $newlog->adminid = Auth::id();
+            $delete_action = ['username' => $username, 'type' => 'log.delete_action'];
+            $action = json_encode($delete_action);
+            $newlog->action = $action;
             $newlog->ip = "127.0.0.1";
             $newlog->route = 'role.delete';
             $newlog->parameters = "delete parameter";
