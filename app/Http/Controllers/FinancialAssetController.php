@@ -59,8 +59,9 @@ class FinancialAssetController extends Controller
                 $project_name = array_key_exists('project_name', $res) ? $res['project_name'] : '';
                 $amount = array_key_exists('amount', $res) ? $res['amount'] : '';
                 $itemid = array_key_exists('itemid',$res) ? $res['itemid'] : '';
+                $username = array_key_exists('username', $res) ? $res['username'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone' => $phone, 'pid' => $pid, 'project_name' => $project_name, 'itemid' => $itemid, 'amount' => $amount]);
+                $action = __($type, ['phone' => $phone, 'pid' => $pid, 'project_name' => $project_name, 'itemid' => $itemid, 'amount' => $amount,'username' => $username]);
             }
             $record_datas[] = [
                 'id' => $record->id,

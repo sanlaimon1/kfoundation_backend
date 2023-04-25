@@ -20,4 +20,7 @@ return [
     'DB2balance_detail' => '用户 :PHONE 将 :amount 平台币转化成 :addmoney 余额',
     'transfertoAsset_detail' => '用户 :PHONE 将 :AMOUNT 余额转化成资产 ',
     'rechargeapply_detail' => '用户 :PHONE 自动充值 :AMOUNT',
+    'assetcheck_update_asset' => '管理员 :username 对用户 :phone 的 :amount 金额的资产充值申请 审核通过',
+    'asset_check_balance' => '得到团队充值奖励 :award_amount'
+
 ];

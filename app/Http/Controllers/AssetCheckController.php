@@ -185,8 +185,11 @@ class AssetCheckController extends Controller
                 if (!$one_user->save())
                     throw new \Exception('事务中断2');
 
+                
                 //添加财务记录
                 $username = Auth::user()->username;
+                //'管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
+                $details = ['username' => $username, 'phone' => $one_user->phone, 'amount' => $one->amount, 'type' => 'finance.assetcheck_update_asset'];
                 $newfinance = new FinancialAsset;
                 $newfinance->userid = $userid;
                 $newfinance->amount = $one->amount;
@@ -194,7 +197,7 @@ class AssetCheckController extends Controller
                 $newfinance->direction = 1;    //加资产
                 $newfinance->financial_type = 3;  //通过用户申请获得
                 $newfinance->created_at = date('Y-m-d H:i:s');
-                $newfinance->details = '管理员' . $username . '对用户' . $one_user->phone . '的' . $one->amount . '金额的资产充值申请 审核通过';
+                $newfinance->details = json_encode($details);
                 $order_arr = ['charge_id' => $id];
                 $newfinance->extra = json_encode($order_arr);  //{"charge_id": 1}
                 $newfinance->after_balance = $one_user->asset;
@@ -287,12 +290,14 @@ class AssetCheckController extends Controller
             //7，检测本级团队是否获得团队奖   奖励到余额
             $current_team = Teamlevel::find( $one_user->team_id );
 
-            if($current_team->is_given===1) {
+            if($current_team->is_given === 1) {
                 $team_award = $current_team->team_award;
                 $award_amount = round($one->amount * $team_award / 100, 2);
                 $after_balance = $one_user->balance + $award_amount;
 
                 //添加余额流水记录  系统团队奖励
+                //'得到团队充值奖励:' . $award_amount;
+                $current_team_detail = ['award_amount' => $award_amount, 'type' => 'finance.asset_check_balance'];
                 $one_financial_balance = new FinancialBalance();
                 $one_financial_balance->userid = $one_user->id;
                 $one_financial_balance->amount = $award_amount;
@@ -300,7 +305,7 @@ class AssetCheckController extends Controller
                 $one_financial_balance->direction = 1;
                 $one_financial_balance->financial_type = 9;
                 $one_financial_balance->created_at = date('Y-m-d H:i:s');
-                $one_financial_balance->details = '得到团队充值奖励:' . $award_amount;
+                $one_financial_balance->details = json_encode($current_team_detail);
                 $one_financial_balance->after_balance = $after_balance;
                 if( !$one_financial_balance->save() )
                     throw new \Exception('事务中断9');
@@ -348,12 +353,15 @@ class AssetCheckController extends Controller
 
             //9，检测直属上级用户的团队是否获得团队奖  奖励到余额
             $parent_team = Teamlevel::find( $parent_user->team_id );
-            if($parent_team->is_given===1) {
+            if($parent_team->is_given === 1) {
                 $team_award = $parent_team->team_award;
                 $award_amount2 = round($one->amount * $team_award / 100, 2);
                 $after_balance2 = $parent_user->balance + $award_amount2;
 
                 //添加余额流水记录  系统团队奖励
+                //'得到团队充值奖励:' . $award_amount2;
+                $parent_team_detail = ['award_amount' => $award_amount2, 'type' => 'finance.asset_check_balance'];
+
                 $one_financial_balance2 = new FinancialBalance;
                 $one_financial_balance2->userid = $parent_user->id;
                 $one_financial_balance2->amount = $award_amount2;
@@ -361,7 +369,7 @@ class AssetCheckController extends Controller
                 $one_financial_balance2->direction = 1;
                 $one_financial_balance2->financial_type = 9;
                 $one_financial_balance2->created_at = date('Y-m-d H:i:s');
-                $one_financial_balance2->details = '得到团队充值奖励:' . $award_amount2;
+                $one_financial_balance2->details = json_encode($parent_team_detail);
                 $one_financial_balance2->after_balance = $after_balance2;
                 if( !$one_financial_balance2->save() )
                     throw new \Exception('事务中断13');

@@ -60,8 +60,9 @@ class FinancialBalanceController extends Controller
                 $amount = array_key_exists('amount', $res) ? $res['amount'] : '';
                 $num = array_key_exists('num', $res) ? $res['num'] : '';
                 $addmoney = array_key_exists('addmoney', $res) ? $res['addmoney'] : '';
+                $award_amount = array_key_exists('award_amount',$res) ? $res['award_amount'] : '';
                 $type = array_key_exists('type', $res) ? $res['type'] : '';
-                $action = __($type, ['phone' => $phone, 'itemid' => $itemid, 'project_name' => $project_name,'production_name' => $production_name,'total' => $total, 'this_fee' => $this_fee, 'money' => $money, 'amount' => $amount, 'addmoney' => $addmoney, 'num' => $num
+                $action = __($type, ['phone' => $phone, 'itemid' => $itemid, 'project_name' => $project_name,'production_name' => $production_name,'total' => $total, 'this_fee' => $this_fee, 'money' => $money, 'amount' => $amount, 'addmoney' => $addmoney, 'num' => $num,'award_amount' => $award_amount
                 ]);
             }
             $record_datas[] = [
