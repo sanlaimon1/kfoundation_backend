@@ -20,5 +20,7 @@ return [
     'DB2balance_detail' => 'User :PHONE will :amount the platform currency is converted into :addmoney balance',
     'transfertoAsset_detail' => 'User :PHONE will :AMOUNT balance converted into assets ',
     'rechargeapply_detail' => 'User :PHONE automatic recharge :AMOUNT',
+    'assetcheck_update_asset' => 'Administrator :username to users :phone of :amount Amount of asset recharge application approved',
+    'asset_check_balance' => 'Get team top-up rewards :award_amount'
 
 ];
