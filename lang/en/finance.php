@@ -26,7 +26,7 @@ return [
     'charge_asset' => 'Administrator: :username for clients :phone assets :amount',
     'charge_integration' => 'Administrator: :username for clients :phone Points up points :amount',
     'charge_platform_coin' => 'Administrator: :username for clients :phone platform currency points :amount',
-    'withdraw_balance' => 'Administrator: :username for clients :phone assets :amount',
+    'withdraw_balance' => 'Administrator: :username for clients :phone the balance is divided up and down :amount',
     'withdraw_asset' => 'Administrator: :username for clients :phone assets :amount',
     'withdraw_integration' => 'Administrator: :username for clients :phone Points under the points :amount',
     'withdraw_platform_coin' => 'Administrator: :username for clients :phone platform token :amount',   

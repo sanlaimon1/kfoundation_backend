@@ -26,7 +26,7 @@ return [
     'charge_asset' => '管理员: :username 为客户 :phone 的资产上分 :amount',
     'charge_integration' => '管理员: :username 为客户 :phone 的积分上分 :amount',
     'charge_platform_coin' => '管理员: :username 为客户 :phone 的平台币上分 :amount',
-    'withdraw_balance' => '管理员: :username 为客户 :phone the balance is divided up and down :amount',
+    'withdraw_balance' => '管理员: :username 为客户 :phone 的余额上下分 :amount',
     'withdraw_asset' => '管理员: :username 为客户 :phone 的资产下分 :amount',
     'withdraw_integration' => '管理员: :username 为客户 :phone 的积分下分 :amount',
     'withdraw_platform_coin' => '管理员: :username 为客户 :phone 的平台币下分 :amount',    
