@@ -22,7 +22,7 @@ return [
     'rechargeapply_detail' => '用户 :PHONE 自动充值 :AMOUNT',
     'assetcheck_update_asset' => '管理员 :username 对用户 :phone 的 :amount 金额的资产充值申请 审核通过',
     'asset_check_balance' => '得到团队充值奖励 :award_amount',
-    'charge_blalance' => '管理员: :username 为客户 :phone 的余额上分 :amount',
+    'charge_balance' => '管理员: :username 为客户 :phone 的余额上分 :amount',
     'charge_asset' => '管理员: :username 为客户 :phone 的资产上分 :amount',
     'charge_integration' => '管理员: :username 为客户 :phone 的积分上分 :amount',
     'charge_platform_coin' => '管理员: :username 为客户 :phone 的平台币上分 :amount',
