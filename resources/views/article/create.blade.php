@@ -147,7 +147,7 @@
                         @error('content')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea class="form-control" id="summernote" name="content" value=" {{old('content')}}"></textarea>
+                        <textarea class="form-control" id="summernote" name="content" >{{old('content')}}</textarea>
                         <script>
                            CKEDITOR.replace('summernote',{
                                 language: 'zh'

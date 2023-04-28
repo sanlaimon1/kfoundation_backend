@@ -49,13 +49,11 @@ class ArticleController extends Controller
 
         $perPage = $request->input('perPage', 10);
         $articles = Article::select('id', 'title', 'content', 'categoryid', 'adminid', 'litpic', 'sort')
-                    ->orderBy('sort', 'asc')
                     ->orderBy('created_at', 'desc')
                     ->paginate($perPage);
 
         if (!Redis::exists("article:homepage:md5")) {
             $article = Article::select('id', 'title', 'litpic')
-                        ->orderBy('sort', 'asc')
                         ->orderBy('created_at', 'desc')
                         ->limit(6)
                         ->get();
