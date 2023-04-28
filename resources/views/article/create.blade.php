@@ -128,7 +128,7 @@
                         @error('title')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="title" name="title" placeholder="标题" value="">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="标题" value="{{old('title')}}">
                     </div>
                     <div class="mb-3 col-6">
                         <label for="lang" class="form-label">语言</label>
@@ -136,8 +136,8 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                         <select id="lang" name="lang" class="form-select" >
-                            <option value="cn">简体中文</option>
-                            <option value="en">English</option>
+                            <option value="cn" {{ old('lang') == 'cn' ? 'selected' : '' }}>简体中文</option>
+                            <option value="en" {{ old('lang') == 'en' ? 'selected' : '' }}>English</option>
                         </select>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                         @error('content')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <textarea class="form-control" id="summernote" name="content"></textarea>
+                        <textarea class="form-control" id="summernote" name="content" >{{old('content')}}</textarea>
                         <script>
                            CKEDITOR.replace('summernote',{
                                 language: 'zh'
@@ -173,13 +173,13 @@
                         @error('sort')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="number" class="form-control" name="sort" id="sort" placeholder="排序" value="">
+                        <input type="number" class="form-control" name="sort" id="sort" placeholder="排序" value="{{old('sort')}}">
                     </div>
 
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="shown" class="form-label">标题</label>
+                        <label for="shown" class="form-label">显示/隐藏</label>
                         @error('shown')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -190,11 +190,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="created_at" class="form-label">标题</label>
+                        <label for="created_at" class="form-label">创建时间</label>
                         @error('created_at')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <input type="datetime-local" class="form-control" id="created_at" name="created_at" placeholder="添加时间" value="">
+                        <input type="datetime-local" class="form-control" id="created_at" name="created_at" placeholder="添加时间" value="{{old('created_at')}}">
                     </div>
                 </div>
 

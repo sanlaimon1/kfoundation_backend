@@ -29,8 +29,8 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">项目id</th>
-                    <th scope="col">客户/投资人id</th>
+                    <th scope="col">项目名称</th>
+                    <th scope="col">投资人</th>
                     <th scope="col">投资金额</th>
                     <th scope="col">周期</th>
                     <th scope="col">费率</th>
@@ -42,8 +42,8 @@
                 @foreach ($order1 as $one)
                 <tr>
                     <td>{{ $one->id }}</td>
-                    <td>{{ $one->pid }}</td>
-                    <td>{{ $one->cid }}</td>
+                    <td>{{ $one->goods->project_name }}</td>
+                    <td>{{ $one->customer->phone }}</td>
                     <td>{{ $one->amount }}</td>
                     <td>{{ $one->days }}天</td>
                     <td>{{ $one->rate }}</td>
