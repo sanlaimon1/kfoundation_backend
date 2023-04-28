@@ -317,10 +317,10 @@
         </aside>
 
         <!-- Content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="min-height: 100vh;">
 
             <div class="content">
-                <iframe src="{{ route('satistatics') }}" name="content" width="100%" style="min-height: 700px;" frameborder="no" id="iframe">
+                <iframe src="{{ route('satistatics') }}" name="content" width="100%" style="min-height: 100vh;" frameborder="no" id="iframe">
                 </iframe>
             </div>
 
