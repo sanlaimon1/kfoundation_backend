@@ -193,7 +193,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-divider"></div>
-                        <form action="/logout" method="post">
+                        <form action="/logout" method="post" id="logout-form">
                             @csrf
                             <button type="submit" class="dropdown-item">
                                 <i class="fas fa-sign-out-alt mr-2"></i>登出

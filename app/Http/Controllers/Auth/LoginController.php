@@ -87,6 +87,9 @@ class LoginController extends Controller
         //构建加盐密码
         $salt = $oneuser->salt;
         //$saltpassword = md5( md5( $salt . $password ) . $salt );
+        // $sessionId =Session::getId();
+        // Session::setId($sessionId);
+        
         $auth = Auth::attempt( [$this->username()=>$username, 'password' => md5( $salt . $password ) . $salt ] );
 
         if($auth) {
@@ -136,12 +139,15 @@ class LoginController extends Controller
             }
 
             $username = Auth::user()->username;
-            $sessionId =$request->session()->getId();
+            // $sessionId =$request->session()->getId();
+            
+            $sessionId =Session::getId();
+            
             if(Redis::exists('online:'.$username)){
-                $redis_sessionId = Redis::get('online:'.$username);                
-                Redis::del('online:'.$username,$redis_sessionId);
-                Redis::set('online:'.$username,$sessionId);
-               
+                // $redis_sessionId = Redis::get('online:'.$username);                
+                // Redis::del('online:'.$username,$redis_sessionId);
+                Redis::del("online:".$username);
+                Redis::set('online:'.$username,$sessionId); 
             }else{
                 Redis::set('online:'.$username,$sessionId);
             }

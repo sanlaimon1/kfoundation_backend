@@ -16,6 +16,8 @@ use App\Models\FinancialPlatformCoin;
 use App\Models\FinancialAsset;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -241,9 +243,20 @@ class HomeController extends Controller
 
     public function check_count()
     {
+        
+        $current_sesssionid = Session::getId();
+
+        $username = Auth::user()->username;
+        $last_sessionid = Redis::get("online:".$username);
+        if($last_sessionid!=$current_sesssionid)
+		{
+			return response()->json([
+                'code' => 2,
+            ]);
+		}
+
         // $asset_check_status = Redis::get('asset_check_status');
         // $balance_check_status = Redis::get('balance_check_status');
-
         $asset_check_status = 0;
         $balance_check_status = 0;
 
