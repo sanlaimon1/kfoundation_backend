@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log as LogFile;
+use Illuminate\Http\JsonResponse;
 
 class LoginController extends Controller
 {
@@ -175,6 +176,21 @@ class LoginController extends Controller
 
             return redirect('/login')->with('pass_error', $error_message);
         }
+    }
+
+    protected function sendLoginResponse(Request $request)
+    {
+        // $request->session()->regenerate();
+
+        $this->clearLoginAttempts($request);
+
+        if ($response = $this->authenticated($request, $this->guard()->user())) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+                    ? new JsonResponse([], 204)
+                    : redirect()->intended($this->redirectPath());
     }
 
     /**
