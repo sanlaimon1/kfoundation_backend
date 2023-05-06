@@ -719,7 +719,7 @@ class CustomerController extends Controller
                 DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
                 $customer = Customer::find($customer_id);
                 // $detail =  "管理员:" . Auth::user()->username . "为客户"  .  $customer->phone .  "的余额上分" . $amount;
-                $detail =  ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'finance.charge_blalance'];
+                $detail =  ['username' => Auth::user()->username, 'phone' => $customer->phone, 'amount' => $amount, 'type' => 'finance.charge_balance'];
                 
                 $balance = $customer->balance + $amount;
 
