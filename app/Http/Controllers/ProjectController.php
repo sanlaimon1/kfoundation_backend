@@ -90,7 +90,9 @@ class ProjectController extends Controller
         }
 
         //项目类型
-        $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')->get();
+        $cates = ProjectCate::select('id','cate_name')->where('enable',1)->orderBy('sort', 'desc')
+                            ->with('projectCateLang')
+                            ->get();
 
         $types = [];
         foreach($cates as $one_cat) {

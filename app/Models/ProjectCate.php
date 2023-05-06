@@ -11,4 +11,9 @@ class ProjectCate extends Model
 
     public $timestamps = FALSE;
     protected $table = 'project_categories';
+
+    public function projectCateLang()
+    {
+        return $this->hasOne('App\Models\ProjectCateLang', 'project_cate_id', 'id');
+    }
 }
