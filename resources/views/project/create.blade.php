@@ -63,18 +63,11 @@
                         @error('cate_name')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <select id="cate_name" name="cate_name"  class="form-select form-select-lg" >
-                            @foreach( $types as $key=>$one_cate )
-                            @php
-                                $projectCateLang = $one_cate->projectCateLang;
-                            @endphp
-                            @if($projectCateLang)
-                                <option value="{{ $key }}" > {{ $projectCateLang->cate_name }} </option>
-                            @else
-                                <option value="{{ $key }}">Error: No projectCateLang found</option>
-                            @endif
-                            @endforeach
-                        </select>
+                            <select id="cate_name" name="cate_name"  class="form-select" >
+                                @foreach( $types as $key=>$one_cate )
+                                <option value="{{ $key }}" > {{ $one_cate }} </option>
+                                @endforeach
+                            </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="lang" class="form-label">语言</label>
