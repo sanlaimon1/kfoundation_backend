@@ -97,7 +97,7 @@
                     <td>{{ $one->created_at }}</td>
                     <td>
                         <a href="{{ $one->qrcode }}" target="_blank">
-                            <img src="{{ $one->qrcode }}" />
+                            <img src="<?= config('app.static_url') ?>{{ $one->qrcode }}" width="100%"/>
                         </a>
                     </td>
                     <td>
